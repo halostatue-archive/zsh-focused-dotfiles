@@ -1,0 +1,7 @@
+#autoload -U
+
+for aname (${@}); do
+  (( ${+aliases[${aname}]} )) || return 1
+done
+
+return 0

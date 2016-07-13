@@ -1,0 +1,40 @@
+#! /bin/zsh
+
+mysql_bin=$(dirname "$(which-mysql)")
+add-paths-after-if ${mysql_bin}
+
+if is-mac; then
+  mysql_lib="$(dirname "${mysql_bin}")/lib"
+  export DYLD_LIBRARY_PATH=${mysql_lib}:${DYLD_LIBRARY_PATH}
+fi
+
+function --automatic-mysql-login()
+{
+  local credentials
+  local -a extra
+  extra=()
+
+  zstyle -s :hzsh:plugins:mysql mysql-credentials credentials
+  if [ -n "${credentials}" ]; then
+    local MYSQL_USER MYSQL_PASS
+    [ -f "${credentials}" ] && source "${credentials}"
+    extra=(-u${MYSQL_USER} -p${MYSQL_PASS})
+  fi
+
+  command ${argv[1]} ${(Q)extra[@]} ${(q)argv[2,-1]}
+}
+
+function mysql()
+{
+  --automatic-mysql-login "${0}" "${@}"
+}
+
+function mysqldump()
+{
+  --automatic-mysql-login "${0}" "${@}"
+}
+
+function mysqlshow()
+{
+  --automatic-mysql-login "${0}" "${@}"
+}

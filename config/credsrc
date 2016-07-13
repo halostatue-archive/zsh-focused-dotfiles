@@ -1,0 +1,2 @@
+CREDS_DIR="<%= user_data_lookup 'creds.dir' %>"
+GPG_KEY="<%= user_data_lookup 'creds.gpg_key' %>"

@@ -1,0 +1,12 @@
+#autoload
+
+if [ -z "${WIDGET}" ]; then
+  echo >&2 ${0}:${LINENO}: can only be called as a zle widget
+  return 1
+fi
+
+if [[ ${LBUFFER} = *... ]]; then
+  LBUFFER=${LBUFFER/.../../..}
+else
+  LBUFFER+=.
+fi

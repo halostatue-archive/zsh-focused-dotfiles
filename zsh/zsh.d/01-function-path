@@ -1,0 +1,42 @@
+#!/bin/zsh
+
+function()
+{
+  # Add a bunch of function paths, including OS-specific ones and, if
+  # necessary, zsh vcs-info functions. Finally, mark everything currently in
+  # $fpath as setup for autoload. This may be done more than once during setup,
+  # but we need it for some of the steps that follow.
+  for fpath_type (prompts completion functions); do
+    [[ -d ${__hzsh_zsh_root}/${fpath_type} ]] &&
+      fpath=(${__hzsh_zsh_root}/${fpath_type} ${fpath})
+    [[ -d ${__hzsh_zsh_root}/${OSTYPE}/${fpath_type} ]] &&
+      fpath=(${__hzsh_zsh_root}/${OSTYPE}/${fpath_type} ${fpath})
+  done
+
+  # As to the vcs-info functions, versions of zsh prior to 4.3.10 don't support
+  # %u/%c for un/staged characters. So let's use these 4.3.11 versions that I
+  # pulled in from the zsh source (vendored in vendor/zsh).
+  if is-at-least 4.3.7 && ! is-at-least 4.3.11; then
+    fpath=(${__hzsh_zsh_root}/vcs-info ${fpath})
+  fi
+
+  autoload -U ${^fpath}/*(N.:t)
+
+  function --zrecompile()
+  {
+    for ((i=1; i <= $#fpath; ++i)); do
+      dir=$fpath[i]
+      zwc=${dir:t}.zwc
+      [[ $dir == (.|..) || $dir == (.|..)/* ]] && continue
+
+      files=($dir/*(N-.))
+
+      if [[ -w $dir:h && -n $files ]]; then
+        files=(${${(M)files%/*/*}#/})
+        if (cd $dir:h && zrecompile -p -U -z $zwc $files); then
+          fpath[i]=$fpath[i].zwc
+        fi
+      fi
+    done
+  }
+}

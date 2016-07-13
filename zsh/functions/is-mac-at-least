@@ -1,0 +1,26 @@
+#autoload -U
+
+autoload is-mac
+is-mac || return 1
+
+local -i darwin_version current_version=${${OSTYPE/darwin/}/.[0-9]*/}
+
+case "${@}" in
+  10.5|10.5.*|"leopard")
+    darwin_version=9
+    ;;
+  10.6|10.6.*|"snow leopard")
+    darwin_version=10
+    ;;
+  10.7|10.7.*|"lion")
+    darwin_version=11
+    ;;
+  10.8|10.8.*|"mountain lion")
+    darwin_version=12
+    ;;
+  *)
+    return 1
+    ;;
+esac
+
+(( ${current_version} >= ${darwin_version} ))

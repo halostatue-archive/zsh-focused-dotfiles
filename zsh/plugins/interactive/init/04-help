@@ -1,0 +1,9 @@
+#! zsh
+
+# If run-help is an alias, make it the function instead.
+case $(command -V run-help) in
+  *alias*)
+    unalias run-help
+    autoload run-help
+    ;;
+esac

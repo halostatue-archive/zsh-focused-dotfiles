@@ -1,0 +1,308 @@
+#! /bin/zsh
+
+if ! (( ${+parameters[__hzsh_active_plugins]} )); then
+  # The names of the zsh plugins we will be supporting. This is global and will
+  # exist after plug-in initialization is complete.
+  typeset -ga __hzsh_active_plugins
+  __hzsh_active_plugins=()
+fi
+
+function()
+{
+  # Find known plug-ins.
+  local i __hzsh_find_plugins=true
+  local -a __hzsh_known_plugins __hzsh_missing_plugins __hzsh_found_plugins
+  __hzsh_missing_plugins=()
+  __hzsh_found_plugins=()
+  __hzsh_known_plugins=(${__hzsh_plugins_path}/*(/:t))
+
+  # Find explicitly enabled or disabled plug-ins by list.
+  #   zstyle :hzsh:plugins disabled <list of disabled plug-ins>
+  #   zstyle :hzsh:plugins enabled <list of enabled plug-ins>
+  local -a __hzsh_enabled __hzsh_disabled
+  zstyle -a :hzsh:plugins enabled __hzsh_enabled
+  zstyle -a :hzsh:plugins disabled __hzsh_disabled
+
+  function --hzsh-retry-plugin-search()
+  {
+    __hzsh_find_plugins=true
+  }
+
+  function --hzsh-plugin-disabled-by-style()
+  {
+    (( ${+__hzsh_disabled[(r)${1}]} ))
+  }
+
+  function --hzsh-plugin-enabled-by-style()
+  {
+    if --hzsh-plugin-disabled-by-style ${1}; then
+      false
+    elif (( ${+__hzsh_enabled[(r)${1}]} )); then
+      true
+    else
+      zstyle -t :hzsh:plugins:${1} enabled
+    fi
+  }
+
+  function --hzsh-detect-plugin()
+  {
+    local plugin_path="${1}"
+    local plugin_detect_file="${plugin_path}/detect"
+    local -A current_plugin
+
+    current_plugin=(name ${plugin_path:t} found false)
+
+    if --hzsh-plugin-disabled-by-style ${current_plugin[name]}; then
+      # Add to missing plugins just in case another plug-in enables this plug-in.
+      __hzsh_missing_plugins+=${current_plugin[name]}
+      return
+    elif [ ! -f "${plugin_detect_file}" ]; then
+      if zstyle -t :hzsh:plugins enable-all; then
+        __hzsh_found_plugins+=${current_plugin[name]}
+        return
+      elif --hzsh-plugin-enabled-by-style ${current_plugin[name]}; then
+        __hzsh_found_plugins+=${current_plugin[name]}
+        return
+      else
+        # Add to missing plugins just in case another plug-in enables this
+        # plug-in.
+        __hzsh_missing_plugins+=${current_plugin[name]}
+        return
+      fi
+    fi
+
+    local -a current_plugin_line
+    while builtin read -A current_plugin_line; do
+      current_plugin[directive]=${current_plugin_line[1]}
+      shift current_plugin_line
+
+      current_plugin[rc]=0
+
+      # Deal with the fact that the "command" current_plugin[directive] is
+      # optional. While we're at it, also make it so that any of the directives
+      # by themselves can be treated as "command <current_plugin[directive]>",
+      # just in case.
+      case ${current_plugin[directive]} in
+        do-return)
+          if [[ ${#current_plugin_line} = 0 ]]; then
+            current_plugin_line[1]=(${current_plugin[directive]} ${line[1]})
+            current_plugin[directive]="command"
+          elif [[ ${#current_plugin_line} -ge 2 ]]; then
+            current_plugin[rc]=${current_plugin_line[1]}
+            shift current_plugin_line
+          fi
+          ;;
+        alternates|"do"|directory|file|executable)
+          if [[ ${#current_plugin_line} = 0 ]]; then
+            current_plugin_line[1]=(${current_plugin[directive]} ${line[1]})
+            current_plugin[directive]="command"
+          fi
+          ;;
+        command)
+          :
+          ;;
+        *)
+          current_plugin_line[1]=(${current_plugin[directive]} ${line[1]})
+          current_plugin[directive]="command"
+          ;;
+      esac
+
+      current_plugin[cmd]=${current_plugin_line[1]}
+      shift current_plugin_line
+
+      case ${current_plugin[directive]} in
+        do-return|do)
+          current_plugin[cmd]=$(eval "builtin echo ${current_plugin[cmd]}")
+          ${current_plugin[cmd]} ${current_plugin_line[*]} > /dev/null 2> /dev/null
+          current_plugin[res]=${?}
+          if [[ ${current_plugin[rc]} = ${current_plugin[res]} ]]; then
+            current_plugin[found]=true
+          else
+            current_plugin[found]=false
+          fi
+          ;;
+        directory|file|executable)
+          current_plugin[itemfound]=false
+          local -a plugins_spath
+
+          plugins_spath=($(eval builtin echo ${current_plugin[cmd]} ${current_plugin_line}))
+
+          for item (${plugins_spath[@]}); do
+            case ${current_plugin[directive]} in
+              directory)
+                if [ -d "${item}" ]; then
+                  current_plugin[itemfound]=true
+                  break
+                fi
+                ;;
+              file)
+                if [ -f "${item}" ]; then
+                  current_plugin[itemfound]=true
+                  break
+                fi
+                ;;
+              executable)
+                if [ -x "${item}" ]; then
+                  current_plugin[itemfound]=true
+                  break
+                fi
+                ;;
+            esac
+          done
+
+          current_plugin[found]=${current_plugin[itemfound]}
+          ;;
+        alternates)
+          local altfound=false
+          for alternate (${current_plugin[cmd]} ${current_plugin_line[*]}); do
+            alt=$(command -v ${alternate})
+            if [ -n "${alt}" ]; then
+              altfound=true
+              break
+            fi
+          done
+
+          current_plugin[found]=${altfound}
+          ;;
+        command)
+          current_plugin[res]=$(command -v ${current_plugin[cmd]})
+
+          if [ -n "${current_plugin[res]}" ]; then
+            current_plugin[found]=true
+          else
+            current_plugin[found]=false
+          fi
+          ;;
+      esac
+
+      if not ${current_plugin[found]}; then
+        break
+      fi
+    done < ${plugin_detect_file}
+
+    if ${current_plugin[found]}; then
+      __hzsh_found_plugins+=${current_plugin[name]}
+    else
+      __hzsh_missing_plugins+=${current_plugin[name]}
+    fi
+
+    ${current_plugin[found]}
+  }
+
+  function --hzsh-init-plugin-core()
+  {
+    [ -d "${current_plugin_path}" ] || return 0
+    local current_plugin_init
+    local current_path=${PATH}
+
+    if [ -d ${current_plugin_path}/completion ]; then
+      fpath=(${current_plugin_path}/completion ${fpath})
+    fi
+
+    if [ -d ${current_plugin_path}/functions ]; then
+      fpath=(${current_plugin_path}/functions ${fpath})
+    elif [ -f ${current_plugin_path}/functions ]; then
+      source ${current_plugin_path}/functions
+    fi
+
+    if [ -d ${current_plugin_path}/init ]; then
+      local -a current_plugin_inits
+      current_plugin_inits=(${current_plugin_path}/init/*[^~](.N))
+      if [ -n "${current_plugin_inits}" ]; then
+        for current_plugin_init (${current_plugin_inits}); do
+          case ${current_plugin_init} in
+            *DISABLED)
+              ;;
+            *)
+              source ${current_plugin_init}
+              ;;
+          esac
+        done
+      fi
+    elif [ -r ${current_plugin_path}/init ]; then
+      source ${current_plugin_path}/init
+    fi
+
+    add-paths-before-if ${current_plugin_path}/bin
+
+    [[ ${PATH} == ${current_path} ]] || --hzsh-retry-plugin-search
+  }
+
+  function --hzsh-init-package-plugin()
+  {
+    __hzsh_active_plugins+=package-${1}
+    local current_plugin_path="${__hzsh_package_plugins_path}/${1}"
+    --hzsh-init-plugin-core
+  }
+
+  function --hzsh-init-plugin()
+  {
+    __hzsh_active_plugins+=${1}
+    local current_plugin_path="${__hzsh_plugins_path}/${1}"
+    --hzsh-init-plugin-core
+  }
+
+  function --hzsh-find-and-initialize-package-plugins()
+  {
+      local __hzsh_package_plugins_path="${__hzsh_package_root}/.plugins"
+      [ -d "${__hzsh_package_plugins_path}" ] || return 0
+
+      local -a packages_with_plugins
+      packages_with_plugins=(${__hzsh_package_plugins_path}/*(/N:t))
+
+      [ -n "${packages_with_plugins}" ] || return 0
+      for current_package (${packages_with_plugins}); do
+        --hzsh-init-package-plugin ${current_package}
+      done
+  }
+
+  function --hzsh-find-and-initialize-plugins()
+  {
+    local plugin_name
+
+    # Initialize package plugins first.
+    if zstyle -t :hzsh:plugins enable-packages; then
+      --hzsh-find-and-initialize-package-plugins
+    fi
+
+    while ${__hzsh_find_plugins}; do
+      for plugin_name in ${(@)__hzsh_known_plugins}; do
+        --hzsh-detect-plugin "${__hzsh_plugins_path}/${plugin_name}"
+      done
+
+      __hzsh_known_plugins=(${__hzsh_missing_plugins})
+      __hzsh_find_plugins=false
+
+      for plugin_name in ${(@)__hzsh_found_plugins}; do
+        --hzsh-init-plugin "${plugin_name}"
+      done
+
+      __hzsh_missing_plugins=()
+      __hzsh_found_plugins=()
+    done
+  }
+
+  --hzsh-find-and-initialize-plugins
+
+  unset \
+    __hzsh_plugins_path \
+    __hzsh_missing_plugins \
+    __hzsh_found_plugins \
+    __hzsh_known_plugins \
+    __hzsh_find_plugins \
+    __hzsh_enabled \
+    __hzsh_disabled
+
+  unfunction -- \
+    --hzsh-retry-plugin-search \
+    --hzsh-detect-plugin \
+    --hzsh-plugin-disabled-by-style \
+    --hzsh-plugin-enabled-by-style \
+    --hzsh-init-plugin-core \
+    --hzsh-init-package-plugin \
+    --hzsh-init-plugin \
+    --hzsh-find-and-initialize-package-plugins \
+    --hzsh-find-and-initialize-plugins
+}
+
+autoload -U $^fpath/*(N.:t)

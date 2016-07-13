@@ -1,0 +1,15 @@
+#! zsh
+
+typeset -ga zshaddhistory_functions
+
+zshaddhistory_functions+='__hzsh_hwd_add_local_history'
+
+typeset -ga __hzsh_hwd_local_history_files
+function __hzsh_hwd_add_local_history()
+{
+  print -sr -- ${1%%$'\n'}
+
+  if [ ${#__hzsh_hwd_local_history_files} -ne 0 ]; then
+    fc -p "${__hzsh_hwd_local_history_files[-1]}"
+  fi
+}

@@ -1,0 +1,53 @@
+#!/bin/zsh
+
+if [ ${#} -lt 2 ]; then
+  echo 1>&2 error: Insufficient arguments.
+  echo 1>&2 Usage: $(basename "${0}") DATABASE FILENAME
+  exit 1
+fi
+
+PV=$(whence -p pv)
+DATABASE=${1}
+FILENAME=${2}
+shift
+shift
+
+if [ ! -f ${FILENAME} ]; then
+  echo 1>&2 error: dump file ${FILENAME} does not exist.
+  echo 1>&2 Usage: $(basename "${0}") DATABASE FILENAME
+  exit 1
+fi
+
+TEMPDIR=$(mktemp -d -t $(basename "${0}"))
+
+mkdir -p "${TEMPDIR}"
+
+SETUP="${TEMPDIR}/setup.sql"
+STARTUP="${TEMPDIR}/prelude.gz"
+CLEANUP="${TEMPDIR}/postlude.gz"
+
+printf "DROP SCHEMA ${DATABASE};\nCREATE SCHEMA ${DATABASE};\n" > "${SETUP}"
+
+printf "SET AUTOCOMMIT=0;\nSET FOREIGN_KEY_CHECKS=0;\n" |
+  gzip -c > "${STARTUP}"
+
+printf "SET FOREIGN_KEY_CHECKS=1;\nCOMMIT;\nSET AUTOCOMMIT=1;\n" |
+  gzip -c > "${CLEANUP}"
+
+SIZE=$(gzip -l ${FILENAME} | tail -1 | awk '{ print $2; }')
+
+local MYSQL_USER MYSQL_PASS
+source ~/.mysql
+local -a extra
+extra=(-u${MYSQL_USER} -p${MYSQL_PASS})
+
+mysql ${(Q)extra[@]} ${DATABASE} < ${SETUP}
+
+if [ -n ${PV} ]; then
+  gzcat ${STARTUP} ${FILENAME} ${CLEANUP} | \
+    ${PV} -s ${SIZE} | \
+    mysql ${(Q)extra[@]} ${DATABASE}
+else
+  gzcat ${STARTUP} ${FILENAME} ${CLEANUP} | \
+    mysql ${(Q)extra[@]} ${DATABASE}
+fi

@@ -1,0 +1,52 @@
+# Mac OS X Noise
+.DS_Store
+._*
+.cache
+.Spotlight-V100
+.Trashes
+
+# Windows Noise
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+.svn/
+CVS
+
+# vim noise
+*~
+*.sw[a-z]
+*.un~
+Session.vim
+vim/.netrwhist
+vim/netrwhist
+
+# CTags
+TAGS
+tags
+tags-ja
+
+# Other noise
+*.pyc
+*.pyo
+*.rbc
+.hsenv*
+.cap_tasks~
+.rake_tasks~
+.idea
+
+# zcompile output
+*.zwc
+
+# SASS
+.sass-cache
+
+# halozsh-specific files
+/.gem
+/.vagrant/
+/config/hoe_template/minitest-travis/
+/config/m2/repository
+/config/lein/indices/
+/packages
+/user
+/user-backup.tar.gz

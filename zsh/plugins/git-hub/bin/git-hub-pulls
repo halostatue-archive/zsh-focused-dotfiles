@@ -1,0 +1,4 @@
+#! zsh
+
+git config --local --add remote.origin.fetch \
+  '+refs/pull/*/head:refs/pull/origin/*'

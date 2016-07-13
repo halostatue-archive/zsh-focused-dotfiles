@@ -1,0 +1,4 @@
+#autoload -U
+
+# Preserve the X environment variables
+export | grep '\(DISPLAY\|XAUTHORITY\)=' > ${HOME}/.display.${HOSTNAME}

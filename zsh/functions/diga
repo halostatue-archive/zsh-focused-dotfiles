@@ -1,0 +1,5 @@
+#autoload -U
+
+# short form of dig
+
+dig +nocmd "${1}" any +multiline +noall +answer

@@ -1,0 +1,6 @@
+#! zsh
+
+function()
+{
+  zstyle ':completion:*:mate:*' ignored-patterns '*?.(o|a|so|aux|dvi|swp|fig|bbl|blg|bst|idx|ind|out|toc|lot|lof|class|pdf|ps|pyc|rbc)'
+}

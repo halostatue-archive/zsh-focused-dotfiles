@@ -1,0 +1,148 @@
+#!/usr/bin/env zsh
+
+local bn=$(basename ${0})
+
+function --hzsh-gitid-error()
+{
+  echo "${bn}: error: ${*}" >&2
+}
+
+function --hzsh-gitid-usage()
+{
+  cat >&2 <<EOS
+
+Usage: ${bn} add|set IDENTITY-NAME "NAME" "email"
+       ${bn} remove IDENTITY-NAME
+       ${bn} [use] IDENTITY-NAME
+       ${bn} clear
+       ${bn} show IDENTITY-NAME
+       ${bn} list
+
+Manages or uses git user identities.
+
+  add     Sets the values for a git identity.
+  remove  Removes a git identity from the system.
+  use     Uses a particular git identity.
+  clear   Removes git identity overrides, keeping what is in .gitconfig.
+  show    Shows the settings for the named identity.
+  list    Shows the names of all identities.
+
+EOS
+}
+
+function --hzsh-gitid-exists()
+{
+  if [ ! -f "${__hzsh_plugins_git_identity_path}/${1}" ]; then
+    --hzsh-gitid-error "git id \"${1}\" does not exist."
+    return 127
+  fi
+
+  return 0
+}
+
+function --hzsh-gitid-remove()
+{
+  --hzsh-gitid-exists ${1} || return
+
+  echo "Removing git id \"${1}\"."
+  rm -f "${__hzsh_plugins_git_identity_path}/${1}"
+}
+
+function --hzsh-gitid-use()
+{
+  --hzsh-gitid-exists ${1} || return
+
+  echo "Using git id \"${1}\"."
+  source "${__hzsh_plugins_git_identity_path}/${1}"
+}
+
+function --hzsh-gitid-clear()
+{
+  unset GIT_AUTHOR_NAME GIT_AUTHOR_EMAIL GIT_COMMITTER_NAME GIT_COMMITTER_EMAIL
+}
+
+function --hzsh-gitid-show()
+{
+  --hzsh-gitid-exists ${1} || return
+
+  echo "git id \"${1}\":"
+  cat "${__hzsh_plugins_git_identity_path}/${1}"
+}
+
+function --hzsh-gitid-add()
+{
+  cat > "${__hzsh_plugins_git_identity_path}/${1}" <<EOS
+export GIT_AUTHOR_NAME="${2}"
+export GIT_AUTHOR_EMAIL="${3}"
+
+export GIT_COMMITTER_NAME="${2}"
+export GIT_COMMITTER_EMAIL="${3}"
+EOS
+}
+
+function --hzsh-gitid-list()
+{
+  if [ ${#identities} -eq 0 ]; then
+    echo "No identities defined."
+  else
+    echo ${^identities:t}
+  fi
+}
+
+if [ -z "${__hzsh_plugins_git_identity_path}" ]; then
+  --hzsh-gitid-error "Missing the identity path."
+  --hzsh-gitid-usage
+  return 1
+fi
+
+if [ ${#} -eq 0 ]; then
+  --hzsh-gitid-error "No command given."
+  --hzsh-gitid-usage
+  return 1
+fi
+
+[ -d "${__hzsh_plugins_git_identity_path}" ] ||
+  mkdir -p "${__hzsh_plugins_git_identity_path}"
+
+local command_name="${1}"
+shift 1
+
+local -a identities
+identities=("${__hzsh_plugins_git_identity_path}"/*(.N))
+
+local command_match=${command_name:l}
+local -i required_params=0
+
+case "${command_match}" in
+  add|set)
+    # git id add|set IDENTITY-NAME "NAME" "email"
+    required_params=3
+    command_match=add
+    ;;
+  remove|show|use)
+    # git id remove|show|use IDENTITY-NAME
+    required_params=1
+    ;;
+  list|clear)
+    # git id list
+    required_params=0
+    ;;
+  *)
+    if --hzsh-gitid-exists ${command_name}; then
+      --hzsh-gitid-use ${command_name}
+      return 0
+    fi
+
+    --hzsh-gitid-error "Unknown command \"${command_name}\"."
+    --hzsh-gitid-usage
+    return 2
+    ;;
+esac
+
+if [ "${#}" -ne ${required_params} ]; then
+  --hzsh-gitid-error "Invalid parameter count for \"${command_name}\"."
+  --hzsh-gitid-usage
+  return 3
+fi
+
+--hzsh-gitid-${command_match} "${@}"

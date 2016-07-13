@@ -1,0 +1,4 @@
+#!/bin/zsh
+
+[ -z "${HOME}" ] && export HOME=$(cd ~; pwd)
+[ -z "${HOSTNAME}" ] && export HOSTNAME=$(hostname)

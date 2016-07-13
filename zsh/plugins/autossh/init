@@ -1,0 +1,13 @@
+#! zsh
+
+# Drawn from
+# http://noone.org/blog/English/Computer/Shell/Perfect%20Team:%20autossh%20and%20GNU%20Screen.futile
+function asc()
+{
+  # Set the screen title to something a bit more obvious, e.g., the expanded
+  # alias/function.
+  print -Pn "\e]0;%n@%m: autossh -t $* 'screen -RdU'\a"
+  autossh -x -a -t "${@}" 'screen -RdU'
+}
+
+compdef asc=ssh

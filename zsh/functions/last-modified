@@ -1,0 +1,9 @@
+#autoload -U
+
+zmodload -F zsh/stat b:zstat
+
+local -A files
+files=($(zstat -n +mtime $*(N)))
+
+local index=${${(on)${(v)q}}[-1]}
+echo ${${(k)files}[${${(v)files}[(i)${index}]}]}

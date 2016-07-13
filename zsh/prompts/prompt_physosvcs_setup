@@ -1,0 +1,96 @@
+#autoload -U
+# physos ZSH prompt theme by <rainer@physos.com>
+prompt_physosvcs_help () {
+  cat <<'EOH'
+
+General Look
+
+  [user@host][12:34]
+  [~/] %                               [vcs|branch-revision]
+
+Options
+  You can change the colours of the theme.
+
+  % prompt physosvcs [<colour1> [<colour2> [<colour3> [<colour4> ]]]]
+
+                 colour1 : [user@host]
+                 colour2 : [24:00] (time)
+                 colour3 : [~/dir/] (pwd)
+                 colour4 : command
+
+  The defaults are green, white, blue, black respectively and
+  work best with a white background.
+
+  Note:
+    The default "white" for the time relies on your terminal
+    foreground colour with ID 8 to be configured as "grey".
+
+  Note:
+    The VCS display uses colour3.
+
+Example
+
+  prompt physosvcs red magenta blue
+
+EOH
+}
+
+prompt_physosvcs_setup () {
+
+#Initialization
+
+  local -A pc
+
+  pc['user']=${1:-'green'}
+  pc['time']=${2:-'white'}
+  pc['pwd']=${3:-'blue'}
+  pc['com']=${4:-'black'}
+
+
+# zstyle setup of the vcs_info display
+# Information in "man zshcontrib"
+
+# check for changes in the git repository
+#
+# can be slow, comment it out if you encounter delays
+  zstyle ':vcs_info:git:*' check-for-changes true
+
+# Format when some action is going on in
+# your repository (rebranch,merge conflict, ...)
+#
+  zstyle ':vcs_info:*' actionformats \
+    "%F{$pc['pwd']}[%s|%b|%a]%F{$pc['com']}"
+  zstyle ':vcs_info:*' actionformats \
+    "%F{$pc['pwd']}%c %u [%s|%b|%a]%F{$pc['com']}"
+# Default format: [git|master]
+  zstyle ':vcs_info:*' formats       \
+    "%F{$pc['pwd']}[%s|%b]%F{$pc['com']}"
+  zstyle ':vcs_info:git:*' formats       \
+    "%F{$pc['pwd']}%c %u [%s|%b]%F{$pc['com']}"
+
+# Different branch formats
+# [svn|www-1173739]
+  zstyle ':vcs_info:*' branchformat '%b-%r'
+
+# Used VCS use
+# %  vcs_info_printsys
+# for supported systems
+  zstyle ':vcs_info:*' enable git cvs svn
+
+# get vcs_info to collect informations
+  precmd(){
+
+    vcs_info
+
+  }
+# %F{$pc['colour']} to allow for color configuration
+  PROMPT="%F{$pc['user']}[%n@%m]%F{$pc['time']}[%T]%f$prompt_newline%F{$pc['pwd']}[%~/] %# %F{$pc['com']}"
+
+# Use %_ to show why you are in a continued prompt
+  PROMPT2="%F{$pc['pwd']}%_> %F{$pc['com']}"
+
+# Print the VCS info
+  RPROMPT='${vcs_info_msg_0_}'
+}
+
+prompt_physosvcs_setup "$@"

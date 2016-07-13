@@ -1,0 +1,11 @@
+#autoload -U
+
+if is-mac; then
+  open "${@}"
+elif has gnome-open; then
+  gnome-open "${@}"
+elif has xdg-open; then
+  xdg-open "${@}"
+elif has kde-open; then
+  kde-open "${@}"
+fi

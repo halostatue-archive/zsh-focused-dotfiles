@@ -1,0 +1,6 @@
+#!/bin/zsh
+
+# http://www.jukie.net/~bart/blog/screen-ssh-agent
+# http://lists.netisland.net/archives/plug/plug-2003-09/msg00133.html
+#
+[ -n "${WINDOW}" ] && screen-update-display

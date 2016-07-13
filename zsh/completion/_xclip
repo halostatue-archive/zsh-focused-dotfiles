@@ -1,0 +1,16 @@
+#compdef xclip
+
+_arguments \
+  '*:::files:_files' \
+  - '(usage)' '(-h -help)'{-h,-help}'[usage]' \
+  - '(version)' '-version[shows the version]' \
+  - '(standard)' \
+  '(-l -loops)'{-l,-loops}'[# of selection requests]:count' \
+  '(-d -display)'{-d,-display}'[X display]:display:_x_display' \
+  '(-i -in -o -out)'{-i,-in}'[read selection]' \
+  '(-i -in -o -out)'{-o,-out}'[write selection to standard out]' \
+  '-selection[selection to access]:selection:(primary secondary clipboard buffer-cut)' \
+  '-noutf8[No UTF-8, old Unicode]' \
+  '(-silent -quiet -verbose)-silent[show errors only, background]' \
+  '(-silent -quiet -verbose)-quiet[show activity, foreground]' \
+  '(-silent -quiet -verbose)-verbose[show running commentary]' \

@@ -1,0 +1,7 @@
+#autoload -U
+
+for cname (${@}); do
+  (( ${+commands[${cname}]} )) || return 1
+done
+
+return 0

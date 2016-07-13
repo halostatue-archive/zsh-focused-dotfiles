@@ -1,0 +1,4 @@
+#autoload -U
+
+# Hide/show all desktop icons (useful when presenting)
+defaults write com.apple.finder CreateDesktop -bool false && killall Finder

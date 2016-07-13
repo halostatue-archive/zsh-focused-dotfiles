@@ -1,0 +1,232 @@
+#!/bin/zsh
+
+zmodload zsh/complist
+
+if is-mac; then
+  fignore+=(DS_Store)
+fi
+fignore+=(swo swp)
+
+function bash_source()
+{
+  alias shopt=':'
+  alias _expand=_bash_expand
+  alias _complete=_bash_comp
+  emulate -L sh
+  setopt kshglob noshglob braceexpand
+
+  source "$@"
+}
+
+# matches case insensitive for lowercase
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+
+# pasting with tabs doesn't perform completion
+zstyle ':completion:*' insert-tab pending
+
+zstyle ':completion:*' squeeze-slashes true
+
+# Caching
+function()
+{
+  if --hzsh-is-caching; then
+    zstyle ':completion:*' use-cache on
+    zstyle ':completion:*' cache-path $(--hzsh-cache-path)/complete-cache
+  fi
+}
+
+zstyle ':completion:*' add-space true
+zstyle ':completion:*' completer _expand _complete _match _prefix _approximate _list
+zstyle ':completion:*' file-sort name
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' matcher-list 'r:|[._-]=** r:|=**' 'l:|=** r:|=**'
+zstyle ':completion:*' menu select=1
+zstyle ':completion:*' verbose true
+zstyle ':completion:*:approximate:*' max-errors 1 numeric
+# Fuzzy matching
+zstyle -e ':completion:*:approximate:*' max-errors 'reply=( $(( ($#PREFIX+$#SUFFIX)/3 )) numeric )'
+zstyle ':completion:*:match:*' original only
+# Ignore completion functions
+zstyle ':completion:*:functions' ignored-patterns '_*'
+zstyle ':completion:*:*:(^rm):*:*files' ignored-patterns \
+  '*?.(o|c~|zwc)' '*?~' '.DS_Store'
+
+#[ Formats ]####################################################################
+zstyle ':completion:*' auto-description 'Specify: %d'
+zstyle ':completion:*' group 1
+zstyle ':completion:*' format '%B---- %d%b'
+zstyle ':completion:*:corrections' format '%B---- %d (errors %e)%b'
+zstyle ':completion:*:descriptions' format "%B---- %d%b"
+zstyle ':completion:*:messages' format '%B%U---- %d%u%b' 
+zstyle ':completion:*:warnings' format "%B$fg[red]%}---- no match for: $fg[white]%d%b"
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:-command-:*:(commands|builtins|reserved-words-aliases)' group-name commands
+
+# Separate man page sections
+zstyle ':completion:*:manuals' separate-sections true
+
+# Separate comand line options and descriptions with #
+zstyle ':completion:*' list-separator '#'
+
+#[ Kill ]#######################################################################
+zstyle ':completion:*:processes' command 'ps -au$USER -o pid,time,cmd|grep -v "ps -au$USER -o pid,time,cmd"'
+zstyle ':completion:*:*:kill:*' menu yes select
+zstyle ':completion:*:kill:*' force-list always
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)[ 0-9:]#([^ ]#)*=01;30=01;31=01;38'
+
+zstyle ':completion:*:cd:*' ignore-parents parent pwd
+
+# Give long completion options in a list. tab to advance.
+zstyle ':completion:*:default' list-prompt '%S%M matches%s'
+
+# disable named-directories autocompletion
+# zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
+
+#[ hosts and users ]############################################################
+#hosts=()
+#[ -r ~/.ssh/config ] && hosts=(${${${$(grep '^Host' ~/.ssh/config)}##Host }##[*0-9]*})
+#[ -r ~/.ssh/known_hosts ] && hosts=(${${${${(f)"$(<$HOME/.ssh/known_hosts)"}:#[0-9]*}%\*}%,*})
+
+zstyle ':completion:*' hosts $(_ssh_hosts)
+# zstyle ':completion:*:hosts' list-colors '=(#b)(*)(.corp.ssv.com)=01;30=01;31' '=[^.]#=01;31'
+
+function()
+{
+  local -a users
+  users=($USER root)
+  zstyle ':completion:*' users ${users}
+  # zstyle ':completion:*' users resolve
+  # zstyle ':completion:*:*:*:users' ignored-patterns \
+    #         adm amanda apache avahi beaglidx bin cacti canna clamav daemon \
+    #         dbus distcache dovecot fax ftp games gdm gkrellmd gopher \
+    #         hacluster haldaemon halt hsqldb ident junkbust ldap lp mail \
+    #         mailman mailnull mldonkey mysql nagios \
+    #         named netdump news nfsnobody nobody nscd ntp nut nx openvpn \
+    #         operator pcap postfix postgres privoxy pulse pvm quagga radvd \
+    #         rpc rpcuser rpm shutdown squid sshd sync uucp vcsa xfs
+}
+
+zstyle ':completion:*:*:[ak]dvi:*' file-patterns \
+    '*.dvi:dvi-files:DVI\ files *(-/):directories:Directories' '*:all-files'
+zstyle ':completion:*:*:kghostview:*' file-patterns \
+    '*.(ps|pdf)(|.gz|.bz2):pspdf-files:PostScript\ or\ PDF\ files  *(-/):directories:Directories' '*:all-files'
+zstyle ':completion:*:*:swfplayer:*' file-patterns \
+    '*.swf:swf-files:Swf\ files  *(-/):directories:Directories' '*:all-files'
+
+zstyle ':completion:*' file-patterns \
+    '%p:globbed-files: *(-/):directories:Directories' '*:all-files'
+
+# only java files for javac
+zstyle ':completion:*:javac:*' files '*.java'
+
+#[ ignores for vim ]############################################################
+
+zstyle ':completion:*:vi:*' ignored-patterns '*?.(o|a|so|aux|dvi|swp|fig|bbl|blg|bst|idx|ind|out|toc|lot|lof|class|pdf|ps|pyc|rbc)'
+zstyle ':completion:*:vim:*' ignored-patterns '*?.(o|a|so|aux|dvi|swp|fig|bbl|blg|bst|idx|ind|out|toc|lot|lof|class|pdf|ps|pyc|rbc)'
+zstyle ':completion:*:gvim:*' ignored-patterns '*?.(o|a|so|aux|dvi|swp|fig|bbl|blg|bst|idx|ind|out|toc|lot|lof|class|pdf|ps|pyc|rbc)'
+
+# no binary files for less
+zstyle ':completion:*:less:*' ignored-patterns '*.(o|a|so|dvi|fig|out|class|pdf|ps|pyc|rbc)'
+zstyle ':completion:*:zless:*' ignored-patterns '*.(o|a|so|dvi|fig|out|class|pdf|ps|pyc|rbc)'
+
+# pdf for xpdf
+zstyle ':completion:*:xpdf:*' files '*.pdf'
+# tar files
+zstyle ':completion:*:tar:*' files '*.tar|*.tgz|*.tz|*.tar.Z|*.tar.bz2|*.tZ|*.tar.gz'
+# latex to the fullest
+# for printing
+zstyle ':completion:*:xdvi:*' files '*.dvi'
+zstyle ':completion:*:dvips:*' files '*.dvi'
+
+zle -C insert-kept-result complete-word _generic
+zle -C expand-kept-result complete-word _generic
+zle -C _expand_word complete-word _expand_word_and_keep      
+
+zstyle ':completion:*' insert-kept all
+zstyle ':completion:insert-kept-result:*' completer _insert_kept
+zstyle ':completion:expand-kept-result:*' completer _insert_kept
+
+bindkey '^Xk' insert-kept-result
+bindkey '^XK' expand-kept-result
+
+# ... unless we really want to.
+zstyle '*' single-ignored show
+
+autoload bashcompinit
+bashcompinit
+
+if [[ -e /etc/bash_completion.d/ack-grep ]]; then
+  bash_source /etc/bash_completion.d/ack-grep
+fi
+
+autoload -U   edit-command-line
+zle -N        edit-command-line
+bindkey '\ee' edit-command-line
+
+# Run command line as user root via sudo:
+sudo-command-line() {
+    [[ -z $BUFFER ]] && zle up-history
+    [[ $BUFFER != sudo\ * ]] && BUFFER="sudo $BUFFER"
+}
+zle -N sudo-command-line
+bindkey "(sudo)" sudo-command-line
+
+less-command-line() {
+  [[ -z $BUFFER ]] && zle up-history
+  [[ $BUFFER != less\ * ]] && BUFFER="less $BUFFER"
+}
+zle -N less-command-line
+bindkey "(less)" less-command-line
+
+less-command-line-output() {
+    [[ -z $BUFFER ]] && zle up-history
+    [[ $BUFFER != less\ * ]] && BUFFER="less \$($BUFFER)"
+}
+zle -N less-command-line-output
+
+# run command line with noglob set:
+noglob-command-line() {
+    [[ -z $BUFFER ]] && zle up-history
+    [[ $BUFFER != noglob\ * ]] && BUFFER="noglob $BUFFER"
+}
+zle -N noglob-command-line
+bindkey "(ng)" noglob-command-line
+
+sub-command-line() {
+    BUF=$BUFFER
+    zle up-history
+    BUFFER="$BUF \$($BUFFER)"
+}
+zle -N sub-command-line
+
+autoload -U predict-on
+zle -N predict-on
+zle -N predict-off
+bindkey '^Xp' predict-on
+bindkey '^Xn' predict-off
+zstyle ':predict' verbose true
+
+autoload -Uz copy-earlier-word
+zle -N copy-earlier-word
+bindkey '^[,' copy-earlier-word
+
+if false; then
+  autoload -Uz narrow-to-region
+  function _history-incremental-preserving-pattern-search-backward
+  {
+    local state
+    MARK=CURSOR  # magick, else multiple ^R don't work
+    narrow-to-region -p "$LBUFFER${BUFFER:+>>}" -P "${BUFFER:+<<}$RBUFFER" -S state
+    zle end-of-history
+    zle history-incremental-pattern-search-backward
+    narrow-to-region -R state
+  }
+  zle -N _history-incremental-preserving-pattern-search-backward
+  bindkey "^R" _history-incremental-preserving-pattern-search-backward
+  bindkey -M isearch "^R" history-incremental-pattern-search-backward
+  bindkey "^S" history-incremental-pattern-search-forward
+fi
+
+autoload -Uz transpose-words-match
+zstyle ':zle:transpose-words' word-style shell
+zle -N transpose-words transpose-words-match

@@ -1,0 +1,22 @@
+#! zsh
+
+function show-required-version-warning()
+{
+  autoload -U is-at-least
+  local required_zsh_version=4.3.7
+
+  if ! is-at-least ${required_zsh_version}; then
+    [[ -f ${HOME}/.hzshversionwarning ]] ||
+      cat 1>&2 <<EOS
+This zsh configuration may not work because there are features used that
+require zsh 4.3.7 or later.
+
+You can silence this warning with:
+
+    touch \${HOME}/.hzshversionwarning
+
+EOS
+  fi
+
+  unfunction $0
+} && show-required-version-warning

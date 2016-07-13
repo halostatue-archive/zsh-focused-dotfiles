@@ -1,0 +1,59 @@
+# -*- ruby -*-
+
+require "rubygems"
+require "hoe"
+
+<%=
+  found = Gem.find_files("hoe/*.rb").map { |f| File.basename(f, ".rb").to_sym }
+  extra = found - Hoe.plugins - [ :rake ]
+  default = %w(doofus gemspec2 git minitest travis).map(&:to_sym)
+  extra.map { |name|
+    case name
+    when :doofus, :gemspec2, :git, :minitest, :travis
+      "Hoe.plugin #{name.inspect}"
+    when :rubyforge
+      "Hoe.plugin #{name.inspect} unless ENV['CI'] or ENV['TRAVIS']"
+    else
+      "# Hoe.plugin #{name.inspect}"
+    end
+  }.sort.uniq.join("\n")
+%>
+
+Hoe.spec "<%= project %>" do
+  developer('Austin Ziegler', 'austin@rubyforge.org')
+  # self.group_name = "<%= project %>x" # if part of an organization/group
+
+  self.need_tar = true
+
+  self.history_file = 'History.rdoc'
+  self.readme_file = 'README.rdoc'
+  self.extra_rdoc_files = FileList["*.rdoc"].to_a
+
+  license "MIT" # <%= XIF %> this should match the license in the README
+  # self.licenses = [ "MIT", ... ]
+
+  self.extra_dev_deps << ['hoe-doofus', '~> 1.0']
+  self.extra_dev_deps << ['hoe-gemspec2', '~> 1.1']
+  self.extra_dev_deps << ['hoe-git', '~> 1.5']
+  self.extra_dev_deps << ['hoe-rubygems', '~> 1.0']
+  self.extra_dev_deps << ['hoe-travis', '~> 1.2']
+  self.extra_dev_deps << ['minitest', '~> 5.2']
+  self.extra_dev_deps << ['rake', '~> 10.0']
+
+  # self.extra_dev_deps << ['simplecov', '~> 0.7']
+end
+
+=begin
+namespace :test do
+  task :coverage do
+    spec.test_prelude = [
+      'require "simplecov"',
+      'SimpleCov.start("test_frameworks") { command_name "Minitest" }',
+      'gem "minitest"'
+    ].join('; ')
+    Rake::Task['test'].execute
+  end
+end
+=end
+
+# vim: syntax=ruby

@@ -1,0 +1,5 @@
+#autoload -U
+
+[ -n "${__hzsh_marked_path}" ] || return 0
+
+open -a "${__hzsh_marked_path}" "${@}"

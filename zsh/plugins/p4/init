@@ -1,0 +1,4 @@
+#! zsh
+
+add-paths-before-if /opt/p4v/bin /usr/local/p4v/bin /usr/p4v/bin
+# zstyle ':vcs_info:p4:prompt:*' use-server true

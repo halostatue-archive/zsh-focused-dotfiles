@@ -1,0 +1,8 @@
+#autoload -U
+#
+# Calls grep with STDIN closed if in a terminal to avoid the "eternal wait"
+# problem. http://gist.github.com/476116
+#
+# Pulled from Henrik Nyh's dotfiles. Neat trick.
+
+( tty -s && exec <& - ; command grep "${@}" )

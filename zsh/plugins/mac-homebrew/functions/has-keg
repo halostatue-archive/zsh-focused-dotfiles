@@ -1,0 +1,7 @@
+#autoload -U
+
+local -a cellars
+
+cellars=($(brew --prefix)/Cellar/${1}/*(/N))
+
+(( ${#cellars} ))

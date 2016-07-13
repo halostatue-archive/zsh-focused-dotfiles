@@ -1,0 +1,38 @@
+#autoload -U
+
+local __real_screen=$(whence -p screen)
+
+function __screen_prep()
+{
+  local screen_path="${HOME}/.screen"
+  [ ! -d "${screen_path}" ] && mkdir -p "${screen_path}"
+  local screen_sock="${screen_path}/ssh-auth-sock.${HOSTNAME}"
+
+  if [ -n "${SSH_AUTH_SOCK}" -a "${SSH_AUTH_SOCK}" != "${screen_sock}" ]; then
+    ln -fs "${SSH_AUTH_SOCK}" "${screen_sock}"
+  fi
+
+  screen-store-display
+}
+
+function __screen()
+{
+  __screen_prep
+
+  local max=$(( ${#argv} - 1 ))
+  for (( x = 1; x <= ${max}; ++x )); do
+    local flag="${argv[${x}]}"
+
+    if [ "${flag}" = "-c" ]; then
+      local y=$(( ${x} + 1 ))
+      local word="${argv[${y}]}"
+
+      [ "${word[1]}" = "/" ] || argv[${y}]="${PWD}/${word}"
+    fi
+  done
+
+  echo ${__real_screen} ${1+"${argv}"}
+  ${__real_screen} ${1+"${@}"}
+}
+
+__screen "${@}"

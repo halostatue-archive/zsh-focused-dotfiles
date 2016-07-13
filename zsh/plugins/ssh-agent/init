@@ -1,0 +1,118 @@
+#! zsh
+
+##
+# A plug-in to support ssh-agent startup/identity adding for zsh in hzsh.
+#
+# To enable agent forwarding support, add the following to your environment
+# configuration:
+#
+#   zstyle :hzsh:plugins:ssh-agent agent-forwarding on
+#
+# To load multiple identities, use the identities style:
+#
+#   zstyle :hzsh:plugins:ssh-agent identities id_rsa id_rsa2 id_github
+#
+# To load all identities in ${HOME}/.ssh, use the all-identities style:
+#
+#   zstyle :hzsh:plugins:ssh-agent all-identities yes
+#
+# The all-identities functionality is considered over the normal identities
+# functionality, and looks for any files with a ".pub" extension in
+# ${HOME}/.ssh.
+#
+# CREDITS
+# -------
+# Originally based on code from Joseph M. Reagle (originally identified below,
+# found in numerous places across the web).
+# http://www.cygwin.com/ml/cygwin/2001-06/msg00537.html
+#
+# Agent forwarding support is pulled from Oh My Zsh and is based on ideas from
+# Florent Thoumie and Jonas Pfenniger.
+#
+# The version of this plug-in found in Oh My Zsh behaves a little badly on OS X
+# 10.7 Lion (and probably earlier versions at least back to 10.5 Leopard) in
+# that it always starts a new instance of ssh-agent when first run after a
+# reboot. This is not necessary at least on Lion because there's already an
+# ssh-agent provided by launchd, so all we have to do is add the identities we
+# want to support.
+
+local __saplugin__ssh_env="${HOME}/.ssh/environment-${HOST}"
+local __saplugin__forwarding
+
+function __saplugin__start_agent()
+{
+  # Don't do ANYTHING if there's already an agent running.
+  [ -n "${SSH_AUTH_SOCK}" ] && return
+
+  # Start ssh-agent and set up the environment
+  builtin echo "Initializing SSH agent..."
+  /usr/bin/env ssh-agent | sed '/^echo/d' > "${__saplugin__ssh_env}"
+  chmod 600 "${__saplugin__ssh_env}"
+  builtin source "${__saplugin__ssh_env}" > /dev/null
+}
+
+function __saplugin__add_identities()
+{
+  # Start the agent if it isn't already started.
+  [ -z "${SSH_AUTH_SOCK}" ] && __saplugin__start_agent
+
+  local -a selected_identities
+
+  local all_identities
+  zstyle -b :hzsh:plugins:ssh-agent all-identities all_identities
+  if [ "${all_identities}" = "yes" ]; then
+    selected_identities=("${HOME}/.ssh/"*.pub(N:t:r))
+  else
+    zstyle -a :hzsh:plugins:ssh-agent identities selected_identities
+    if [ ${#selected_identities} -eq 0 ]; then
+      selected_identities=(id_rsa id_dsa identity)
+    fi
+
+    # Eliminate identities that aren't present.
+    for id in "${selected_identities[@]}"; do
+      [ -f "${HOME}/.ssh/${id}" ] ||
+        selected_identities[(i)${id}]=()
+    done
+  fi
+
+  local -a added_identities
+  added_identities=(${^$(ssh-add -L | cut -f3 -d' ')}(N:t))
+
+  for id in "${added_identities[@]}"; do
+    selected_identities[(i)${id}]=()
+  done
+
+  [ ${#selected_identities} -ne 0 ] &&
+    /usr/bin/env ssh-add "${HOME}/.ssh/"${^selected_identities}
+}
+
+if is-mac; then
+  if [ -z "${SSH_AUTH_SOCK}" ]; then
+    local -a sockets
+    # The below is the same as:
+    # find /tmp/launch-*/Listeners -name Listeners -user ${USER} -type s
+    sockets=(/tmp/launch-*/Listeners(=u[${USER}]N))
+
+    (( ${#sockets} )) && export SSH_AUTH_SOCK=${sockets[1]}
+  fi
+fi
+
+zstyle -b :hzsh:plugins:ssh-agent agent-forwarding __saplugin__forwarding
+if [ ${__saplugin__forwarding} = "yes" -a -n "${SSH_AUTH_SOCK}" ]; then
+  # Add a nifty symlink for screen/tmux if agent forwarding
+  [ -L ${SSH_AUTH_SOCK} ] ||
+    ln -sf "${SSH_AUTH_SOCK}" /tmp/ssh-agent-${USER}-screen
+elif [ -f "${__saplugin__ssh_env}" ]; then
+  builtin source "${__saplugin__ssh_env}" > /dev/null
+  ps "${SSH_AGENT_PID}" > /dev/null || { __saplugin__start_agent }
+else
+  __saplugin__start_agent
+fi
+
+__saplugin__add_identities
+
+# Clean up after ourselves now that ssh-agent is started.
+unfunction __saplugin__start_agent
+unfunction __saplugin__add_identities
+unset __saplugin__forwarding
+unset __saplugin__ssh_env

@@ -1,0 +1,36 @@
+#! zsh
+
+function()
+{
+  add-paths-before-if ${HOME}/.brew/bin
+
+  local prefix="$(brew --prefix)"
+
+  add-paths-before-if "${prefix}/bin" "${prefix}/sbin"
+  unique-manpath -b "${prefix}/share/man"
+
+  local completion_fpath
+
+  if --hzsh-is-caching; then
+    completion_fpath=$(--hzsh-cache-path completion)
+  else
+    completion_fpath=${HOME}/.zsh-completion
+  fi
+
+  fpath=(${fpath} ${completion_fpath} ${prefix}/share/zsh/site-functions)
+  autoload -U _brew
+
+  autoload -U has-keg brew-prefix
+
+  if has-keg node; then
+    NODE_PATH="$(brew-prefix node)/lib/node_modules:${NODE_PATH}"
+    add-paths-before-if "${prefix}/share/npm/bin"
+  fi
+
+  if has-keg coreutils; then
+    # Matt Foster had problems with his prompt and the g[ alias. Thus, unalias [.
+    test -e $(brew-prefix coreutils)/aliases &&
+      source $(brew-prefix coreutils)/aliases &&
+      unalias [
+  fi
+}

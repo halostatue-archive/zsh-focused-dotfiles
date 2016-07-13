@@ -1,0 +1,53 @@
+---
+exclude: !ruby/regexp /(tmp|swp)$|CVS|TAGS|\.(svn|git|hg|DS_Store)|Gemfile\.lock|\.gemspec/
+travis:
+  before_script:
+  - gem install hoe-travis --no-rdoc --no-ri
+  - rake travis:before -t
+  after_script:
+  - rake travis:after -t
+  script: rake travis
+  token: <%= user_data_lookup 'hoe.travis_token' %>
+  matrix:
+    allow_failures:
+      - rvm: rbx
+      - rvm: ruby-head
+      - rvm: jruby-head
+  notifications:
+    recipients:
+      - austin@rubyforge.org
+    email:
+      - on_success: change
+      - on_failure: always
+  versions:
+    - 2.1.0
+    - 2.0.0
+    - 1.9.3
+    - 1.9.2
+    - jruby-19mode
+    - rbx
+    - 1.8.7
+    - jruby-18mode
+    - ree
+    - ruby-head
+    - jruby-head
+  language: ruby
+email:
+  to:
+  - ruby-talk@ruby-lang.org
+  user: <%= user_data_lookup 'hoe.email.address' %>
+  pass: <%= user_data_lookup 'hoe.email.password' %>
+  host: smtp.gmail.com
+  port: submission
+  auth: plain
+  tls: true
+signing_key_file: ~/.gem/gem-private_key.pem
+signing_cert_file: ~/.gem/gem-public_cert.pem
+publish_on_announce: true
+blogs:
+- user: user
+  password: password
+  url: url
+  blog_id: blog_id
+  extra_headers:
+    mt_convert_breaks: markdown

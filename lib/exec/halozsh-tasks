@@ -1,0 +1,5 @@
+#! /usr/bin/env zsh
+
+source ${HALOZSH_LIB}/halozsh_core.zsh
+
+--halozsh-rake -T ${1} | sed -e 's/^rake //'

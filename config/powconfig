@@ -1,0 +1,14 @@
+% unless %x(#{ENV['SHELL']} -c 'command -v rbenv').empty?
+%   @rbenv_root = Pathname.new(%x(rbenv root).chomp).expand_path
+%   @rbenv_shims = @rbenv_root.join("shims").to_path
+%   @rbenv_bin = @rbenv_root.join("bin").to_path
+export PATH="<%= @rbenv_shims %>:<%= @rbenv_bin %>:${PATH}"
+% end
+
+% @mysql_config = Dir["/{opt,usr}/{,local/}{bin,mysql/bin,lib/mysql/bin}/mysql_config{,5}"].first
+% if @mysql_config
+%   @mysql_lib = %x(#{@mysql_config} --variable=pkglibdir).chomp
+export DYLD_LIBRARY_PATH="<%= @mysql_lib %>:${DYLD_LIBRARY_PATH}"
+% end
+
+# vim: ft=eruby

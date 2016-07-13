@@ -1,0 +1,44 @@
+#!/bin/sh -e
+# Usage: git-remove-submodule <submodule path>
+
+git_toplevel=$(git rev-parse --show-toplevel)
+gitmodules="${git_toplevel}/.gitmodules"
+
+submodule_name="${1}"
+
+test -z "${submodule_name}" && {
+  echo "$(basename ${0}): you must specify the submodule path" 1>&2
+  exit 1
+}
+
+submodule_path="${git_toplevel}/${submodule_name}"
+
+test -d "${submodule_path}" || {
+  echo "$(basename ${0}): the submodule path must be relative to the repo toplevel" 1>&2
+  exit 1
+}
+
+submodule_key="submodule.${submodule_name}"
+submodule_url_key="submodule.${submodule_name}.url"
+
+git config --local --get ${submodule_url_key} > /dev/null || {
+  echo "$(basename ${0}): the submodule is not present in .git/config." 1>&2
+  echo "$(basename ${0}) cannot be used to handle this submodule." 1>&2
+  exit 1
+}
+
+git config -f "${gitmodules}" --get ${submodule_url_key} > /dev/null || {
+  echo "$(basename ${0}): the submodule is not present in ${gitmodules}." 1>&2
+  echo "$(basename ${0}) cannot be used to handle this submodule." 1>&2
+  exit 1
+}
+
+set -x
+git config --local --remove ${submodule_key}
+git config -f "${gitmodules}" --remove ${submodule_key}
+git rm --cached "${submodule_path}"
+rm -rf "${submodule_path}"
+set +x
+
+echo "Submodule ${submodule_name} removed. Review and commit."
+exit 0

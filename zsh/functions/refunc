@@ -1,0 +1,5 @@
+#autoload -U
+
+for f ("${@}") {
+  unfunction "${f}" && autoload -Uz "${f}"
+}

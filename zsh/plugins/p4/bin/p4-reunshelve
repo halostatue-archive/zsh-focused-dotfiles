@@ -1,0 +1,88 @@
+#! /usr/bin/env ruby
+
+require 'rubygems'
+require 'rmarshal'
+require 'set'
+require 'stringio'
+require 'find'
+
+def p4(arguments)
+  result = []
+  sio    = StringIO.new(%x(p4 -G #{arguments}))
+  loop do
+    break if sio.eof?
+
+    begin
+      item = unmarshal(sio)
+    rescue
+      next
+    end
+
+    raise "P4 error: #{item["data"]}" if item["code"] == "error"
+    result << item
+  end
+
+  result
+end
+
+def p4_unshelve_exceptions(shelf)
+  result = p4 "unshelve -n -f -s #{shelf}"
+  result.reject! { |item| item["code"] == "stat" }
+  result.reject! { |item| item["code"] == "info" && item["level"] > 0 }
+  result.map { |item| item["data"] }
+end
+
+def p4_unshelve(shelf, changelist = nil)
+  if changelist
+    p4 "unshelve -f -s #{shelf} -c #{changelist}"
+  else
+    p4 "unshelve -f -s #{shelf}"
+  end
+end
+
+def p4_opened_for_unshelve(changelist = nil)
+  result = if changelist
+             p4 "opened -c #{changelist}"
+           else
+             p4 "opened"
+           end
+  result.map { |item| item["depotFile"] }
+end
+
+def p4_revert_from_shelf(shelf)
+  except = p4_unshelve_exceptions shelf
+  opened = p4_opened_for_unshelve
+
+  except.each do |file|
+    opened.each do |open_file|
+      if file =~ /^#{open_file}/
+        $output.puts "Reverting #{open_file}." if $output
+        p4 "revert #{open_file}"
+        break
+      end
+    end
+  end
+end
+
+if __FILE__ == $0
+  shelf = ARGV.shift
+  clist = ARGV.shift
+
+  if shelf.nil?
+    $stderr.puts "error: need to specify a shelf to unshelve."
+    exit 1
+  end
+
+  $output = $stdout
+  p4_revert_from_shelf shelf
+  result = p4_unshelve shelf, clist
+
+  result.each do |item|
+    case item["code"]
+    when "stat"
+      puts "#{item["depotFile"]}##{item["rev"]} - unshelved, opened for #{item["action"]}"
+    when "info"
+      puts "#{"  " * item["level"]}#{item["data"]}"
+    end
+  end
+end

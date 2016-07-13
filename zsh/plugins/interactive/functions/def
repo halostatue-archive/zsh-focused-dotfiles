@@ -1,0 +1,23 @@
+#autoload -U
+
+# Idea found on http://onethingwell.org; fixed up a little to handle another
+# error case and show usage.
+#
+# Originally from:
+# http://vikros.tumblr.com/post/23750050330/cute-little-function-time
+
+case $# in
+  0)
+    echo >&2 "${0}: not enough arguments"
+    echo >&2 "usage: ${0} WORD"
+    return 1
+    ;;
+  1)
+    curl "dict://dict.org/d:${1}"
+    ;;
+  *)
+    echo >&2 "${0}: too many arguments"
+    echo >&2 "usage: ${0} WORD"
+    return 1
+    ;;
+esac

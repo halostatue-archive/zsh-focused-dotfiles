@@ -1,0 +1,14 @@
+#autoload -U
+
+# Keep a glob pattern expansion for reuse elsewhere.
+setopt localoptions nomarkdirs nonomatch nocshnullglob nullglob
+kept=() # Erase old value in case of error on next line
+kept=($~*)
+if [[ ! -t 0 ]]; then
+  local line
+  while read line; do
+    kept+=( $line )   # += is a zsh 4.2+ feature
+  done
+fi
+print -Rc - ${^kept%/}(T)
+

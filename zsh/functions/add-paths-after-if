@@ -1,0 +1,7 @@
+#autoload -U
+
+autoload -U unique-path
+
+for p ("${@}"); do
+  [[ -d "${p}" ]] && unique-path -a "${p}"
+done

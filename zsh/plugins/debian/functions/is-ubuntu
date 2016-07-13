@@ -1,0 +1,12 @@
+#autoload -U
+
+if [[ -r /etc/lsb-release ]]; then
+  local DISTRIB_ID DISTRIB_RELEASE DISTRIB_CODENAME DISTRIB_DESCRIPTION
+  source /etc/lsb-release
+
+  if [[ ${DISTRIB_ID} == 'Ubuntu' ]]; then
+    return 0
+  fi
+fi
+
+return 1

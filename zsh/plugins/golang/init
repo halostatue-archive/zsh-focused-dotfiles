@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+function()
+{
+  eval $(go env | grep GOROOT=)
+  export GOROOT
+  add-paths-after-if ${GOROOT}/bin ${GOPATH:-${HOME}/go}/bin
+
+  export GOPATH=${GOPATH:-${HOME}/go}
+  mkdir -p ${GOPATH}
+
+  cdpath+=(${GOPATH}/src{,/*(/N),/*/*(/N)})
+}

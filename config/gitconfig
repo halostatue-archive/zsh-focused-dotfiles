@@ -1,0 +1,266 @@
+[user]
+  name = <%= user_data_lookup 'name' %>
+  email = <%= user_data_lookup 'email' %>
+
+% on path_exist?(home('.git_template')) do
+[init]
+  templatedir = <%= home %>/.git_template
+% end
+
+[difftool]
+  prompt = false
+
+[diff "ruby"]
+  funcname = ^ *\\(\\(class\\|module\\|def\\) .*\\)
+
+[branch]
+  autosetuprebase = always
+
+[rebase]
+  autostash = true
+  autosquash = true
+
+[core]
+  excludesfile = <%= home %>/.gitignore
+  pager = less -FRSX
+  whitespace=trailing-space,tab-in-indent,cr-at-eol,space-before-tab
+  autocrlf = input
+  safecrlf = true
+
+[merge]
+  tool = gvimdiff
+  # Include summaries of merged commits in newly created merge commit messages
+  log = true
+
+[mergetool "gvimdiff"]
+  cmd = gvim -d --remote-wait-silent "${LOCAL}" "${MERGED}" "${REMOTE}"
+  trustExitCode = true
+
+[mergetool "vimdiff"]
+  cmd = vim -d "${LOCAL}" "${MERGED}" "${REMOTE}"
+  trustExitCode = true
+
+[format]
+  pretty = %C(yellow)%h%C(reset) %C(red)%ad%C(reset) | %s%d %C(green)[%aN]%C(reset)
+
+[log]
+  date = short
+
+[alias]
+  # Smooth out the git-cli surface
+  branches = branch -a
+  remotes  = remote -v
+  stashes  = stash list
+  tags     = tag -l
+
+  nevermind  = !git reset --hard HEAD && git clean -fd
+  hardreset  = reset --hard HEAD
+  discard    = checkout --
+  unstage    = reset -q HEAD --
+  unamend    = reset --soft HEAD@{1}
+  uncommit   = reset --soft HEAD~
+  fast-amend = commit --amend --no-edit
+  amend      = !git-amend
+
+  save   = commit -m
+  resave = commit --amend
+  invert = revert
+
+  precommit = diff --cached -w --word-diff=color --word-diff-regex='[^[:space:]<>]+'
+  prestage = diff -w --word-diff=color
+  unmerged  = diff --name-only --diff-filter=U
+
+  move = mv
+  remove = rm
+
+  unmerged-branches = branch --no-merged
+  unstash = stash pop
+
+  what = show -w
+  untrack = rm -r --cached
+  rewrite = rebase -i
+
+  back = checkout "-"
+
+  contributors = shortlog -s -n
+  filetrail = log --follow -p -w
+  mergetrail = log --ancestry-path --merges
+
+  # Simple functionality extension
+  addp          = add -p
+  cat           = -p cat-file -p
+  changelog     = log --pretty=format:\" * %s\"
+  changes       = log --pretty=format:\"%h %cr %cn %C(green)%s%C(reset)\" --name-status
+  co            = checkout
+  dump          = cat-file -p
+  filelog       = log -u
+  findnext      = rev-list --reverse -n1 HEAD..master
+  go            = checkout -b
+  branchout = checkout -b
+  hist          = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+  hist2         = for-each-ref --count=5 --sort=-committerdate --format='%(refname:short)' refs/heads/
+  ignored       = ls-files --others -i --exclude-standard
+  lastd         = diff HEAD^
+  last = log -1 HEAD --format=format:"%Cred%H"
+
+  history = log -10 --format=format:'%C(green)%h %C(reset)• %s (%cN, %ar)'
+  graph = log --graph -10 --branches --remotes --tags  --format=format:'%C(green)%h %C(reset)• %<(75,trunc)%s (%cN, %cr) %C(red)%d' --date-order
+  ld            = log --topo-order --stat --patch --full-diff --pretty=format:'%C(bold)%C(yellow)Commit:%C(reset) %C(yellow)%H%C(red)%d%n%C(bold)%C(yellow)Author:%C(reset) %C(cyan)%an <%= "<%ae>" %>%n%C(bold)%C(yellow)Date:%C(reset)   %C(blue)%ai (%ar)%C(reset)%n%+B'
+  lg            = log --graph --pretty=format:'%C(red)%h%C(reset) -%C(yellow)%d%C(reset) %s %C(green)(%cd)%C(reset)' --abbrev-commit --date=short
+  lga           = log --topo-order --all --graph --pretty=format:'%C(yellow)%h %C(cyan)%cn%C(reset) %s %C(red)%d%C(reset)%n'
+  lgs           = log --topo-order --all --graph --pretty=format:'%C(yellow)%h%C(reset) %s %C(red)%d%C(reset)%n'
+  ll            = log --pretty=oneline --abbrev-commit --max-count=15
+  llf           = fsck --lost-found
+  lm            = log --topo-order --pretty=format:'%s'
+  logg          = log --graph --all --decorate
+  logo          = log --oneline --graph --all --decorate
+  logt          = log --date-order --graph --tags --simplify-by-decoration --pretty=format:'%ai %h %C(Yellow)%d%C(reset)'
+  longline      = log --abbrev-commit --graph --pretty=format:'%C(yellow bold)%h%C(reset) by %C(red)%an%C(reset) (%ar)%C(cyan bold)%d%C(reset)%n%s%n%b' --all
+  ls            = log --topo-order --stat --pretty=format:'%C(bold)%C(yellow)Commit:%C(reset) %C(yellow)%H%C(red)%d%n%C(bold)%C(yellow)Author:%C(reset) %C(cyan)%an <%= "%ae" %>%n%C(bold)%C(yellow)Date:%C(reset)   %C(blue)%ai (%ar)%C(reset)%n%+B'
+  lt            = log --topo-order --pretty=format:'%C(yellow)%h %C(cyan)%cn %C(blue)%cr%C(reset) %s'
+  pull-rebase   = pull --rebase
+  rclone        = clone --reference /git/cache.git/
+  rebase-abort  = rebase --abort
+  rebase-skip   = rebase --skip
+  review        = merge --no-ff --no-commit
+  sa            = status -sb --ignore-submodules=untracked
+  short         = log --pretty=format:\"%h %cr %cn %C(green)%s%C(reset)\"
+  shortnocolor  = log --pretty=format:\"%h %cr %cn %s\"
+  sm            = status -sb -uno --ignore-submodules=untracked
+  staged        = diff --cached
+  standup       = shortlog --since=yesterday
+  stc           = diff --stat --name-status --cached
+  summary = status -u -s
+  subdo         = submodule foreach git
+  subs          = submodule foreach git pul origin master
+  today         = shortlog --since=midnight
+  type          = cat-file -t
+  vgc           = repack -f -a -d --depth=250 --window=250
+  who           = shortlog -s -n --no-merges
+% on path_exist?(packages_file('willgit/bin/git-wtf')) do
+  wtfs          = wtf -s -r -k
+% end
+% on path_exist?(packages_file('hub/bin/hub')) do
+  home          = browse
+% end
+% on in_path?('diff-so-fancy') do
+  dsf           = "!f() { [ \"$GIT_PREFIX\" != \"\" ] && cd "$GIT_PREFIX"; git diff --color $@ | diff-so-fancy | less --tabs=4 -RFX; }; f"
+  ssf           = "!f() { [ \"$GIT_PREFIX\" != \"\" ] && cd "$GIT_PREFIX"; git show --color $@ | diff-so-fancy | less --tabs=4 -RFX; }; f"
+% end
+  latest        = for-each-ref --count=30 --sort=-committerdate refs/heads/ --format='%(refname:short)'
+
+
+  # More complex functionality
+  add-unmerged      = !git add $(git ls-files --unmerged | cut -f2 | sort -u)
+  checkoutnext      = !git checkout $(git findnext)
+  cherry-continue   = !git add -u . && git cherry-pick --continue
+  clean-local       = "!for d in $(git merged-local); do git branch -d $d; done"
+  credit            = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+  current-branch    = !git symbolic-ref HEAD 2> /dev/null | sed -e 's!refs/heads/!!'
+  datetag           = !git tag $(date '+%Y%m%d%H%M')-1
+  debug             = !GIT_PAGER= gdb --args git
+  edit-last-commit  = !$EDITOR $(git diff-tree -r --name-only 'HEAD' 'HEAD~1')
+  edit-unmerged     = !$EDITOR $(git ls-files --unmerged | cut -f2 | sort -u)
+  file-blame        = !git ls-files | xargs -n1 -I{} git log -1 --pretty=format:'%ci {}' -- {}
+  gvc               = "!f() { EDITOR=\"gvim --servername git --remote-wait-silent\" git commit ${@}; }; f"
+  merged-local      = "!git wtf -s -r | grep '^(x' | awk '{ print $2; }'"
+  merged-remote     = "!git wtf -s -r | grep '^{x' | awk '{ print $2; }'"
+  rebase-continue   = !git add -u . && git rebase --continue
+  pr                = !git-new-pull-request
+  push-head         = !git push origin $(git symbolic-ref HEAD)
+  pushall           = !git remote | xargs -n1 git push
+  pushalltags       = !git remote | xargs -n1 git push --tags
+  subup             = !git submodule foreach git checkout master && git submodule foreach git pull
+  top               = !eval cd "$(pwd)/$(git rev-parse --show-cdup)" && pwd
+  update-rebase     = !git fetch -mp && git pull-rebase
+# clean-remote      = "!for d in $(git merged-remote); do git push origin :$d; done"
+
+  # Not sure I'm going to use these.
+# # Show the diff between the latest commit and the current state
+# d = !"git diff-index --quiet HEAD -- || clear; git diff --patch-with-stat"
+# # `git di $number` shows the diff between the state `$number` revisions ago and the current state
+# di = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
+# # Pull in remote changes for the current repository and all its submodules
+# p = !"git pull; git submodule foreach git pull origin master"
+# # Clone a repository including all submodules
+# c = clone --recursive
+# # Commit all changes
+# ca = !git add -A && git commit -av
+# # Show verbose output about tags, branches or remotes
+# # Interactive rebase with the given number of latest commits
+# reb = "!r() { git rebase -i HEAD~$1; }; r"
+# # Undo a `git push`
+# undopush = push -f origin HEAD^:master
+
+  # Aliases to allow for the completion of helper functions
+  browse           = !hub browse
+  compare          = !hub compare
+  conflicts        = !git-conflicts
+  cut-branch       = !git-cut-branch
+  sh               = !git-sh
+  grab             = !git-grab
+  thanks           = !git-thanks
+  track            = !git-track
+  remove-submodule = !git-remove-submodule
+  incoming         = !git-incoming
+  outgoing         = !git-outgoing
+
+[advice]
+  statusHints = false
+
+[color]
+  pager = true
+  ui = auto
+
+[color "diff"]
+  meta = blue bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+
+[color "branch"]
+  current = yellow reverse
+  local = yellow bold
+  remote = green bold
+  plain = red bold
+
+[color "status"]
+  added = yellow
+  changed = green bold
+  untracked = blue bold
+
+[diff]
+  mnemonicprefix = true
+  compactionHeuristic = true
+  ; renames = copies
+
+[pack]
+  threads = 0
+
+[gc]
+  reflogexpire = 300
+  reflogexpireunreachable = 90
+
+[github]
+  user = <%= user_data_lookup 'github.user' %>
+
+[push]
+  default = simple
+
+# URL shorthands
+[url "git@github.com:"]
+  insteadOf = "gh:"
+[url "git@gist.github.com:"]
+  insteadOf = "gist:"
+[url "git@bitbucket.org:"]
+  insteadOf = "bb:"
+
+% on in_path?('delta') do
+[difftool "delta"]
+  cmd = delta \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
+% end
+
+<%= include_platform_files %>
+<%= include_user_files %>
+
+# vim: ft=gitconfig

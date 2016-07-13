@@ -1,0 +1,40 @@
+#! /bin/zsh
+
+# Provide platform-neutral functions to copy to or paste from the clipboard.
+
+function()
+{
+  if has pbcopy pbpaste; then
+    function --copy-to-clipboard()
+    {
+      pbcopy
+    }
+
+    function --paste-from-clipboard()
+    {
+      pbpaste
+    }
+  elif has xclip; then
+    function --copy-to-clipboard()
+    {
+      xclip -i
+    }
+
+    function --paste-from-clipboard()
+    {
+      xclip -o
+    }
+  else
+    function --copy-to-clipboard()
+    {
+      echo >&2 "Do not know how to copy to the clipboard."
+      return 1
+    }
+
+    function --paste-from-clipboard()
+    {
+      echo >&2 "Do not know how to paste from the clipboard."
+      return 1
+    }
+  fi
+}

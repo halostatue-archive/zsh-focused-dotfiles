@@ -1,0 +1,4 @@
+#autoload -U
+
+printf "\\\x%s" $(print "${@}" | xxd -p -c1 -u)
+echo

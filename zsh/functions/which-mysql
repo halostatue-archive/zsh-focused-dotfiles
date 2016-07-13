@@ -1,0 +1,20 @@
+#! /bin/zsh
+
+noisy=true
+
+if [ ${#} -ne 0 ]; then
+  case "${1}" in
+    -t|-test|--test)
+      noisy=false
+      ;;
+  esac
+fi
+
+for d in /{opt,usr}/{,local/}{bin,mysql/bin,lib/mysql/bin}/mysql_config{,5}; do
+  if [ -x ${d} ]; then
+    ${noisy} && echo ${d}
+    return 0
+  fi
+done
+
+return 1

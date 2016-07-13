@@ -1,0 +1,31 @@
+#! zsh
+
+function()
+{
+  test -e /Applications/Emacs.app || return
+  has emacs || function emacs()
+  {
+    open -a /Applications/Emacs.app "${@}"
+  }
+
+  has gemacs || function gemacs()
+  {
+    open -a /Applications/Emacs.app "${@}"
+  }
+
+  [ -d "${HOME}/.emacs.d/.git" ] &&
+    {
+      local remote
+      remote=$(
+        builtin cd ~/.emacs.d
+        command git remote -v | awk '/^origin.*push/ { print $2; }'
+      )
+
+      if [ "${remote}" = "https://github.com/syl20bnr/spacemacs" ]; then
+        has spacemacs || function spacemacs()
+        {
+          open -a /Applications/Emacs.app "${@}"
+        }
+      fi
+    }
+}

@@ -1,0 +1,21 @@
+#autoload -U
+
+# Fast lookup first.
+
+for candidate (/Applications ~/Applications /Applications/Xcode.app/Contents/Applications /Developer/Applications); do
+  [ -d "${candidate}/${*}" ] && return 0
+  [ -d "${candidate}/${*}.app" ] && return 0
+  [ -h "${candidate}/${*}" ] && return 0
+  [ -h "${candidate}/${*}.app" ] && return 0
+done
+
+return 1
+
+# Disabled for now. Very slow and does not appear to work.
+# candidates=$(find /Applications \( -type d -o -type l \) -a \( -name "${*}" -o -name "${*}.app" \))
+#
+# (( ${#candidates} )) && return 0
+#
+# candidates=$(find ~/Applications \( -type d -o -type l \) -a \( -name "${*}" -o -name "${*}.app" \))
+#
+# (( ${#candidates} ))

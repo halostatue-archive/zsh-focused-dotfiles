@@ -1,0 +1,12 @@
+#!/bin/zsh
+
+{
+  local chruby_path=$(echo $(which chruby-exec)(:h:h))
+  source "${chruby_path}/share/chruby/chruby.sh"
+
+  if zstyle -t :hzsh:plugins:chruby auto; then
+    source "${chruby_path}/share/chruby/auto.sh"
+  fi
+} always {
+  unset chruby_path
+}

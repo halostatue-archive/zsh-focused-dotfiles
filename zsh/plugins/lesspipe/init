@@ -1,0 +1,5 @@
+#! zsh
+
+export LESS="-R -M --shift 5"
+export LESSOPEN="|lesspipe.sh %s"
+export LESSCOLOR=1

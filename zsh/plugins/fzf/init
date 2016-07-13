@@ -1,0 +1,7 @@
+#! zsh
+
+function()
+{
+  export FZF_DEFAULT_OPTS="-x"
+  source ${HOME}/.fzf.zsh
+}

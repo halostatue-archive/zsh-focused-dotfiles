@@ -1,0 +1,22 @@
+# [core]
+#   editor = mvim --remote-wait-silent
+
+[difftool "Kaleidoscope"]
+  cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
+
+[mergetool "Kaleidoscope"]
+  cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
+  trustExitCode = true
+
+<% if user_data_lookup "git.default_difftool" %>
+[diff]
+  tool = <%= user_data_lookup "git.default_difftool" %>
+<% end %>
+
+[web]
+  browser = open
+
+[browser "gitscm"]
+  cmd = sh -c 'open http://git-scm.com/docs/$(basename $1 .html)' --
+
+# vim: syntax=gitconfig

@@ -1,0 +1,25 @@
+#autoload -U
+
+if (( ${#} )); then
+  local prefix
+  prefix="$(brew --prefix ${1})"
+
+  if (( !${?} )) && test ! -d "${prefix}"; then
+    local -a cellars
+
+    cellars=($(brew --prefix)/Cellar/${1}/*(/N))
+
+    if (( ${#cellars} )); then
+      prefix=${cellars[-1]}
+    fi
+  fi
+
+  if (( ${#prefix} )); then
+    echo ${prefix%%/}
+  else
+    echo "Error: No available formula for xyz"
+    return 1
+  fi
+else
+  brew --prefix
+fi

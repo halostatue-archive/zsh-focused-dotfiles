@@ -1,0 +1,7 @@
+#autoload -U
+
+if has ps2pdf; then
+  man -t $* | ps2pdf - - | open -f -a Preview
+else
+  man -t $* | open -f -a Preview
+fi

@@ -1,0 +1,29 @@
+#! zsh
+
+# Various git scripts
+
+function()
+{
+  local param
+  zstyle -s :hzsh:plugins:git git-identity-path param
+
+  if --hzsh-is-caching; then
+    export __hzsh_plugins_git_identity_path="${param:-$(--hzsh-cache-path)}/git-identities"
+  else
+    export __hzsh_plugins_git_identity_path="${current_plugin_path}/identities"
+  fi
+
+  if [ -n "${FULLNAME}" ]; then
+    export GIT_AUTHOR_NAME="${FULLNAME}"
+    export GIT_COMMITTER_NAME="${FULLNAME}"
+  fi
+
+  if [ -n "${EMAIL}" ]; then
+    export GIT_AUTHOR_EMAIL="${EMAIL}"
+    export GIT_COMMITTER_EMAIL="${EMAIL}"
+  fi
+
+  [ -d "${current_plugin_path}/share/man" ] &&
+    unique-manpath -b "${current_plugin_path}/share/man"
+  unique-path -b .git/safe/../../bin .git/safe/../../exe
+}

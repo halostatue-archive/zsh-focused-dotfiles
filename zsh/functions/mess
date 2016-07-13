@@ -1,0 +1,23 @@
+#autoload -U
+
+local -i _year=$(date +%Y)
+local -i _week=$(date +%W)
+
+local _current="${MESS_PATH:=${HOME}/mess}/${_year}/$(printf '%02d' ${_week})"
+local _link="${MESS_PATH}/current"
+
+if [[ ! -d ${_current} ]]; then
+  mkdir -p ${_current}
+  echo "Created messdir ${_current}"
+fi
+
+if [[ -a ${_link} && ! -L ${_link} ]]; then
+  echo '"${_link}\" is not a symlink; something is wrong.'
+else
+  if [[ ! ${_link} -ef ${_current} ]]; then
+    rm -f ${_link}
+    ln -s ${_current} ${_link}
+  fi
+
+  cd ${_current}
+fi

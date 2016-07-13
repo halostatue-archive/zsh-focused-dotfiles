@@ -1,0 +1,5 @@
+#autoload -U
+
+CSf=/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/
+LSf=LaunchServices.framework/Versions/A/Support/
+"${CSf}/${LSf}/lsregister" -dump | grep -B6 bindings:.*:

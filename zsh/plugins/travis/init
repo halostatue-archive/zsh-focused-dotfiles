@@ -1,0 +1,6 @@
+#! zsh
+
+function()
+{
+  source ${HOME}/.travis/travis.sh
+}

@@ -1,0 +1,3 @@
+#autoload -U
+
+ruby -ruri -e 'puts URI.escape(ARGV.join(" "))' "${@}"

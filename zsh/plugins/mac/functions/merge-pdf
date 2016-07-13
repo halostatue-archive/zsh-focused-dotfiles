@@ -1,0 +1,5 @@
+#autoload -U
+
+# Yanked from Mathias Bynens’ dotfiles.
+# Usage: `merge-pdf -o output.pdf input{1,2,3}.pdf`
+/System/Library/Automator/Combine\ PDF\ Pages.action/Contents/Resources/join.py "${@}"

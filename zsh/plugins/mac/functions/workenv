@@ -1,0 +1,180 @@
+#autoload -U
+
+local Workenv=$(basename ${0})
+
+function {
+  function --workenv-increment-count() {
+    local -i count=0
+    [ -f ${WorkenvCountFile} ] && count=$(<${WorkenvCountFile})
+    builtin printf "%d" $(( ++count )) > ${WorkenvCountFile}
+    echo ${count}
+  }
+
+  function --workenv-tab-title() {
+    local -i count=$(--workenv-increment-count)
+    local desc=" "
+    [ -n "${*}" ] && desc=" ${*} "
+    builtin printf "%s:%s%d" ${WorkenvName} ${desc} ${count}
+  }
+
+  function --workenv-tab() {
+    local -a descs counts first
+
+    builtin zparseopts -D -E -K \
+      desc:=descs -desc:=descs \
+      count:=counts -count:=counts \
+      first=first -first=first
+
+    local -i count=${counts[-1]:-1}
+
+    if [ ${#first} -ne 0 ]; then
+      ttitle "$(--workenv-tab-title "${descs[-1]}")"
+      (( count-- ))
+    fi
+
+    local script
+    script=
+
+    if (( ${#} )); then
+      script=$(mktemp -t workenv)
+
+      if [ ${#} -eq 1 -a "${1}" = '-' ]; then
+        cat - > "${script}"
+      else
+        echo "${@}" > "${script}"
+      fi
+    fi
+
+    local -i i
+    for (( i = 0; i < ${count}; ++i )); do
+      local title="$(--workenv-tab-title "${descs[-1]}")"
+      if (( ${#script} )); then
+        tab --title "${title}" --script "${script}"
+      else
+        tab --title "${title}"
+      fi
+    done
+
+    [ ${#first} -ne 0 ] && "${@}"
+  }
+
+  function --workenv-use() {
+    typeset -r WorkenvCountFile=/tmp/${WorkenvName}.$$.count
+
+    {
+      if [ -r ./.workenv ]; then
+        source ./.workenv
+      else
+        --workenv-tab --first --count 2
+      fi
+    } always {
+      rm -f ${WorkenvCountFile}
+    }
+  }
+
+  function --workenv-init() {
+    if [ -f .workenv ]; then
+      echo "${Workenv}: ${WorkenvPath}/.workenv already exists." 1>&2
+      return 1
+    fi
+
+    echo "Creating workenv ${WorkenvName} for ${WorkenvPath}."
+
+    cat > .workenv <<EOS
+#! zsh
+
+local WorkenvName="${WorkenvName}"
+
+--workenv-tab --first --count 2
+EOS
+
+    return 0
+  }
+
+  function --workenv-help() {
+    less - <<EOS
+Usage: ${Workenv} [DIRECTORY] [--name NAME]
+       ${Workenv} --init [--name NAME]
+
+Create or use a Terminal.app working environment (“workenv”). A workenv
+is a set of tabs for a directory in a single window. They are created
+using the “tab” function. Workenvs are used by calling ${Workenv} with
+an optional DIRECTORY argument. If provided, ${Workenv} will change to
+DIRECTORY before using the workenv. Then, the workenv will be started
+with a custom workenv definition (in “./.workenv”) or the default
+workenv. If the default workenv is being used, a name can be provided
+with the --name argument.
+
+Custom workenvs should be created using --init, and an override name can
+be provided with --name. They are created in the current directory as
+“.workenv”, which can then be edited to match your workenv needs. The
+default workenv, and the initial contents of a “.workenv” file, creates
+two tabs (“NAME: 1”, “NAME: 2”). An advanced “.workenv” might look like:
+
+    local WorkspaceName="Rails"
+    --workenv-tab --first --count 2
+    --workenv-tab --desc "console" - <<script
+      sleep 2
+      zeus console
+    script
+    --workenv-tab --desc "zeus" zeus start
+
+This starts four tabs:
+
+* “Rails: 1” (using the host tab)
+* “Rails: 2”
+* “Rails: console 3”; sleeps two seconds and runs “zeus console”
+* “Rails: zeus 4”; runs “zeus start”
+
+Tabs are created with --workenv-tab:
+
+  --workenv-tab [--first] [--count COUNT] [--desc DESC] [COMMANDS]
+
+    Creates a new tab. Increments the tab counter. If provided, COMMANDS
+    provides the commands that will be run in the new tab after setting
+    the title.
+
+    --first       Just rename the current tab.
+    --count COUNT Creates COUNT tabs with the same description, running
+                  the same commands. If used with --first, the base tab
+                  will be renamed, the other new tabs will be created,
+                  then COMMANDS will be executed in the base tab.
+    --desc DESC   Provides an extra description for the tab title.
+EOS
+  }
+
+  {
+    local -a inits names help
+
+    builtin zparseopts -D -E -K \
+      init=inits -init=inits \
+      name:=names -name:=names \
+      \?=help h=help help=help -help=help
+
+    if (( $#help )); then
+      --workenv-help
+      return 0
+    fi
+
+    local WorkenvPath=${1:-${PWD}}
+    local WorkenvName=$(basename ${WorkenvPath})
+    (( $#names )) && WorkenvName=${names[-1]}
+
+    if (( $#inits )); then
+      --workenv-init ${WorkenvName}
+      return ${?}
+    fi
+
+    [ -n "${1}" ] && cd "${1}"
+
+    --workenv-use
+  } always {
+    unfunction -- \
+      --workenv-help \
+      --workenv-increment-count \
+      --workenv-init \
+      --workenv-tab-title \
+      --workenv-tab \
+      --workenv-use
+  }
+} "${@}"

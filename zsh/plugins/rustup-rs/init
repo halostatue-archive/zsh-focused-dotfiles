@@ -1,0 +1,6 @@
+#! zsh
+
+function()
+{
+  add-paths-before-if ${HOME}/.cargo/bin
+}

@@ -1,0 +1,158 @@
+#autoload -U
+
+local bn=$(basename ${0})
+local hf="$(pwd -P)/.local_history"
+
+function __hzsh_hwd-error()
+{
+  echo "${bn}: error: ${*}" >&2
+}
+
+function __hzsh_hwd-not-active()
+{
+  echo "No active local history files."
+}
+
+function __hzsh_hwd-usage()
+{
+  cat <<EOS
+Usage: ${bn} [command]
+
+  start | push  Start recording history in the current working dirctory.
+                This is the default command if no parameters are provided.
+                Does nothing if the current directory is already recording
+                history.
+  pop [erase]   The most recent 'hwd push' will be deactivated. If the
+                parameter 'erase' is provided, removes the associated history
+                file.
+
+  stop | clear  Stops all local history writing. If the parameter 'erase' is
+    [erase]     provided, removes the associated history files.
+
+  show [all]    Shows the name of the currently active history file (or all
+                history files, if 'all' is provided), except \$HISTFILE.
+
+  print         Prints the contents of the history file in the current
+                directory (if it exists) or the topmost history file currently
+                being written to. Does nothing if only \$HISTFILE is in use.
+
+  erase         If there is a local history file in the current working
+                directory, erases it. (If the current working directory is on
+                the local history stack, it is removed from the stack.)
+
+  help          Show this help.
+EOS
+}
+
+function __hzsh_hwd-push()
+{
+  if [ ${#__hzsh_hwd_local_history_files} -gt 0 ]; then
+    # Stop early if we're already writing to this file.
+    [ "${__hzsh_hwd_local_history_files[-1]}" = "${hf}" ] && return 0
+  fi
+
+  __hzsh_hwd_local_history_files+="${hf}"
+}
+
+function __hzsh_hwd-pop()
+{
+  if [ ${#__hzsh_hwd_local_history_files} -eq 0 ]; then
+    __hzsh_hwd-not-active
+  else
+    [ "$(echo ${1:-x} | tr A-Z a-z)" = "erase" ] &&
+      rm -f "${__hzsh_hwd_local_history_files[-1]}"
+    __hzsh_hwd_local_history_files[-1]=()
+  fi
+}
+
+function __hzsh_hwd-clear()
+{
+  if [ ${#__hzsh_hwd_local_history_files} -eq 0 ]; then
+    __hzsh_hwd-not-active
+  else
+    if [ "$(echo ${1:-x} | tr A-Z a-z)" = "erase" ]; then
+      for file (${(Oa)__hzsh_hwd_local_history_files}); do
+        rm -f "${file}"
+      done
+    fi
+
+    __hzsh_hwd_local_history_files=()
+  fi
+}
+
+function __hzsh_hwd-show()
+{
+  if [ ${#__hzsh_hwd_local_history_files} -eq 0 ]; then
+    __hzsh_hwd-not-active
+  else
+    if [ "$(echo ${1} | tr A-Z a-z)" = "all" ]; then
+      for file (${(Oa)__hzsh_hwd_local_history_files}); do
+        echo "${file}"
+      done
+    else
+      echo "${__hzsh_hwd_local_history_files[-1]}"
+    fi
+  fi
+}
+
+function __hzsh_hwd-print()
+{
+  if [ -r "${hf}" ]; then
+    cat "${hf}"
+  elif [ ${#__hzsh_hwd_local_history_files} -eq 0 ]; then
+    __hzsh_hwd-not-active
+  else
+    cat "${__hzsh_hwd_local_history_files[-1]}"
+  fi
+}
+
+function __hzsh_hwd-erase()
+{
+  if [ -r "${hf}" ]; then
+    local -i ix=${__hzsh_hwd_local_history_files[(ie)${hf}]}
+
+    [ ${ix} -le ${#__hzsh_hwd_local_history_files} ] &&
+      __hzsh_hwd_local_history_files[${ix}]=()
+
+    rm -f "${hf}"
+  else
+    echo "No local history file in this directory."
+  fi
+}
+
+local command_name="${1:-push}"
+[ ${#} -ne 0 ] && shift 1
+
+command_name=$(echo "${command_name}" | tr A-Z a-z)
+
+case "${command_name}" in
+  start|push)
+    __hzsh_hwd-push
+    ;;
+  pop)
+    __hzsh_hwd-pop ${1}
+    ;;
+  stop|clear)
+    __hzsh_hwd-clear ${1}
+    ;;
+  erase)
+    __hzsh_hwd-erase
+    ;;
+  show)
+    __hzsh_hwd-show ${1}
+    ;;
+  print)
+    __hzsh_hwd-print
+    ;;
+  help)
+    __hzsh_hwd-usage
+    return 0
+    ;;
+  *)
+    __hzsh_hwd-error "Unknown command \"${command_name}\"."
+    __hzsh_hwd-usage >&2
+    return 2
+    ;;
+esac
+
+return 0

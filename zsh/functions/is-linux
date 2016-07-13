@@ -1,0 +1,4 @@
+#autoload -u
+
+autoload is-os
+is-os linux

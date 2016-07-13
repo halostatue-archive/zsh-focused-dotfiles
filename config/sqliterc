@@ -1,0 +1,6 @@
+# Setup sqlite
+
+.header on
+.mode column
+.timer on
+

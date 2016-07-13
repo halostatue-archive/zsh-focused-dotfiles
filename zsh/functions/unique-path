@@ -1,0 +1,52 @@
+#autoload -U
+
+local -a params
+local -i plist_size
+local plist pv path_type position conditional
+
+_prepend_path() {
+  path[1]=("${@}" "${path[1]}")
+}
+
+_append_path() {
+  path[-1]=("${path[-1]}" "${@}")
+}
+
+_prepend_manpath() {
+  manpath[1]=("${@}" "${manpath[1]}")
+}
+
+_append_manpath() {
+  manpath[-1]=("${manpath[-1]}" "${@}")
+}
+
+params=()
+position=prepend
+path_type=path
+conditional=
+
+zparseopts -D -a params b before -before a after -after m manpath -manpath i if -if
+
+plist=${params[@]}
+plist_size=${#plist}
+
+if [[ ${plist_size} -gt 0 ]]; then
+  [[ ${plist[(i)--after]} -le ${plist_size} ]] && position=append
+  [[ ${plist[(i)-after]} -le ${plist_size} ]] && position=append
+  [[ ${plist[(i)-a]} -le ${plist_size} ]] && position=append
+
+  [[ ${plist[(i)--manpath]} -le ${plist_size} ]] && path_type=manpath
+  [[ ${plist[(i)-manpath]} -le ${plist_size} ]] && path_type=manpath
+  [[ ${plist[(i)-m]} -le ${plist_size} ]] && path_type=manpath
+
+  [[ ${plist[(i)--if]} -le ${plist_size} ]] && conditional=yes
+  [[ ${plist[(i)-if]} -le ${plist_size} ]] && conditional=yes
+  [[ ${plist[(i)-i]} -le ${plist_size} ]] && conditional=yes
+fi
+
+for path_name in "${@}"; do
+  [[ -n "${conditional}" ]] && [[ ! -d "${path_name}" ]] && continue
+
+  clean-path -${path_type} "${path_name}"
+  _${position}_${path_type} "${path_name}"
+done

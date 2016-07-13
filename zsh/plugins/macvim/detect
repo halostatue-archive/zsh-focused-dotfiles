@@ -1,0 +1,2 @@
+do is-mac
+do ${plugin_detect_file:h}/bin/mvim --version

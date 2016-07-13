@@ -1,0 +1,13 @@
+#autoload -U
+
+if is-ubuntu
+  local DISTRIB_ID DISTRIB_RELEASE DISTRIB_CODENAME DISTRIB_DESCRIPTION
+  sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com ${2}
+
+  source /etc/lsb-release
+
+  echo deb http://ppa.launchpad.net/${1}/ppa/ubuntu ${DISTRIB_CODENAME} main | \
+    sudo tee /etc/apt/sources.list.d/${1}-ppa.list
+else
+  echo "Not Ubuntu."
+fi

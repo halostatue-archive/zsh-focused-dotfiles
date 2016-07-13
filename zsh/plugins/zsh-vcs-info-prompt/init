@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+function()
+{
+  local real_git=$(whence -p git)
+
+  autoload -Uz vcs_info
+  zstyle ':vcs_info:*' formats '%b '
+  zstyle ':vcs_info:(svn|bzr|cvs):*' branchformat '%b:%r'
+  zstyle ':vcs_info:cvs:*' branchformat '%r '
+  zstyle ':vcs_info:bzr:*' use-simple true
+  zstyle ':vcs_info:git:*:*' command ${real_git:-git}
+
+  local -a supported_vcs
+  zstyle -a :hzsh:prompt:vcs_info enable supported_vcs
+
+  [ ${#supported_vcs} -eq 0 ] && supported_vcs=(git cvs svn hg bzr p4)
+
+  zstyle ':vcs_info:*' enable ${supported_vcs}
+  vcs_info
+}

@@ -1,0 +1,21 @@
+#autoload -U
+
+# Add reminder to Reminders.app (OS X 10.8)
+# Usage: `note 'foo'` or `echo 'foo' | note`
+autoload is-mac-at-least
+is-mac-at-least mountain lion || return 1
+
+local text
+if [ -t 0 ]; then # argument
+  text="$1"
+else # pipe
+  text=$(cat)
+fi
+
+osascript >/dev/null <<EOF
+  tell application "Reminders"
+    tell the default list
+      make new reminder with properties {name:"$text"}
+    end tell
+  end tell
+EOF

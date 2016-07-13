@@ -1,0 +1,32 @@
+#! zsh
+
+function()
+{
+  local version
+  zstyle -s :hzsh:plugins:mactex version param
+
+  if [ -n "${version}" ]; then
+    version="/usr/local/texlive/${version}"
+
+    [ -d "${version}" ] || version=
+  fi
+
+  if [ -z "${version}" ]; then
+    local -a installs
+    installs=($(echo /usr/local/texlive/20*(/N)))
+
+    (( ${#installs} )) || return
+
+    version=${installs[1]}
+  fi
+
+  if (( $(basename "${version}") >= 2012 )); then
+    if zstyle -T :hzsh:plugins:mactex use-64bit; then
+      add-paths-before-if ${version%%/}/bin/x86_64-darwin
+    else
+      add-paths-before-if ${version%%/}/bin/universal-darwin
+    fi
+  else
+    add-paths-before-if ${version%%/}/bin
+  fi
+}

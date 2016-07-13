@@ -1,0 +1,484 @@
+#autoload -U
+# austin2 prompt theme
+
+autoload -U zgitinit && zgitinit && zgit_start_hooks
+
+function prompt_austin2_help()
+{
+  cat <<'EOF'
+prompt austin [options]
+
+Options
+-------
+  [no]right     Show the right-hand prompt.
+  [no]verbose   Include "verbose" information.
+  [no]unicode   Include Unicode characters.
+  [no]vcsinfo   Use zsh's vcs_info zstyle.
+EOF
+}
+
+function __prompt_austin2_colors()
+{
+  __austin2_colors=(
+    default           "%{${fg[default]}%}"
+    date              "%{${fg[cyan]}%}"
+    time              "%{${fg[blue]}%}"
+    host              "%{${fg[green]}%}"
+    user              "%{${fg[cyan]}%}"
+    punc              "%{${fg[yellow]}%}"
+    line              "%{${fg[magenta]}%}"
+    hist              "%{${fg[green]}%}"
+    path              "%{${fg[cyan]}%}"
+    shortpath         "%{${fg[default]}%}"
+    rc_clean          "%{${fg[green]}%}"
+    rc_dirty          "%{${fg[red]}%}"
+    vcs_branch        "%{${fg[cyan]}%}"
+    vcs_commitid      "%{${fg[yellow]}%}"
+    vcs_status_dirty  "%{${fg[red]}%}"
+    vcs_status_staged "%{${fg[green]}%}"
+    \#                "%{%(!.${fg[red]}.${fg[yellow]})%}"
+    reset             "%{${fg[default]}%}"
+  )
+}
+
+function __prompt_austin2_vcsnames()
+{
+  if ${__austin2_options[unicode]}; then
+    __austin2_vcsnames=(
+      bzr             "bzr"
+      cdv             "cdv"
+      cvs             "cvs"
+      darcs           "darcs"
+      git             "±"
+      hg              "☿"
+      git-p4          "±p₄"
+      git-svn         "±svn"
+      hg-git          "☿±"
+      hg-hgsubversion "☿svn"
+      hg-hgsvn        "☿svn"
+      mtn             "mtn"
+      p4              "p₄"
+      svk             "svk"
+      svn             "svn"
+      tla             "tla"
+    )
+  elif ${__austin2_options[vcsinfo]}; then
+    __austin2_vcsnames=(
+      bzr             "%s"
+      cdv             "%s"
+      cvs             "%s"
+      darcs           "%s"
+      git             "%s"
+      hg              "%s"
+      git-p4          "%s"
+      git-svn         "%s"
+      hg-git          "%s"
+      hg-hgsubversion "%s"
+      hg-hgsvn        "%s"
+      mtn             "%s"
+      p4              "%s"
+      svk             "%s"
+      svn             "%s"
+      tla             "%s"
+    )
+  else
+    __austin2_vcsnames=(
+      bzr             "bzr"
+      cdv             "cdv"
+      cvs             "cvs"
+      darcs           "darcs"
+      git             "git"
+      hg              "hg"
+      git-p4          "git-p4"
+      git-svn         "git-svn"
+      hg-git          "hg-git"
+      hg-hgsubversion "hg-svn"
+      hg-hgsvn        "hg-svn"
+      mtn             "mtn"
+      p4              "p4"
+      svk             "svk"
+      svn             "svn"
+      tla             "tla"
+    )
+  fi
+}
+
+function __prompt_austin2_formats()
+{
+  __austin2_formats=(
+    date              "${__austin2_colors[date]}%D{%Y-%m-%d}${__austin2_colors[reset]}"
+    time              "${__austin2_colors[time]}%D{%T}${__austin2_colors[reset]}"
+    host              "${__austin2_colors[host]}%m${__austin2_colors[reset]}"
+    user              "${__austin2_colors[user]}%n${__austin2_colors[reset]}"
+    punc              ""
+    line              "${__austin2_colors[line]}%l${__austin2_colors[reset]}"
+    hist              "${__austin2_colors[hist]}%h${__austin2_colors[reset]}"
+    path              "${__austin2_colors[path]}%(2~.%~.%/)${__austin2_colors[reset]}"
+    shortpath         "${__austin2_colors[shortpath]}%1~${__austin2_colors[reset]}"
+    rc                "%(?.${__austin2_colors[rc_clean]}(%?%)${__austin2_colors[reset]}.${__austin2_colors[rc_dirty]}(%?%)${__austin2_colors[reset]})"
+    vcs_branch        "${__austin2_colors[vcs_branch]}%b${__austin2_colors[reset]}"
+    vcs_action        "${__austin2_colors[vcs_action]}%a${__austin2_colors[reset]}"
+    vcs_name          "${__austin2_colors[vcs_name]}%s${__austin2_colors[reset]}"
+    vcs_commitid      ""
+    vcs_status_dirty  "${__austin2_colors[vcs_status_dirty]}%u${__austin2_colors[reset]}"
+    vcs_status_staged "${__austin2_colors[vcs_status_staged]}%c${__austin2_colors[reset]}"
+    \#                "${__austin2_colors[#]}%#${__austin2_colors[reset]}"
+    _aformat          "%c%u[%s %b|%a]"
+    _format           "%c%u[%s %b]"
+  )
+
+  if ${__austin2_options[unicode]}; then
+    __austin2_formats[#]="${__austin2_colors[#]}%(!.☢.‣)${__austin2_colors[reset]}"
+    __austin2_formats[rc]="%(?,%{${__austin2_colors[rc_clean]}%}☺%{${__austin2_colors[reset]}%},%{${__austin2_colors[rc_dirty]}%}☹%{${__austin2_colors[reset]}%})"
+  fi
+
+  if ${__austin2_options[vcsinfo]}; then
+    if ${__austin2_options[unicode]}; then
+      zstyle ':vcs_info:*:prompt:*' unstagedstr '✗'
+      zstyle ':vcs_info:*:prompt:*' stagedstr '✓'
+    else
+      zstyle ':vcs_info:*:prompt:*' unstagedstr '?'
+      zstyle ':vcs_info:*:prompt:*' stagedstr '!'
+    fi
+
+    zstyle ':vcs_info:*:prompt:*' check-for-changes true
+
+    for vcs (${(k)__austin2_vcsnames}); do
+      zformat -f _name "${__austin2_formats[vcs_name]}" "s:${__austin2_vcsnames[${vcs}]}"
+      zformat -f _aformat "${__austin2_formats[_aformat]}" \
+        "c:${__austin2_formats[vcs_status_staged]}" \
+        "u:${__austin2_formats[vcs_status_dirty]}" \
+        "s:${_name}" \
+        "b:${__austin2_formats[vcs_branch]}" \
+        "a:${__austin2_formats[vcs_action]}"
+
+      zformat -f _format "${__austin2_formats[_aformat]}" \
+        "c:${__austin2_formats[vcs_status_staged]}" \
+        "u:${__austin2_formats[vcs_status_dirty]}" \
+        "s:${_name}" \
+        "b:${__austin2_formats[vcs_branch]}"
+
+      zstyle ":vcs_info:${vcs}:prompt:*" actionformats "${_aformat}"
+      zstyle ":vcs_info:${vcs}:prompt:*" formats "${_format}"
+    done
+  fi
+}
+
+function __prompt_austin2_declare()
+{
+  declare -Ag __austin2_colors
+  declare -Ag __austin2_vcsnames
+  declare -Ag __austin2_formats
+  declare -Ag __austin2_options
+  declare -ag __austin2_style
+}
+
+function __git_revstring()
+{
+  git describe --tags --always ${1} 2>/dev/null ||
+    git rev-parse --short ${1} 2>/dev/null
+}
+
+function __format_austin_prompt()
+{
+  local output
+  zformat -f output "${@}" \
+    "H:${__austin2_formats[host]}" \
+    "P:${__austin2_formats[path]}" \
+    "R:${__austin2_formats[rc]}" \
+    "F:${__austin2_formats[hist]}" \
+    "S:${__austin2_formats[shortpath]}" \
+    "B:\$(prompt_austin2_vcs_branch)" \
+    "C:${__austin2_formats[#]}" \
+    "D:${__austin2_formats[date]}" \
+    "T:${__austin2_formats[time]}" \
+    "U:${__austin2_formats[user]}" \
+    "L:${__austin2_formats[line]}"
+  echo "${output}"
+}
+
+function prompt_austin2_setup()
+{
+  __prompt_austin2_declare
+  __prompt_austin2_options "${@}"
+  __prompt_austin2_colors
+  __prompt_austin2_vcsnames
+  __prompt_austin2_formats
+
+  # Left-hand Prompt
+  local __lprompt=
+  case ${(pj::)__austin2_style} in
+    ?1??) # right, novcsinfo
+      __lprompt="%P
+%R %F %C"
+      ;;
+    ?0?0) # No right, verbose, novcsinfo
+      __lprompt="%P \$(prompt_austin2_git_status)
+%R %F %C"
+      ;;
+    ?0?1) # No right, verbose, vcsinfo
+      __lprompt="%P \${vcs_info_msg_0_}
+%R %F %C"
+      ;;
+  esac
+
+  # Right-hand prompt
+  local __rprompt=
+  case ${(pj::)__austin2_style} in
+    ?100) # right, noverbose, novcsinfo
+      __rprompt="\$(prompt_austin2_git_status)"
+      ;;
+    ?101) # right, noverbose, vcsinfo
+      __rprompt="\${vcs_info_msg_0_}"
+      ;;
+    ?110) # right, verbose, novcsinfo
+      __rprompt="%D %T \$(prompt_austin2_git_status)"
+      ;;
+    ?111) # right, verbose, vcsinfo
+      __rprompt="%D %T \${vcs_info_msg_0_}"
+      ;;
+  esac
+
+  if [ -n "${__lprompt}" ]; then
+    PROMPT=$(__format_austin_prompt "${__lprompt}")$'\u00a0'
+  else
+    unset PROMPT
+  fi
+
+  if [ -n "${__rprompt}" ]; then
+    RPROMPT=$(__format_austin_prompt "${__rprompt}")
+  else
+    unset RPROMPT
+  fi
+
+  export PROMPT RPROMPT
+
+  if is-at-least 4.3.9; then
+    add-zsh-hook precmd prompt_austin2_precmd
+    # add-zsh-hook preexec prompt_austin2_preexec
+  else
+    # preexec_functions+=(prompt_austin2_preexec)
+    precmd_functions+=(prompt_austin2_precmd)
+    typeset -U precmd_functions preexec_functions
+  fi
+}
+
+function prompt_austin2_preexec()
+{
+  if [[ "${TERM}" == "screen" ]]; then
+    local CMD=${1[(wr)^(*=*|sudo|-*)]}
+    echo -n "\ek${CMD}\e\\"
+  fi
+}
+
+function prompt_austin2_precmd()
+{
+  if ${__austin2_options[vcsinfo]}; then
+    vcs_info 'prompt'
+    return
+  fi
+
+  local ex=$?
+  psvar=()
+
+  if [[ ${ex} -ge 128 ]]; then
+    sig=${signals[${ex}-127]}
+    psvar[1]="sig${(L)sig}"
+  else
+    psvar[1]="${ex}"
+  fi
+
+  local TERMWIDTH
+  (( TERMWIDTH = ${COLUMNS} - 1 ))
+
+  # Truncate the path if it's too long.
+  PR_FILLBAR=""
+  PR_PWDLEN=""
+
+  local promptsize=${#${(%):---(%n@%m:%l)---()--}}
+  local pwdsize=${#${(%):-%~}}
+
+  if [[ "${promptsize} + ${pwdsize}" -gt ${TERMWIDTH} ]]; then
+    ((PR_PWDLEN=${TERMWIDTH} - ${promptsize}))
+  else
+    PR_FILLBAR="\${(l.((${TERMWIDTH} - (${promptsize} + ${pwdsize})))..${PR_HBAR}.)}"
+  fi
+}
+
+function prompt_austin2_git_status()
+{
+  zgit_isgit || return
+
+  head=$(zgit_head)
+  gitcommit=$(__git_revstring ${head})
+
+  local -a commits
+
+  if zgit_rebaseinfo; then
+    orig_commit=$(__git_revstring ${zgit_info[rb_head]})
+    orig_name=$(git name-rev --name-only ${zgit_info[rb_head]})
+    orig="${__austin2_colors[vcs_branch]}${orig_name}${__austin2_colors[punc]}(${__austin2_colors[vcs_commitid]}${orig_commit}${__austin2_colors[punc]})"
+    onto_commit=$(__git_revstring ${zgit_info[rb_onto]})
+    onto_name=$(git name-rev --name-only ${zgit_info[rb_onto]})
+    onto="${__austin2_colors[vcs_branch]}${onto_name}${__austin2_colors[punc]}(${__austin2_colors[vcs_commitid]}${onto_commit}${__austin2_colors[punc]})"
+
+    if [ -n "${zgit_info[rb_upstream]}" ] && [ ${zgit_info[rb_upstream]} != ${zgit_info[rb_onto]} ]; then
+      upstream_commit=$(__git_revstring ${zgit_info[rb_upstream]})
+      upstream_name=$(git name-rev --name-only ${zgit_info[rb_upstream]})
+      upstream="${__austin2_colors[vcs_branch]}${upstream_name}${__austin2_colors[punc]}(${__austin2_colors[vcs_commitid]}${upstream_commit}${__austin2_colors[punc]})"
+      commits+="rebasing ${upstream}${__austin2_colors[reset]}..${orig}${__austin2_colors[reset]} onto ${onto}${__austin2_colors[reset]}"
+    else
+      commits+="rebasing ${onto}${__austin2_colors[reset]}..${orig}${__austin2_colors[reset]}"
+    fi
+
+    local -a revs
+    revs=($(git rev-list ${zgit_info[rb_onto]}..HEAD))
+    if [ $#revs -gt 0 ]; then
+      commits+="\n$#revs commits in"
+    fi
+
+    if [ -f ${zgit_info[dotest]}/message ]; then
+      mess=$(head -n1 ${zgit_info[dotest]}/message)
+      commits+="on ${mess}"
+    fi
+  elif [ -n "${gitcommit}" ]; then
+    commits+="on ${__austin2_colors[vcs_branch]}${head}${__austin2_colors[punc]}(${__austin2_colors[vcs_commitid]}${gitcommit}${__austin2_colors[punc]})${__austin2_colors[reset]}"
+    local track_merge=$(zgit_tracking_merge)
+    if [ -n "${track_merge}" ]; then
+      if git rev-parse --verify -q ${track_merge} >/dev/null; then
+        local track_remote=$(zgit_tracking_remote)
+        local tracked=$(__git_revstring ${track_merge} 2>/dev/null)
+
+        local -a revs
+        revs=($(git rev-list --reverse ${track_merge}..HEAD))
+        if [ $#revs -gt 0 ]; then
+          local base=$(__git_revstring ${revs[1]}~1)
+          local base_name=$(git name-rev --name-only ${base})
+          local base_short=$(__git_revstring ${base})
+          local word_commits
+          if [ $#revs -gt 1 ]; then
+            word_commits='commits'
+          else
+            word_commits='commit'
+          fi
+
+          local conj="since"
+          if [[ "${base}" == "${tracked}" ]]; then
+            conj+=" tracked"
+            tracked=
+          fi
+          commits+="$#revs ${word_commits} ${conj} ${__austin2_colors[vcs_branch]}${base_name}${__austin2_colors[punc]}(${__austin2_colors[vcs_commitid]}${base_short}${__austin2_colors[punc]})${__austin2_colors[reset]}"
+        fi
+
+        if [ -n "${tracked}" ]; then
+          local track_name=${track_merge}
+          if [[ ${track_remote} == "." ]]; then
+            track_name=${track_name##*/}
+          fi
+          tracked=$(__git_revstring ${tracked})
+          commits+="tracking ${__austin2_colors[vcs_branch]}${track_name}${__austin2_colors[punc]}"
+          if [[ "${tracked}" != "${gitcommit}" ]]; then
+            commits[$#commits]+="(${__austin2_colors[vcs_commitid]}${tracked}${__austin2_colors[punc]})"
+          fi
+          commits[$#commits]+="${__austin2_colors[reset]}"
+        fi
+      fi
+    fi
+  fi
+
+  gitsvn=$(git rev-parse --verify -q --short git-svn)
+  if [ $? -eq 0 ]; then
+    gitsvnrev=$(zgit_svnhead ${gitsvn})
+    gitsvn=$(__git_revstring ${gitsvn})
+    if [ -n "${gitsvnrev}" ]; then
+      local svninfo=''
+      local -a revs
+      svninfo+="${__austin2_colors[default]}svn${__austin2_colors[punc]}:${__austin2_colors[vcs_branch]}r${gitsvnrev}"
+      revs=($(git rev-list git-svn..HEAD))
+      if [ $#revs -gt 0 ]; then
+        svninfo+="${__austin2_colors[punc]}@${__austin2_colors[default]}HEAD~$#revs"
+        svninfo+="${__austin2_colors[punc]}(${__austin2_colors[vcs_commitid]}${gitsvn}${__austin2_colors[punc]})"
+      fi
+      commits+=${svninfo}
+    fi
+  fi
+
+  if [ $#commits -gt 0 ]; then
+    echo -n " ${(j: :)commits}"
+  fi
+}
+
+function prompt_austin2_vcs_branch()
+{
+  zgit_isgit || return
+
+  echo -n "${__austin2_colors[punc]}:${__austin2_colors[vcs_branch]}$(zgit_head)"
+
+  if zgit_inworktree; then
+    if not zgit_isindexclean; then
+      echo -n "${__austin2_colors[vcs_status_staged]}+"
+    fi
+
+    local -a dirty
+    if not zgit_isworktreeclean; then
+      dirty+='!'
+    fi
+
+    if zgit_hasunmerged; then
+      dirty+='*'
+    fi
+
+    if zgit_hasuntracked; then
+      dirty+='?'
+    fi
+
+    if [ $#dirty -gt 0 ]; then
+      echo -n "${__austin2_colors[vcs_status_dirty]}${(j::)dirty}"
+    fi
+  fi
+
+  echo ${__austin2_colors[reset]}
+}
+
+function __prompt_austin2_options()
+{
+  local -A options
+  options=(
+    right   true
+    verbose true
+    unicode true
+    vcsinfo true
+  )
+
+  if [[ ${TERM} == screen* ]] && [ -n "${STY}" ]; then
+    options[verbose]=true
+  fi
+
+  if not is-at-least 4.3.6; then
+    options[vcsinfo]=false
+  fi
+
+  for arg (${@}); do
+    case ${arg} in
+      no*)  options[${arg/no/}]=false ;;
+      no_*) options[${arg/no_/}]=false ;;
+      *)    options[${arg}]=true ;;
+    esac
+  done
+
+  __austin2_options=(${(kv)options})
+  __austin2_style=(0 0 0 0)
+
+  ${__austin2_options[unicode]}  && __austin2_style[1]=1
+  ${__austin2_options[right]}    && __austin2_style[2]=1
+  ${__austin2_options[verbose]}  && __austin2_style[3]=1
+  ${__austin2_options[vcsinfo]}  && __austin2_style[4]=1
+}
+
+prompt_austin2_setup "$@"
+
+# Soliah:
+# __format_austin_prompt \
+  #   '%{$fg[blue]%}%{$bold_color%}%20~%{$reset_color%}(%{$fg[green]%}$(zgit_head)%{$reset_color%}<STATUS>) $ '
+#
+# Note: need to consider porting STATUS from git.zsh

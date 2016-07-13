@@ -1,0 +1,3 @@
+#autoload -U
+
+grep -hs $(date +"%m/%d") /usr/share/calendar/*

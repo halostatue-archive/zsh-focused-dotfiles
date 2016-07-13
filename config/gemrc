@@ -1,0 +1,16 @@
+---
+backtrace: false
+benchmark: false
+bulk_threshold: 1000
+gem: --ri --no-rdoc
+update_sources: true
+verbose: true
+sources:
+  - https://rubygems.org/
+% if user_data_lookup 'rubygems.extra_sources'
+%   user_data_lookup('rubygems.extra_sources').each do |source|
+  - <%= source %>
+% end
+% end
+
+# vim: ft=yaml

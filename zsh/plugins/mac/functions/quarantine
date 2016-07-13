@@ -1,0 +1,25 @@
+#autoload -U
+
+local -a databases
+databases=( ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* )
+
+local cmd=${1:l} db
+
+[[ -z "${cmd}" ]] && cmd=show
+
+case "${cmd}" in
+  show)
+    for db (${databases}); do
+      sqlite3 "${db}" "SELECT LSQuarantineAgentName, LSQuarantineDataURLString FROM LSQuarantineEvent WHERE LSQuarantineDataURLString != '' ORDER BY LSQuarantineAgentName, LSQuarantineDataURLString"
+    done
+    ;;
+  clear)
+    for db (${database}); do
+      sqlite3 "${db}" "DELETE LSQuarantineAgentName, LSQuarantineDataURLString FROM LSQuarantineEvent"
+    done
+    ;;
+  *)
+    echo >&2 "Unknown command ${1}. Use 'show' or 'clear'"
+    return 1
+    ;;
+esac

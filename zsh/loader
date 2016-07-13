@@ -1,0 +1,89 @@
+#! /bin/zsh
+
+export __hzsh_loader_mode=${1:-zshrc}
+function --hzsh-loader-mode()
+{
+  [ "${__hzsh_loader_mode}" = "${1}" ]
+}
+
+# WARNING: This file should *not* be edited unless you understand how the whole
+# hzsh system works.
+
+# Set up some core functionality that will be used to power absolutely
+# everything else.
+setopt extended_glob
+zmodload zsh/parameter
+
+# We need to know some standard paths relative to the root of the dotfiles
+# directory this is set up in. Because we know this file is always
+# ROOT/zsh/loader, we can start trimming from this file.
+#
+#   dotfile_root  ROOT            Where all files in the dotfiles live.
+#   zsh_root      ROOT/zsh        Where the main zsh files live. This excludes
+#                                 pure dotfiles (~/.zshrc -> ROOT/zshrc and
+#                                 ~/.zlogin -> ROOT/zlogin).
+#   package_root  ROOT/packages   Where some dotfile-installed packages reside
+#                                 providing functionality we want (through
+#                                 plug-in operations, see the README in
+#                                 zsh_root/plugins).
+#
+# Because these variables are internal, they are prefixed with '__hzsh_'.
+export __hzsh_zsh_root=$(builtin echo ${0}(:A:h))
+export __hzsh_dotfile_root=$(builtin echo ${__hzsh_zsh_root}(:h))
+export __hzsh_package_root="${__hzsh_dotfile_root}/packages"
+export __hzsh_plugins_path="${__hzsh_zsh_root}/plugins"
+
+# Show a warning if we don't meet the minimum required version. Note that
+# because anonymous functions were introduced in zsh 4.3.7, the rest of the
+# hzsh system is pretty much guaranteed to crash and burn because the scriptlet
+# and the plugin loaders are implemented as anonymous functions.
+source ${__hzsh_zsh_root}/version-warning
+
+# While the hzsh system is moving most of the functionality away from this
+# init.d-like scriptlet setup that Bart Trajanowski created, there is still
+# great value in having it present because some things need to be done *first*.
+source ${__hzsh_zsh_root}/zsh.d/loader
+
+# Load the local init if it exists.
+hzsh-source-if ${HOME}/.zsh-local/init
+hzsh-source-if ${HOME}/.zshrc-local init
+
+# Load local settings/overrides for plugins prior to loading the plugins, then
+# load the plug-ins.
+hzsh-source-if ${HOME}/.zsh-local/plugin-settings
+hzsh-source-if ${HOME}/.zshrc-local plugin-settings
+source ${__hzsh_plugins_path}/loader
+
+# Finalize the local initialization.
+hzsh-source-if ${HOME}/.zsh-local/finalize
+hzsh-source-if ${HOME}/.zshrc-local finalize
+
+# Use 'command-not-found' on platforms where it's installed.
+[ -f /etc/zsh_command_not_found ] && source /etc/zsh_command_not_found
+
+# This removes duplicates from PATH, MANPATH, and FPATH
+typeset -U path manpath fpath cdpath
+
+unfunction hzsh-source-if
+
+function()
+{
+  --hzsh-loader-mode zshrc || return 0
+  autoload -U $^fpath/*(N.:t)
+  autoload -Uz compinit && compinit
+
+  setopt prompt_subst
+  autoload -U promptinit && promptinit
+
+  local prompt_name
+  zstyle -s :hzsh:prompt name prompt_name
+  local -a prompt_options
+  zstyle -a :hzsh:prompt options prompt_options
+  prompt ${prompt_name} ${prompt_options}
+}
+
+unset __hzsh_loader_mode
+unfunction -- --hzsh-loader-mode
+
+# Make sure our default prompt shows success.
+true

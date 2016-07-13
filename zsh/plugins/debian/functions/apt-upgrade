@@ -1,0 +1,11 @@
+#autoload -U
+
+if [[ -z "${1}" ]]; then
+  sudo apt-get update
+  sudo apt-get -u upgrade
+else
+  ssh ${1} "sudo apt-get update; sudo apt-get --no-act upgrade"
+  if read -q \?"Process the upgrade on ${1}? "; then
+    ssh ${1} "sudo apt-get -u upgrade --yes"
+  fi
+fi

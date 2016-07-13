@@ -1,0 +1,62 @@
+#!/bin/zsh
+
+# Make the dirstack more persitent. Yanked from oh-my-zsh
+# (dirpersist.plugin.zsh) and made more to my liking as a hzsh plugin.
+#
+# Enable this plug-in by putting it in ':hzsh:plugins enabled' or setting
+# ':hzsh:plugins:dirpersist enabled' to 'yes'.
+#
+# Enabling this plug-in may change some default setopt options: autopushd,
+# pushdminus, pushdsilent, pushdtohome, and pushdignoredups must be set. This
+# also changes DIRSTACKSIZE as noted below.
+#
+# This plug-in does nothing unless the shell it's in is interactive.
+#
+# zstyle options:
+#   :hzsh:plugins:dirpersist dirstack-size
+#       Sets DIRSTACKSIZE. Defaults to 10.
+#
+#   :hzsh:plugins:dirpersist cache-file
+#       Sets an explicit dirpersist cache file. The default here
+#       depends on whether :hzsh use-cache is turned on. When it
+#       is, the default is <hzsh-cache-path>/dirstore. When it
+#       isn't, the default is ${HOME}/.zdirstore.
+
+is-interactive || return 0
+
+function()
+{
+  # These options must be used if using dirpersist
+  setopt autopushd pushdminus pushdsilent pushdtohome pushdignoredups
+
+  local param
+  zstyle -s :hzsh:plugins:dirpersist dirstack-size param
+  export DIRSTACKSIZE=${param:-10}
+
+  zstyle -s :hzsh:plugins:dirpersist cache-file param
+
+  if --hzsh-is-caching; then
+    export __hzsh_dirpersist_cache=${param:-$(--hzsh-cache-path)}
+  else
+    export __hzsh_dirpersist_cache=${param:-${HOME}/.zdirstore}
+  fi
+
+  local -i count=0
+  [ -f ${HOME}/.zlogout ] && count=$(grep -c 'dirpersist-store' ${HOME}/.zlogout)
+
+  if [ ${count} -eq 0 ]; then
+    if read -q \?"Would you like to set up your .zlogout for use with dirpersist? (y/n) "; then
+      cat >> ${HOME}/.zlogout <<EOS
+
+# Store the directory stack for use next time. See zsh/plugins/dirpersist for
+# details.
+dirpersist-store
+EOS
+    else
+      echo "\nIf you don't want this message to appear, disable the dirpersist plug-in."
+    fi
+  fi
+}
+
+autoload -U dirpersist-restore
+dirpersist-restore

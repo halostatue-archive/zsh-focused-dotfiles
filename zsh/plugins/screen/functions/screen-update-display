@@ -1,0 +1,4 @@
+#autoload -U
+
+# Read out the X environment variables
+[ -r ${HOME}/.display.${HOSTNAME} ] && source ${HOME}/.display.${HOSTNAME}

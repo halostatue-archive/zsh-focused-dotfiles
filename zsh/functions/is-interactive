@@ -1,0 +1,4 @@
+#autoload -u
+
+zmodload zsh/parameter
+[[ ${options[interactive]} = "on" ]]

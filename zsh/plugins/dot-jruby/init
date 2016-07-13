@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+add-paths-before-if ${HOME}/.jruby/bin

@@ -1,0 +1,4 @@
+---
+github.com:
+- user: <%= user_data_lookup 'github.user' %>
+  oauth_token: <%= user_data_lookup 'github.oauth_token' %>

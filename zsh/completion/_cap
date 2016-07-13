@@ -1,0 +1,11 @@
+#compdef cap
+
+# Shows Capistrano tasks.
+if [ -f Capfile ]; then
+  recent=$(last-modified .cap_tasks~ Capfile **/deploy.rb)
+  if [[ $recent != '.cap_tasks~' ]]; then
+    cap --tasks | grep '#' | cut -d " " -f 2 > .cap_tasks~
+    # cap show_tasks -q | cut -d " " -f 1 | sed -e '/^ *$/D' -e '1,2D'
+  fi
+  compadd $(cat .cap_tasks~)
+fi

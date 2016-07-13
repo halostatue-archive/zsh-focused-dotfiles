@@ -1,0 +1,3 @@
+#autoload -U
+
+pmset -g batt | awk '/InternalBattery/ { print $2 }' | sed 's/;//'

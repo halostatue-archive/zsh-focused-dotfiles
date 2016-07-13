@@ -1,0 +1,15 @@
+# General SSH configuration
+ForwardAgent yes
+HashKnownHosts no
+UseRoaming no
+ServerAliveCountMax 6
+ServerAliveInterval 30
+
+# Default
+# Host *
+#     #User username
+#     StrictHostKeyChecking ask
+#     ControlMaster auto
+#     ControlPath ~/.ssh/master/%r@%h:%p
+
+<%= include_user_files %>

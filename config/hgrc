@@ -1,0 +1,45 @@
+[ui]
+ssh = ssh -C
+username = <%= user_data_lookup "name" %> <<%= user_data_lookup "email" %>>
+style = compact
+
+[extensions]
+hgext.bookmarks =
+hgext.extdiff =
+hgext.churn =
+hgext.color =
+hgext.graphlog =
+hgext.progress =
+hgext.purge =
+hgext.schemes =
+<%= when_path_exist?(packages_file("hgfold/fold.py")) { "fold = {PATH}" } %>
+<%= when_path_exist?(packages_file("hggit/hggit")) { "hggit = {PATH}" } %>
+
+[schemes]
+gh = git://github.com/
+gh+ssh = git+ssh://git@github.com/
+
+[paths]
+rp-canon = bb+ssh://raineszm/rubypython
+my-rp = bb+ssh://halostatue/rubypython
+rp-github = gh+ssh://halostatue/rubypython.git
+
+[extdiff]
+opts.gvimdiff = -f '+next' '+execute "DirDiff" argv(0) argv(1)'
+
+[alias]
+slog = log --template '{rev}:{node|short} {desc|firstline}\n'
+show = log --color=always -pr
+
+[color]
+status.added = green bold
+status.removed = red bold
+
+[defaults]
+outgoing = --style compact -v
+incoming = --style compact -v
+heads = --template '{rev}:{node|short}({branches}) {desc|firstline}\n'
+qseries = -s
+
+<%= include_platform_files %>
+<%= include_user_files %>

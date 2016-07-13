@@ -1,0 +1,4 @@
+#autoload -u
+
+local ppidsshd="$(ps x | grep "${PPID}" | grep sshd | grep -v grep)"
+[ -z "${ppidsshd}" ] && return 1 || return 0

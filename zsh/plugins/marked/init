@@ -1,0 +1,16 @@
+#! /bin/zsh
+
+function() {
+  local p n a
+
+  for p ({,~}/Applications); do
+    for n ("Marked" "Marked 2"); do
+      a=$(echo ${p}/${n}.app(NA))
+      if [ -n "${a}" ]; then
+        export __hzsh_marked_path=${a}
+        compdef '_open' mark
+        break
+      fi
+    done
+  done
+}

@@ -1,0 +1,99 @@
+#! /usr/bin/env zsh
+
+if (( ${UID} == 0 )); then
+  builtin printf "halozsh cannot be run as root.\n" >&2
+  exit 1
+fi
+
+unset REPORTTIME
+
+printed_version=false
+export HALOZSH_VERSION=0.9
+
+export HALOZSH_BN0=$(builtin echo ${0}(:t))
+export HALOZSH_DN0=$(builtin cd $(builtin echo ${0}(:h)); builtin pwd -P)
+export HALOZSH_ROOT=$(builtin echo ${HALOZSH_DN0}(:h))
+export HALOZSH_BIN=${HALOZSH_ROOT}/bin
+export HALOZSH_LIB=${HALOZSH_ROOT}/lib
+export HALOZSH_LIBEXEC=${HALOZSH_ROOT}/lib/exec
+
+source ${HALOZSH_LIB}/halozsh_core.zsh
+
+path+=(${HALOZSH_BIN} ${HALOZSH_LIBEXEC})
+
+if [ ${#} -eq 0 ]; then
+  cmd=commands
+else
+  cmd=${1}
+  shift
+fi
+
+halozsh-version() {
+  ${printed_version} && return
+  builtin printf "${HALOZSH_BN0} v${HALOZSH_VERSION}\n"
+  printed_version=true
+}
+
+halozsh-commands() {
+  halozsh-version
+
+  local -a cmds
+
+  for cmd ($(builtin whence -m 'halozsh-*')); do
+    c=$(builtin echo ${cmd}(N:t))
+    (( ${#c} )) && cmd=${c}
+    cmds+=(${cmd/halozsh-/})
+  done
+
+  builtin printf "\nCommands:\n"
+  builtin printf "\t%s\n" ${(ui)cmds}
+}
+
+halozsh-bootstrap() {
+  builtin printf "Bootstrapping halozsh…\n"
+  --halozsh-install-rake
+  --halozsh-install-highline
+
+  # rake _${rake_version}_ package:install:defaults
+  # rake _${rake_version}_ setup
+  # rake _${rake_version}_ install
+}
+
+halozsh-files() {
+  halozsh-tasks file: | sed -e 's/^file://'
+}
+
+halozsh-file() {
+  if [ -n "${1}" ]; then
+    --halozsh-rake file:${1}
+  else
+    halozsh-files
+  fi
+}
+
+halozsh-install() {
+  --halozsh-rake ${${1##-}##-} install
+}
+
+halozsh-rake() {
+  if [ ${#@} -eq 0 ]; then
+    halozsh-tasks
+  else
+    --halozsh-rake ${@}
+  fi
+}
+
+cd ${HALOZSH_ROOT}
+
+--halozsh-gem-setup
+
+if --halozsh-has-function ${cmd}; then
+  halozsh-${cmd} "${@}"
+elif --halozsh-has-command ${cmd}; then
+  exec halozsh-${cmd} "${@}"
+else
+  halozsh-version >&2
+  builtin printf >&2 "\nUnknown command '${HALOZSH_BN0} ${cmd}'.\n"
+  halozsh-commands >&2
+  exit 1
+fi

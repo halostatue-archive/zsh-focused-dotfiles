@@ -1,0 +1,76 @@
+#! zsh
+
+function --insecure-ssh-operation()
+{
+  local -a keynames keys
+  local -A keyfiles
+
+  zstyle -a :hzsh:plugins:insecure-ssh user-keys keyfiles
+
+  builtin zparseopts -D -E -K \
+    ${^${(k)keyfiles}}=keynames \
+    -${^${(k)keyfiles}}=keynames \
+    key:=keys -key:=keys
+
+  local key keyfile
+
+  for key (${keys}); do
+    if [ -f "${key}" ]; then
+      keyfile="${key}"
+      break
+    fi
+  done
+  key=
+
+  if [ -z "${keyfile}" ]; then
+    for key (${(k)keyfiles}); do
+      if [[ ${keynames[(i)-${key}]} -le ${#keynames} ]] ||
+        [[ ${keynames[(i)--${key}]} -le ${#keynames} ]]; then
+        keyfile="${keyfiles[${key}]}"
+        break
+      fi
+
+      key=
+    done
+  fi
+
+  local -a command_line
+  command_line=(-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no)
+
+  if [ -n "${key}" ]; then
+    local -A params
+
+    if [[ ${argv[1]} == 'ssh' ]]; then
+      zstyle -a :hzsh:plugins:insecure-ssh user-logins params
+
+      if [ -n "${params[${key}]}" ]; then
+        command_line=(${command_line} -l "${params[${key}]}")
+      fi
+    fi
+
+    zstyle -a :hzsh:plugins:insecure-ssh user-ports params
+    if [ -n "${params[${key}]}" ]; then
+      port=-p
+      [[ ${argv[1]} == 'scp' ]] && port=-P
+      command_line=(${command_line} ${port} "${params[${key}]}")
+    fi
+  fi
+
+  if [ -n "${keyfile}" ]; then
+    command_line=(${command_line} -o IdentitiesOnly=yes -i "${keyfile}")
+  fi
+
+  command ${argv[1]} ${command_line} ${(q)argv[2,-1]}
+}
+
+function pssh()
+{
+  --insecure-ssh-operation ssh "${@}"
+}
+compdef pssh=ssh
+
+function pscp()
+{
+  --insecure-ssh-operation scp "${@}"
+}
+compdef pscp=scp

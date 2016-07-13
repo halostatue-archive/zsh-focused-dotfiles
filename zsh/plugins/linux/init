@@ -1,0 +1,25 @@
+#! zsh
+
+# purge all cached data
+if [ -f /proc/sys/vm/drop_caches ]; then
+  function dropcaches()
+  {
+    sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
+  }
+fi
+
+if [ -d /proc ]; then
+  function sortmapsfor()
+  {
+    # this sorts /proc/<pid>/maps
+    test -z "$1" -o -n "$2" && { echo "sortmapsfor <pid>"; return 1; }
+    local m=/proc/$1/maps
+    test -f $m || { echo "$1 is not a valid pid"; return 1; }
+    while read a rest ; do
+      local s=${a%-*}
+      local e=${a#*-}
+      local l=$((0x$e - 0x$s))
+      printf "%10s $s-$e $rest\n" $l
+    done < $m | sort -n | cut -d ' ' -f 2-
+  }
+fi

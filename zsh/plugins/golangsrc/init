@@ -1,0 +1,46 @@
+#!/bin/zsh
+
+# Do not configure for self-installed go if it already exists in the PATH.
+has-command go && return
+
+function --go-lang-set-root()
+{
+  for d in "${@}"; do
+    if test -x "${d}"/src/all.bash; then
+      export GOROOT="${d}"
+      break
+    fi
+  done
+}
+
+function --go-lang()
+{
+  --go-lang-set-root ${GOROOT:-${HOME}/go} ${HOME}/dev/go
+
+  local -a quiet
+  quiet=()
+  zparseopts -D -K -E -a quiet quiet -quiet
+
+  add-paths-before-if ${GOROOT}/bin ${GOROOT}/libexec/bin
+
+  [ ${#quiet} -eq 0 ] && echo "golang in ${GOROOT}"
+}
+
+function goupdate()
+{
+  --go
+  pushd ${GOROOT}
+  hg pull && hg update release
+  popd
+  pushd ${GOROOT}/src
+  ./all.bash
+  popd
+  go get code.google.com/p/go.tools/cmd/...
+}
+
+function goinit()
+{
+  --go-lang "${@}"
+}
+
+--go-lang -quiet

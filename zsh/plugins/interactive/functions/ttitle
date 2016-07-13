@@ -1,0 +1,28 @@
+#autoload -U
+
+local -a use_cwd cwd_before cwd_after
+builtin zparseopts -D -E -K \
+  cwd=use_cwd -cwd=use_cwd \
+  before=cwd_before -before=cwd_before \
+  after=cwd_after -after=cwd_after
+
+local _title
+_title="${*}"
+
+if (( ${#use_cwd} + ${#cwd_before} + ${#cwd_after} )); then
+  local cwd=$(basename $(pwd))
+  if (( ${#_title} )); then
+    if (( ${#cwd_after} )); then
+      _title="${_title} ${cwd}"
+    else
+      _title="${cwd} ${_title}"
+    fi
+  else
+    _title="${cwd}"
+  fi
+fi
+
+[ -z "${_title}" ] && _title=Terminal
+
+printf "\033]0;${_title}\007"
+printf "Set terminal title to: \"${_title}\"\n"

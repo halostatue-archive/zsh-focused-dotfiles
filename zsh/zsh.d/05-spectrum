@@ -1,0 +1,28 @@
+#! /bin/zsh
+
+  # A script to make using 256 colors in zsh less painful.
+  #
+  # P.C. Shyamshankar <sykora@lucentbeing.com>
+  #
+  # Copied from http://github.com/sykora/etc/blob/master/zsh/functions/spectrum
+  # Found via oh-my-zsh.
+  #
+  # Disabled because while it's not a bad idea, I don't like the approach.
+function() {
+  #
+  # typeset -Ag FX FG BG
+  #
+  # FX=(
+  # reset     "%{\033[00m%}"
+  # bold      "%{\033[01m%}" no-bold      "%{\033[22m%}"
+  # italic    "%{\033[03m%}" no-italic    "%{\033[23m%}"
+  # underline "%{\033[04m%}" no-underline "%{\033[24m%}"
+  # blink     "%{\033[05m%}" no-blink     "%{\033[25m%}"
+  # reverse   "%{\033[07m%}" no-reverse   "%{\033[27m%}"
+  # )
+  #
+  # for color in {000..255}; do
+  #   FG[$color]="%{\033[38;5;${color}m%}"
+  #   BG[$color]="%{\033[48;5;${color}m%}"
+  # done
+}

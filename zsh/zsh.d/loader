@@ -1,0 +1,23 @@
+#! /bin/zsh
+
+function hzsh-source-if()
+{
+  [ -f "${1}" ] && source "${@}"
+}
+
+function()
+{
+  local -a scriptlets
+  scriptlets=(${__hzsh_zsh_root}/zsh.d/[0-9][0-9]*(.nN))
+
+  for scriptlet (${scriptlets}); do
+    case ${scriptlet} in
+      *DISABLED|*~)
+        :
+        ;;
+      *)
+        source ${scriptlet}
+        ;;
+    esac
+  done
+}

@@ -1,0 +1,20 @@
+[extdiff]
+cmd.ksdiff = /usr/local/bin/ksdiff
+opts.ksdiff = --changeset --wait --filelist
+cmd.gvimdiff = mvim
+
+[ui]
+merge = Kaleidoscope
+
+[merge-tools]
+Kaleidoscope.executable = /usr/local/bin/ksdiff
+Kaleidoscope.args = --merge --output $output --base $base -- $local $other
+
+[core]
+editor = mvim --remote-wait-silent
+
+[web]
+<%= when_path_exist?('/etc/hg-dummy-cert.pem') { "cacerts = /etc/hg-dummy-cert.pem" } %>
+#<%= when_path_exist?('/etc/hg-ca-roots.pem') { "cacerts = /etc/hg-ca-roots.pem" } %>
+
+# vim: syntax=cfg
