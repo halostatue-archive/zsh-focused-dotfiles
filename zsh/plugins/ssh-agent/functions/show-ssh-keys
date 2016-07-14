@@ -1,0 +1,21 @@
+#autoload -Uz
+
+COLORIZE=$(cat << _EOF_
+{
+	FS = " "; ORS = ""; OFS = "";
+	print " ${fg_bold[cyan]}",\$1,"${reset_color}\t${fg_no_bold[magenta]}",\$2,"${reset_color} ";
+	\$1 = \$2 = "";
+	OFS = " ";
+	sub("\\\(DSA\\\)",       "[_${fg_bold[red]}DSA${reset_color}_]");
+	sub("\\\(RSA\\\)",       "[_${fg_bold[red]}RSA${reset_color}_]");
+	sub("\\\(ED25519\\\)",   "[${fg_bold[green]}EdDSA${reset_color}]");
+	sub("\\\(ECDSA\\\)",     "[${fg_bold[yellow]}ECDSA${reset_color}]");
+	print \$NF," ";
+	\$NF = "";
+	print \$0,"\n";
+}
+_EOF_
+)
+
+list=$(ssh-add -l || (rm ${SSH_AUTH_SOCK}; ssh-agent -a ${SSH_AUTH_SOCK} >/dev/null 2>/dev/null && ssh-add -l))
+[ ${?} -eq 0 ] && echo ${list} | awk ${COLORIZE}

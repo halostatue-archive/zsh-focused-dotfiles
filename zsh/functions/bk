@@ -1,0 +1,6 @@
+#autoload -Uz
+
+# Make a backup of a file:
+# https://github.com/grml/grml-etc-core/blob/master/etc/zsh/zshrc
+
+cp -a "$1" "${1}_$(date --iso-8601=seconds)"

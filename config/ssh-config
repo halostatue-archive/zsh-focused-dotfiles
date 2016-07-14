@@ -13,3 +13,41 @@ ServerAliveInterval 30
 #     ControlPath ~/.ssh/master/%r@%h:%p
 
 <%= include_user_files %>
+
+# # This came from Greg V's dotfiles:
+# #      https://github.com/myfreeweb/dotfiles
+# # Feel free to steal it, but attribution is nice
+# #
+# # thanks:
+# #  http://blogs.perl.org/users/smylers/2011/08/ssh-productivity-tips.html
+# #  https://stribika.github.io/2015/01/04/secure-secure-shell.html
+
+# ControlMaster auto
+# ControlPath ~/.tmp/ssh_%r@%h:%p
+# ControlPersist 5m
+# TCPKeepAlive no
+# ServerAliveInterval 60
+# ServerAliveCountMax 10
+# HostbasedAuthentication no
+# RhostsRSAAuthentication no
+# HashKnownHosts no
+# CheckHostIP yes
+# VerifyHostKeyDNS yes
+# StrictHostKeyChecking ask
+# UseRoaming no
+
+# Host *
+# 	HashKnownHosts yes
+# 	KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256,diffie-hellman-group1-sha1
+# 	Ciphers chacha20-poly1305@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+# 	MACs umac-128-etm@openssh.com,hmac-ripemd160-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-ripemd160
+# 	HostKeyAlgorithms ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ssh-ed25519,ssh-rsa
+# 	SendEnv BASE16_SCHEME LANG LC_*
+# 	IdentityFile ~/.ssh/%u@%h
+# 	# PKCS11Provider libsimple-tpm-pk11.so
+
+# Host *.onion
+# 	ProxyCommand socat - SOCKS4A:localhost:%h:%p,socksport=9050
+
+# Host *.local
+# 	ForwardAgent yes

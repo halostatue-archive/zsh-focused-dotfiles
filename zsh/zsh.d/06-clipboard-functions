@@ -2,18 +2,29 @@
 
 # Provide platform-neutral functions to copy to or paste from the clipboard.
 
-function()
 {
   if has pbcopy pbpaste; then
-    function --copy-to-clipboard()
-    {
-      pbcopy
-    }
+    if has reattach-to-user-namespace; then
+      function --copy-to-clipboard()
+      {
+        reattach-to-user-namespace pbcopy
+      }
 
-    function --paste-from-clipboard()
-    {
-      pbpaste
-    }
+      function --paste-from-clipboard()
+      {
+        reattach-to-user-namespace pbpaste
+      }
+    else
+      function --copy-to-clipboard()
+      {
+        pbcopy
+      }
+
+      function --paste-from-clipboard()
+      {
+        pbpaste
+      }
+    fi
   elif has xclip; then
     function --copy-to-clipboard()
     {

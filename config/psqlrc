@@ -1,0 +1,22 @@
+-- http://robots.thoughtbot.com/improving-the-command-line-postgres-experience/
+-- https://github.com/eevee/rc/blob/master/.psqlrc
+
+\set QUIET 1
+\set PROMPT1 '%[%033[1m%]%M %n@%/%R%[%033[0m%]%# '
+\set PROMPT2 '[more] %R > '
+-- \set PROMPT1 '%[%033[33m%]%`date +"[%T]"`% %[%033[31;5m%]%x%[%033[0m%]%[%033[35m%]%n@%m %[%033[37;1m%]%/› %[%033[0m%]'
+-- \set PROMPT2 '%[%033[37;1m%] » %[%033[0m%]'
+
+\set VERBOSITY verbose
+\set HISTFILE ~/.cache/psql_history- :DBNAME
+\set HISTCONTROL ignoredups
+\set COMP_KEYWORD_CASE upper
+
+\pset format wrapped
+\pset linestyle unicode
+\pset border 2
+\pset null ¤
+\x auto
+
+\timing on
+\unset QUIET

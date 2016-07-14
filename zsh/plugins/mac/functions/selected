@@ -1,0 +1,12 @@
+#autoload -Uz
+
+osascript <<EOT
+tell application "Finder"
+  set theFiles to selection
+  set theList to ""
+  repeat with aFile in theFiles
+    set theList to theList & POSIX path of (aFile as alias) & "\n"
+  end repeat
+  theList
+end tell
+EOT

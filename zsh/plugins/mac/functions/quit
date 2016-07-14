@@ -1,0 +1,7 @@
+#autoload -Uz
+
+local app
+
+for app in "${@}"; do
+  osascript -e "$(printf 'quit app "%s"' "${app}")"
+done

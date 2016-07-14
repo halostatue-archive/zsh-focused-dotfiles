@@ -1,5 +1,6 @@
 # List all matches in case multiple possible completions are possible
 set show-all-if-ambiguous on
+set show-all-if-unmodified on
 
 # Make Tab autocomplete regardless of filename case
 set completion-ignore-case on
@@ -42,3 +43,4 @@ set convert-meta off
 # http://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/
 Control-j: menu-complete
 Control-k: menu-complete-backward
+tab: complete

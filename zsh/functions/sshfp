@@ -1,0 +1,34 @@
+#autoload -Uz
+
+# desc: secure way (locally) to create SSHFP records
+#
+# author: Danny Fullerton - Mantor Organization www.mantor.org
+# license: public domain
+
+if (( ! ${#} )) || [[ "${1}" == "-h" ]]; then
+  echo "Usage: ${0} <fully qualified domain name>" >&2
+  return 1
+fi
+
+local fqdn sshfp h i j k
+local -a ciphers hashes
+ 
+fqdn=${1}
+ciphers=(rsa dsa ecdsa ed25519)
+hashes=(sha1 sha256)
+
+
+for i ({1..4}); do
+  for j ({1..2}); do
+    k=/etc/ssh/ssh_host_${ciphers[${i}]}_key.pub
+
+    if [[ -f "${k}" ]]; then
+      h=${hashes[${j}]}
+      sshfp=$(
+        awk '{print $2}' $k | openssl base64 -d -A | openssl dgst -${h} |
+        sed 's/^.* //' | awk '{print $1}' | tr '[a-z]' '[A-Z]'
+      )
+      echo "${fqdn}. IN SSHFP ${i} ${j} ${sshfp}"
+    fi
+  done
+done

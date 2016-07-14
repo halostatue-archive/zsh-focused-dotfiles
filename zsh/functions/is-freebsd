@@ -1,0 +1,4 @@
+#autoload -Uz
+
+autoload -Uz is-os
+is-os freebsd

@@ -1,5 +1,3 @@
 #! zsh
 
-git() {
-  command hub "${@}"
-}
+(( ${+commands[hub]} )) && function git() { command hub "${@}" }

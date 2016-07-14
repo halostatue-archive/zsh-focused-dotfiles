@@ -1,0 +1,7 @@
+#autoload -Uz
+
+if [[ -n "${1}" ]]; then
+  osascript -e "set volume output volume $1"
+else
+  osascript -e "output volume of (get volume settings)"
+fi

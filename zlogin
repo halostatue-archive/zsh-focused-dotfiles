@@ -7,10 +7,12 @@ function()
       source ${HOME}/.zsh/zsh.d/00-cache-initialization
 
     if --hzsh-is-caching ; then
-      # Run this in the background
-      for f in ${HOME}/.zshrc $(--hzsh-cache-path)/zcomp-${HOST}; do
-        [ -f ${f} ] && zrecompile -qp ${f} && rm -f ${f}.zwc.old
-      done
+      {
+        # Run this in the background
+        for f in ${HOME}/.zshrc $(--hzsh-cache-path)/zcomp-${HOST}; do
+          [ -f ${f} ] && zrecompile -qp ${f} && rm -f ${f}.zwc.old
+        done
+      } &!
     fi
 
     if [[ ${OSTYPE} == darwin* ]]; then

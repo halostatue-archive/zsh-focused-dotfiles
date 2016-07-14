@@ -1,10 +1,5 @@
 #! zsh
 
-function openssl-view-certificate()
-{
-  openssl x509 -text -noout -in "${1}"
-}
-
 function openssl-view-csr()
 {
   openssl req -text -noout -verify -in "${1}"
