@@ -1,56 +1,121 @@
 #!/bin/zsh
 
-autoload -- --rationalise-dot url-quote-magic
-zle -N self-insert url-quote-magic
-zle -N -- --rationalise-dot
+{
+  if [[ ${ZSH_VERSION} != 5.1.1 ]]; then
+    if is-at-least 5.2; then
+      autoload -Uz bracketed-paste-url-magic
+      zle -N bracketed-paste bracketed-paste-url-magic
+    else
+      if is-at-least 5.1; then
+        autoload -Uz bracketed-paste-magic
+        zle -N bracketed-paste bracketed-paste-magic
+      fi
+      autoload -Uz url-quote-magic
+      zle -N self-insert url-quote-magic
+    fi
+  fi
 
-# Z line editor, zsh’s version of readline has a very good Emacs keybinding
-# support which we’ll enable and configure it to regard / as a word separator
-# too (highly useful for editing paths):
-WORDCHARS=${WORDCHARS//[&=\/;!#%\{\}]}
-bindkey -e
+  # Z line editor, zsh’s version of readline has a very good Emacs keybinding
+  # support which we’ll enable and configure it to regard / as a word separator
+  # too (highly useful for editing paths):
+  WORDCHARS=${WORDCHARS//[&=\/;!#%\{\}]}
+  bindkey -e
 
-[ -n "${key[Home]}" ] && bindkey "${key[Home]}" beginning-of-line
-[ -n "${key[End]}" ] && bindkey "${key[End]}" end-of-line
+  # Use human-friendly identifiers
+  typeset -gA Key
+  Key=(
+  'Control'      '\C-'
+  'ControlLeft'  '\e[1;5D \e[5D \e\e[D \eOd \eOD'
+  'ControlRight' '\e[1;5C \e[5C \e\e[C \eOc \eOC'
+  'Escape'       '\e'
+  'Meta'         '\M-'
+  'Backspace'    "^?"
+  'Delete'       "^[[3~"
+  'F1'           "${terminfo[kf1]}"
+  'F2'           "${terminfo[kf2]}"
+  'F3'           "${terminfo[kf3]}"
+  'F4'           "${terminfo[kf4]}"
+  'F5'           "${terminfo[kf5]}"
+  'F6'           "${terminfo[kf6]}"
+  'F7'           "${terminfo[kf7]}"
+  'F8'           "${terminfo[kf8]}"
+  'F9'           "${terminfo[kf9]}"
+  'F10'          "${terminfo[kf10]}"
+  'F11'          "${terminfo[kf11]}"
+  'F12'          "${terminfo[kf12]}"
+  'Insert'       "${terminfo[kich1]}"
+  'Home'         "${terminfo[khome]}"
+  'PageUp'       "${terminfo[kpp]}"
+  'End'          "${terminfo[kend]}"
+  'PageDown'     "${terminfo[knp]}"
+  'Up'           "${terminfo[kcuu1]}"
+  'Left'         "${terminfo[kcub1]}"
+  'Down'         "${terminfo[kcud1]}"
+  'Right'        "${terminfo[kcuf1]}"
+  'BackTab'      "${terminfo[kcbt]}"
+  )
 
-bindkey "^[[3~" delete-char
-bindkey "^[[5~" backward-word
-bindkey "^[[6~" forward-word
-bindkey "^[^[[D" backward-word 
-bindkey "^[^[[C" forward-word
+  function --hz-keyname()
+  {
+    (( ${#Key[${1}]} )) || return
+    [[ -n "${Key[${1}]}" ]] || return
 
-bindkey "^[[A" history-beginning-search-backward
-bindkey "^[[B" history-beginning-search-forward
+    if (( ${#} == 3 )); then
+      bindkey "${Key[${1}]}${2}" ${3}
+    else
+      local key name bindfunc
+      name=${1}
+      bindfunc=${2}
 
-bindkey "^A" beginning-of-line
-bindkey "^E" end-of-line
-bindkey "^K" kill-line
-bindkey "^L" clear-screen
-bindkey "^R" history-incremental-search-backward
-bindkey "^U" kill-whole-line
-bindkey "^V" quoted-insert
-bindkey "^W" backward-kill-word
+      for key in "${(s: :)Key[${name}]}"; do
+        bindkey ${key} ${bindfunc}
+      done
+    fi
+  }
 
-bindkey "^N" down-history
-bindkey "^P" up-history
+  --hz-keyname Home beginning-of-line
+  --hz-keyname End end-of-line
+  --hz-keyname ControlLeft backward-word
+  --hz-keyname ControlRight forward-word
 
-bindkey "^[H" run-help
-bindkey "^[h" run-help
+  # --hz-keyname Insert overwrite-mode
 
-bindkey "^[m" copy-prev-shell-word
+  --hz-keyname Delete delete-char
+  --hz-keyname Backspace backward-delete-char
+  --hz-keyname Left backward-char
+  --hz-keyname Right forward-char
 
-bindkey '^[^[[D' backward-word
-bindkey '^[^[[C' forward-word
-bindkey '^[[5D' beginning-of-line
-bindkey '^[[5C' end-of-line
-# bindkey '^[^N' newtab
-bindkey '^?' backward-delete-char 
+  --hz-keyname Control A beginning-of-line
+  --hz-keyname Control E end-of-line
+  --hz-keyname Control K kill-line
+  --hz-keyname Control L clear-scren
+  --hz-keyname Control R history-incremental-search-backward
+  --hz-keyname Control U kill-whole-line
+  --hz-keyname Control V quoted-insert
+  --hz-keyname Control W backward-kill-word
+  --hz-keyname Control N down-history
+  --hz-keyname Control P up-history
 
-bindkey " " magic-space
+  --hz-keyname BackTab reverse-menu-complete
 
-bindkey "^Og" noglob-command-line
-bindkey "^Os" sudo-command-line
+  --hz-keyname Escape "[A" history-beginning-search-backward
+  --hz-keyname Escape "[B" history-beginning-search-forward
 
-bindkey . --rationalise-dot
+  --hz-keyname Escape H run-help
+  --hz-keyname Escape h run-help
 
-bindkey -s $'\u00a0' '^u'
+  --hz-keyname Escape m copy-prev-shell-word
+
+  bindkey ' ' magic-space
+
+  --hz-keyname Control Og noglob-command-line
+  --hz-keyname Control Os sudo-command-line
+
+  autoload -Uz -- --rationalise-dot
+  zle -N -- --rationalise-dot
+  bindkey . --rationalise-dot
+
+  bindkey -s $'\u00a0' '^u'
+
+  unfunction -- --hz-keyname
+}

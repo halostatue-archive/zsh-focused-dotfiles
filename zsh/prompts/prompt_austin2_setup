@@ -476,9 +476,3 @@ function __prompt_austin2_options()
 }
 
 prompt_austin2_setup "$@"
-
-# Soliah:
-# __format_austin_prompt \
-  #   '%{$fg[blue]%}%{$bold_color%}%20~%{$reset_color%}(%{$fg[green]%}$(zgit_head)%{$reset_color%}<STATUS>) $ '
-#
-# Note: need to consider porting STATUS from git.zsh

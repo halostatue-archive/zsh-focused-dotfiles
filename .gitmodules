@@ -1,0 +1,48 @@
+[submodule "vendor/oh-my-zsh"]
+	path = vendor/oh-my-zsh
+	url = git://github.com/robbyrussell/oh-my-zsh.git
+[submodule "vendor/grml-etc-core"]
+	path = vendor/grml-etc-core
+	url = git://git.grml.org/grml-etc-core.git
+[submodule "vendor/solarized"]
+	path = vendor/solarized
+	url = git://github.com/altercation/solarized.git
+[submodule "vendor/dotzsh"]
+	path = vendor/dotzsh
+	url = git://github.com/dotphiles/dotzsh.git
+[submodule "vendor/zsh-history-substring-search"]
+	path = vendor/zsh-history-substring-search
+	url = git://github.com/zsh-users/zsh-history-substring-search.git
+[submodule "vendor/zsh-syntax-highlighting"]
+	path = vendor/zsh-syntax-highlighting
+	url = git://github.com/zsh-users/zsh-syntax-highlighting.git
+[submodule "vendor/prezto"]
+	path = vendor/prezto
+	url = git://github.com/sorin-ionescu/prezto.git
+[submodule "vendor/gitignore"]
+	path = vendor/gitignore
+	url = git://github.com/github/gitignore.git
+[submodule "vendor/dotphiles"]
+	path = vendor/dotphiles
+	url = git://github.com/dotphiles/dotphiles.git
+[submodule "vendor/zshuery"]
+	path = vendor/zshuery
+	url = git://github.com/myfreeweb/zshuery.git
+[submodule "vendor/pfarrell"]
+	path = vendor/pfarrell
+	url = git://github.com/pfarrell/dotfiles.git
+[submodule "vendor/holman"]
+	path = vendor/holman
+	url = git://github.com/holman/dotfiles.git
+[submodule "vendor/freshshell"]
+	path = vendor/freshshell
+	url = git://github.com/freshshell/fresh.git
+[submodule "vendor/antigen"]
+	path = vendor/antigen
+	url = git://github.com/zsh-users/antigen.git
+[submodule "vendor/slackwise-dotfiles"]
+	path = vendor/slackwise-dotfiles
+	url = git://github.com/Slackwise/dotfiles.git
+[submodule "vendor/thoughtbot-dotfiles"]
+	path = vendor/thoughtbot-dotfiles
+	url = git://github.com/thoughtbot/dotfiles.git

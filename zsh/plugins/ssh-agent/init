@@ -46,7 +46,7 @@ function __saplugin__start_agent()
 
   # Start ssh-agent and set up the environment
   builtin echo "Initializing SSH agent..."
-  /usr/bin/env ssh-agent | sed '/^echo/d' > "${__saplugin__ssh_env}"
+  /usr/bin/env ssh-agent | sed '/^echo /d' > "${__saplugin__ssh_env}"
   chmod 600 "${__saplugin__ssh_env}"
   builtin source "${__saplugin__ssh_env}" > /dev/null
 }

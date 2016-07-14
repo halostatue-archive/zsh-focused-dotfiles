@@ -5,7 +5,7 @@ function()
   local -A known_zsh_options
   known_zsh_options=($(builtin set -o))
 
-  function hz_setopt()
+  function --hz-setopt()
   {
     local opt_name=$(echo ${(L)1#no_#} | sed -e 's/_//g')
     if [ -n "${known_zsh_options[${opt_name}]}" ]; then
@@ -17,198 +17,206 @@ function()
   # alphabetical sort, ordered by alphabetical within the logical groups.
 
   # [ changing directories ]
-  hz_setopt auto_cd                   # cd 'path' if 'path' is given as a command.
-  hz_setopt auto_pushd                # cd = pushd
-  hz_setopt no_cdable_vars            # don't try to expand as ~path
-  hz_setopt no_chase_dots             # foo/bar/.. is foo/ even if bar is a symlink
-  hz_setopt chase_links               # cd to a symlink is in fact cd to the true dir
-  hz_setopt no_posix_cd               # don't use posix chdir semantics
-  hz_setopt pushd_ignore_dups         # ignore dups in pushd
-  hz_setopt no_pushd_minus            # don't exchange +/-
-  hz_setopt pushd_silent              # don't print stack after push/pop
-  hz_setopt pushd_to_home             # pushd == pushd $HOME
+  --hz-setopt AUTO_CD                   # cd 'path' if 'path' is given as a command.
+  --hz-setopt AUTO_PUSHD                # cd = pushd
+  --hz-setopt NO_CDABLE_VARS            # don't try to expand as ~path
+  --hz-setopt CHASE_DOTS                # implied by CHASE_LINKS
+  --hz-setopt CHASE_LINKS               # cd to a symlink is in fact cd to the true dir
+  --hz-setopt NO_POSIX_CD               # use zsh chdir
+  --hz-setopt PUSHD_IGNORE_DUPS         # ignore dups in pushd
+  --hz-setopt NO_PUSHD_MINUS            # don't exchange +/-
+  --hz-setopt PUSHD_SILENT              # don't print stack after push/pop
+  --hz-setopt PUSHD_TO_HOME             # pushd == pushd $HOME
 
   # [ completion ]
-  hz_setopt no_always_last_prompt     # Completions return to last prompt if numeric.
-  hz_setopt always_to_end             # Always go to end of word after completion.
-  hz_setopt auto_list                 # list choice on ambiguous command
-  hz_setopt auto_menu                 # show menu for completion
-  hz_setopt no_auto_name_dirs         # Dir params are explicit ~param. RTFM.
-  hz_setopt auto_param_keys           # Remove trailing spaces on param name completion
-  hz_setopt auto_param_slash          # add slash for directories
-  hz_setopt auto_remove_slash         # remove slash on dirs if word separator added
-  hz_setopt no_bash_auto_list         # auto_list is sufficient, i want it on first tab
-  hz_setopt complete_aliases          # don't replace alias before completion
-  hz_setopt complete_in_word          # completion to be done from cursor in word
-  hz_setopt no_glob_complete          # don't generate matches and cycle through them
-  hz_setopt hash_list_all             # verify path hash on completion
-  hz_setopt list_ambiguous            # unambiguous prefix completion is done silently
-  hz_setopt no_list_beep              # don't beep for completion
-  hz_setopt list_packed               # different width for completion
-  hz_setopt list_rows_first           # complete matches across, then down.
-  hz_setopt list_types                # show types of listing files
-  hz_setopt no_menu_complete          # don't show menu on ambiguous completion
-  hz_setopt no_rec_exact              # recognize exact match even if ambiguous
+  --hz-setopt NO_ALWAYS_LAST_PROMPT     # Completions return to last prompt if numeric.
+  --hz-setopt ALWAYS_TO_END             # Always go to end of word after completion.
+  --hz-setopt AUTO_LIST                 # list choice on ambiguous command*
+  --hz-setopt AUTO_MENU                 # show menu for completion*
+  --hz-setopt NO_AUTO_NAME_DIRS         # Dir params are explicit ~param. RTFM.
+  --hz-setopt AUTO_PARAM_KEYS           # Remove trailing spaces on param name completion*
+  --hz-setopt AUTO_PARAM_SLASH          # add slash for directories*
+  --hz-setopt AUTO_REMOVE_SLASH         # remove slash on dirs if word separator added*
+  --hz-setopt NO_BASH_AUTO_LIST         # auto_list is sufficient, i want it on first tab
+  --hz-setopt COMPLETE_ALIASES          # don't replace alias before completion
+  --hz-setopt COMPLETE_IN_WORD          # completion to be done from cursor in word
+  --hz-setopt NO_GLOB_COMPLETE          # don't generate matches and cycle through them
+  --hz-setopt HASH_LIST_ALL             # verify path hash on completion*
+  --hz-setopt LIST_AMBIGUOUS            # unambiguous prefix completion is done silently*
+  --hz-setopt NO_LIST_BEEP              # don't beep for completion
+  --hz-setopt LIST_PACKED               # different width for completion
+  --hz-setopt LIST_ROWS_FIRST           # complete matches across, then down.
+  --hz-setopt LIST_TYPES                # show types of listing files*
+  --hz-setopt NO_MENU_COMPLETE          # don't show menu on ambiguous completion
+  --hz-setopt NO_REC_EXACT              # recognize exact match even if ambiguous
 
   # [ expansion and globbing ]
-  hz_setopt bad_pattern               # warn on bad file patterns
-  hz_setopt bare_glob_qual            # PATTERN()$ is a qualifier list
-  hz_setopt brace_ccl                 # expand {adasd} to (a, d, s)
-  hz_setopt case_glob                 # case sensitive globbing
-  hz_setopt case_match                # regular expressions are case sensitive
-  hz_setopt no_csh_null_glob          # don't erase unmatched globs silently
-  hz_setopt equals                    # perform '=' file expansions
-  hz_setopt extended_glob             # #,~,^ expansion
-  hz_setopt glob                      # sure i want globbing
-  hz_setopt no_glob_assign            # no globbing on foo=*, use foo=(*)
-  hz_setopt no_glob_dots              # foo won't match .foo
-  hz_setopt no_glob_subst             # no recursive expansion
-
-  hz_setopt no_hist_subst_pattern     # history substitution uses string matching
-  hz_setopt no_ignore_braces          # do braces expansion
-  hz_setopt no_ksh_glob               # ignore @ before ()
-  hz_setopt magic_equal_subst         # foo= is file expanded
-  hz_setopt mark_dirs                 # adds / on dirs in filename completion
-  hz_setopt multibyte                 # respect multibyte characters when found
-  hz_setopt nomatch                   # print error on non matched patterns (!!!)
-  hz_setopt no_null_glob              # don't delete unmatched globs
-  hz_setopt numeric_glob_sort         # sort in numeric order rather than lexicographic
-  hz_setopt rc_expand_param           # foo${xx}bar where xx is (a b c) = fooabar ...
-  hz_setopt rematch_pcre              # Use PCRE matching with =~
-  hz_setopt no_sh_glob                # allow globbing with [(|)<]
-  hz_setopt unset                     # unset parameters are empty, not parameters.
-  hz_setopt no_warn_create_global     # No warning on assigned global param in function.
+  --hz-setopt BAD_PATTERN               # warn on bad file patterns*
+  --hz-setopt BARE_GLOB_QUAL            # PATTERN()$ is a qualifier list*
+  --hz-setopt BRACE_CCL                 # expand {adasd} to (a, d, s)
+  --hz-setopt CASE_GLOB                 # case sensitive globbing*
+  --hz-setopt CASE_MATCH                # regular expressions are case sensitive*
+  --hz-setopt NO_CSH_NULL_GLOB          # don't erase unmatched globs silently
+  --hz-setopt EQUALS                    # perform '=' file expansions*
+  --hz-setopt EXTENDED_GLOB             # #,~,^ expansion
+  --hz-setopt NO_FORCE_FLOAT            # do not convert to float for math
+  --hz-setopt GLOB                      # sure i want globbing*
+  --hz-setopt NO_GLOB_ASSIGN            # no globbing on foo=*, use foo=(*)
+  --hz-setopt NO_GLOB_DOTS              # foo won't match .foo
+  --hz-setopt GLOB_STAR_SHORT           # **/* => **; ***/* => ***.
+  --hz-setopt NO_GLOB_SUBST             # no recursive expansion
+  --hz-setopt NO_HIST_SUBST_PATTERN     # history substitution uses string matching
+  --hz-setopt NO_IGNORE_BRACES          # do braces expansion
+  --hz-setopt NO_IGNORE_CLOSE_BRACES    # Close braces are syntactically significatn
+  --hz-setopt NO_KSH_GLOB               # ignore @ before ()
+  --hz-setopt MAGIC_EQUAL_SUBST         # foo= is file expanded
+  --hz-setopt MARK_DIRS                 # adds / on dirs in filename completion
+  --hz-setopt MULTIBYTE                 # respect multibyte characters when found*
+  --hz-setopt NOMATCH                   # print error on non matched patterns (!!!)*
+  --hz-setopt NO_NULL_GLOB              # don't delete unmatched globs
+  --hz-setopt NUMERIC_GLOB_SORT         # sort in numeric order rather than lexicographic
+  --hz-setopt RC_EXPAND_PARAM           # foo${xx}bar where xx is (a b c) = fooabar ...
+  --hz-setopt REMATCH_PCRE              # Use PCRE matching with =~.*
+  --hz-setopt NO_SH_GLOB                # allow globbing with [(|)<]
+  --hz-setopt UNSET                     # unset parameters are empty, not parameters.*
+  --hz-setopt NO_WARN_CREATE_GLOBAL     # No warning on assigned global param in function.
 
   # [ history ]
-  hz_setopt append_history            # append to history, don't truncate it
-  hz_setopt bang_hist                 # csh-style history expansion with '!'
-  hz_setopt extended_history          # timestamped history :time:elapsed:command
-  hz_setopt hist_allow_clobber        # add | to redirections in history
-  hz_setopt no_hist_beep              # don't beep on history expansion errors
-  hz_setopt hist_expire_dups_first    # remove dups from history first
-  hz_setopt hist_fcntl_lock           # use zsh's built-in ad-hoc history locking.
-  hz_setopt hist_find_no_dups         # don't show dups even if not contiguous
-  hz_setopt hist_ignore_all_dups      # ignore all -- even non contiguous -- dups
-  hz_setopt hist_ignore_dups          # ignore contiguous dups
-  hz_setopt hist_ignore_space         # store commands that match /^[^ ]/
-  hz_setopt hist_lex_words            # use normal lexing on loaded history
-  hz_setopt hist_no_functions         # don't save functions defs in history
-  hz_setopt hist_no_store             # remove hists access cmds from hist
-  hz_setopt hist_reduce_blanks        # remove superfluous blanks
-  hz_setopt hist_save_by_copy         # prevents history loss
-  hz_setopt hist_save_no_dups         # no dups on history saving
-  hz_setopt hist_verify               # expands history into the edit buffer
-  hz_setopt inc_append_history        # append incrementally, not on exit
-  hz_setopt share_history             # Share history between sessions.
+  --hz-setopt APPEND_HISTORY             # append to history, don't truncate it*
+  --hz-setopt BANG_HIST                  # csh-style history expansion with '!'*
+  --hz-setopt EXTENDED_HISTORY           # no ttimestamped history (:time:elapsed:command)
+  --hz-setopt HIST_ALLOW_CLOBBER         # add | to redirections in history
+  --hz-setopt NO_HIST_BEEP               # don't beep on history expansion errors
+  --hz-setopt HIST_EXPIRE_DUPS_FIRST     # remove dups from history first
+  --hz-setopt HIST_FCNTL_LOCK            # use zsh's built-in ad-hoc history locking.
+  --hz-setopt HIST_FIND_NO_DUPS          # don't show dups even if not contiguous
+  --hz-setopt HIST_IGNORE_ALL_DUPS       # ignore all -- even non contiguous -- dups
+  --hz-setopt HIST_IGNORE_DUPS           # ignore contiguous dups
+  --hz-setopt HIST_IGNORE_SPACE          # store commands that match /^[^ ]/
+  --hz-setopt HIST_LEX_WORDS             # use normal lexing on loaded history
+  --hz-setopt HIST_NO_FUNCTIONS          # don't save functions defs in history
+  --hz-setopt HIST_NO_STORE              # remove hists access cmds from hist
+  --hz-setopt HIST_REDUCE_BLANKS         # remove superfluous blanks
+  --hz-setopt HIST_SAVE_BY_COPY          # prevents history loss
+  --hz-setopt HIST_SAVE_NO_DUPS          # no dups on history saving
+  --hz-setopt HIST_VERIFY                # expands history into the edit buffer
+  --hz-setopt NO_INC_APPEND_HISTORY      # append incrementally, not on exit
+  --hz-setopt NO_INC_APPEND_HISTORY_TIME # append incrementally, not on exit, with time
+  --hz-setopt SHARE_HISTORY              # Share history between sessions.
 
   # [ initialization ]
-  hz_setopt no_all_export             # Parameters are not automatically exported
-  hz_setopt no_global_export          # declare -x does not imply -g
-  hz_setopt global_rcs                # use global rcs
-  hz_setopt rcs                       # source all /etc rcs
+  --hz-setopt NO_ALL_EXPORT             # Parameters are not automatically exported
+  --hz-setopt NO_GLOBAL_EXPORT          # declare -x does not imply -g
+  --hz-setopt GLOBAL_RCS                # use global rcs*
+  --hz-setopt RCS                       # source all /etc rcs
 
   # [ input/output ]
-  hz_setopt aliases                   # expand aliases
-  hz_setopt clobber                   # redirection can create files
-  hz_setopt correct                   # try to spell-correct command line
-  hz_setopt no_correct_all            # don't correct args
-  hz_setopt no_dvorak                 # use only regular keyboard for correct
-  hz_setopt no_flow_control           # ignore ^S/^Q as remnants of sttys.
-  hz_setopt no_ignore_eof             # don't ignore ^D for exit
-  hz_setopt interactive_comments      # allow comments in interactive shell (!!!)
-  hz_setopt hash_cmds                 # do not always search through path, hash cmds
-  hz_setopt hash_dirs                 # hash directories holding commands too
-  hz_setopt no_mail_warning           # no warning printed if mail file touched
-  hz_setopt path_dirs                 # search in path even if cmd has '/' in it
-  hz_setopt no_path_script            # Don't search $PATH for a "zsh SCRIPT" cmd.
-  hz_setopt print_eight_bit           # just to be sure
-  hz_setopt no_print_exit_value       # Don't print exit values ($PROMPT does)
-  hz_setopt rc_quotes                 # 'foo''bar' => foo'bar
-  hz_setopt no_rm_star_silent         # ask user before rm foo/*
-  hz_setopt rm_star_wait              # Make *really* sure. ~10s wait.
-  hz_setopt short_loops               # short loops forms allowed.
-  hz_setopt no_sun_keyboard_hack      # I don't use a SUN keyboard.
+  --hz-setopt ALIASES                   # expand aliases
+  --hz-setopt CLOBBER                   # redirection will truncate existing files*
+  --hz-setopt CORRECT                   # try to spell-correct command line
+  --hz-setopt NO_CORRECT_ALL            # don't correct args
+  --hz-setopt NO_DVORAK                 # use only regular keyboard for correct
+  --hz-setopt NO_FLOW_CONTROL           # ignore ^S/^Q as remnants of sttys.
+  --hz-setopt NO_IGNORE_EOF             # don't ignore ^D for exit
+  --hz-setopt INTERACTIVE_COMMENTS      # allow comments in interactive shell (!!!)
+  --hz-setopt HASH_CMDS                 # do not always search through path, hash cmds*
+  --hz-setopt HASH_DIRS                 # hash directories holding commands too*
+  --hz-setopt NO_HASH_EXECUTABLES_ONLY  # do not check that the command is +x
+  --hz-setopt NO_MAIL_WARNING           # no warning printed if mail file touched
+  --hz-setopt PATH_DIRS                 # search in path even if cmd has '/' in it
+  --hz-setopt NO_PATH_SCRIPT            # Don't search $PATH for a "zsh SCRIPT" cmd.
+  --hz-setopt PRINT_EIGHT_BIT           # just to be sure
+  --hz-setopt NO_PRINT_EXIT_VALUE       # Don't print exit values ($PROMPT does)
+  --hz-setopt RC_QUOTES                 # 'foo''bar' => foo'bar
+  --hz-setopt NO_RM_STAR_SILENT         # ask user before rm foo/*
+  --hz-setopt RM_STAR_WAIT              # Make *really* sure. ~10s wait.
+  --hz-setopt SHORT_LOOPS               # short loops forms allowed.*
+  --hz-setopt NO_SUN_KEYBOARD_HACK      # I don't use a SUN keyboard.
 
   # [ job control ]
-  hz_setopt auto_continue             # send SIGCONT to jobs disowned
-  hz_setopt auto_resume               # single word resume if possible
-  hz_setopt no_bg_nice                # don't renice jobs in bg
-  hz_setopt check_jobs                # check jobs on exit
-  hz_setopt no_hup                    # don't SIGHUP bg cmds on logout
-  hz_setopt long_list_jobs            # list jobs in long format
-  hz_setopt monitor                   # enable job control
-  hz_setopt notify                    # notify immediately, not on next prompt
-  hz_setopt no_posix_jobs             # Use zsh job management semantics.
+  --hz-setopt AUTO_CONTINUE             # send SIGCONT to jobs disowned
+  --hz-setopt AUTO_RESUME               # single word resume if possible
+  --hz-setopt NO_BG_NICE                # don't renice jobs in bg
+  --hz-setopt CHECK_JOBS                # check jobs on exit*
+  --hz-setopt NO_HUP                    # don't SIGHUP bg cmds on logout
+  --hz-setopt LONG_LIST_JOBS            # list jobs in long format
+  --hz-setopt MONITOR                   # enable job control
+  --hz-setopt NOTIFY                    # notify immediately, not on next prompt*
+  --hz-setopt NO_POSIX_JOBS             # Use zsh job management semantics.
 
   # [ prompting ]
-  hz_setopt no_prompt_bang            # don't perform history expansion in prompt
-  hz_setopt prompt_cr                 # ensure multi-line editing works.
-  hz_setopt prompt_sp                 # preserve partial lines
-  hz_setopt prompt_percent            # expand % escapes in prompt
-  hz_setopt prompt_subst              # command/math subst in prompt
-  hz_setopt transient_rprompt         # better for cut/paste
+  --hz-setopt NO_PROMPT_BANG            # don't perform history expansion in prompt
+  --hz-setopt PROMPT_CR                 # ensure multi-line editing works.*
+  --hz-setopt PROMPT_SP                 # preserve partial lines*
+  --hz-setopt PROMPT_PERCENT            # expand % escapes in prompt*
+  --hz-setopt PROMPT_SUBST              # command/math subst in prompt
+  --hz-setopt TRANSIENT_RPROMPT         # better for cut/paste
 
   # [ scripts and functions ]
-  hz_setopt c_bases                   # use C-style 0xff instead of 16#ff.
-  hz_setopt no_c_precedences          # Use zsh math evaluation order
-  hz_setopt no_debug_before_cmd       # do not run DEBUG trap before command.
-  # when set, ksh 93; when unset ksh 88.
-  #hz_setopt err_exit                 # exit shell on unhandled error
-  #hz_setopt err_return               # return from function on unhandled error.
-  hz_setopt eval_lineno               # Track eval line numbers.
-  #hz_setopt no_exec                  # syntax check only. scripts only.
-  hz_setopt function_argzero          # $0 == name of script
-  #hz_setopt local_options            # setopts are local to functions
-  #hz_setopt local_traps              # traps are local to functions
-  #hz_setopt multi_func_def           # allow multiple function definition at once
-  hz_setopt multios                   # multi redirection (implicit tee/cat)
-  hz_setopt no_octal_zeroes           # 010 = 9 sucks
-  #hz_setopt source_trace             # tracing similar to 'set -x'
-  #hz_setopt typeset_silent           # don't print values from typeset family
-  #hz_setopt verbose                  # Print input lines as they are read
-  #hz_setopt no_xtrace                # do not debug by default
+  --hz-setopt C_BASES                   # use C-style 0xff instead of 16#ff.
+  --hz-setopt NO_C_PRECEDENCES          # Use zsh math evaluation order
+  --hz-setopt DEBUG_BEFORE_CMD          # run DEBUG trap before command (ksh93)*
+  #--hz-setopt err_exit                 # exit shell on unhandled error
+  #--hz-setopt err_return               # return from function on unhandled error.
+  --hz-setopt eval_lineno               # Track eval line numbers.*
+  #--hz-setopt no_exec                  # syntax check only. scripts only.
+  --hz-setopt function_argzero          # $0 == name of script*
+  #--hz-setopt local_loops              # break/continue is local to a function
+  #--hz-setopt local_options            # setopts are local to functions
+  #--hz-setopt local_patterns           # restore `disable -p` pattern disable status
+  #--hz-setopt local_traps              # traps are local to functions
+  #--hz-setopt multi_func_def           # allow multiple function definition at once*
+  --hz-setopt multios                   # multi redirection (implicit tee/cat)*
+  --hz-setopt no_octal_zeroes           # 010 = 9 sucks
+  #--hz-setopt pipe_fail                 # pipeline failure is non-zero fail command, not overall
+  #--hz-setopt source_trace             # tracing similar to 'set -x'
+  #--hz-setopt typeset_silent           # don't print values from typeset family
+  #--hz-setopt verbose                  # Print input lines as they are read
+  #--hz-setopt no_xtrace                # do not debug by default
 
   # [ shell emulation ]
-  hz_setopt no_bash_rematch           # use $MATCH/$match, not $BASH_REMATCH
-  hz_setopt no_bsd_echo               # use zsh echo, not BSD echo(1).
-  hz_setopt no_csh_junkiehistory      # zsh history references, not csh.
-  hz_setopt no_csh_junkie_loops       # zsh 'do list; done' not csh 'list; end'
-  hz_setopt no_csh_junkie_quotes      # csh quote rules are painful
-  hz_setopt no_csh_nullcmd            # keep my (READ)?NULLCMD for bare redirs.
-  hz_setopt no_ksh_arrays             # don't emulate ksh arrays
-  hz_setopt no_ksh_autoload           # zsh autoload (contents), not ksh autoload (exec)
-  hz_setopt no_ksh_option_print       # use zsh default 'setopt' output.
-  hz_setopt no_ksh_typeset            # use zsh typeset
-  hz_setopt no_ksh_zero_subscript     # use zsh array references (1-index)
+  #--hz-setopt append_create            # redirection with append will create new files
+  --hz-setopt no_bash_rematch           # use $MATCH/$match, not $BASH_REMATCH
+  --hz-setopt no_bsd_echo               # use zsh echo, not BSD echo(1).
+  #--hz-setopt no_continue_on_error     # do not act like interactive shell
+  --hz-setopt no_csh_junkie_history     # zsh history references, not csh.
+  --hz-setopt no_csh_junkie_loops       # zsh 'do list; done' not csh 'list; end'
+  --hz-setopt no_csh_junkie_quotes      # csh quote rules are painful
+  --hz-setopt no_csh_nullcmd            # keep my (READ)?NULLCMD for bare redirs.
+  --hz-setopt no_ksh_arrays             # don't emulate ksh arrays
+  --hz-setopt no_ksh_autoload           # zsh autoload (contents), not ksh autoload (exec)
+  --hz-setopt no_ksh_option_print       # use zsh default 'setopt' output.
+  --hz-setopt no_ksh_typeset            # use zsh typeset
+  --hz-setopt no_ksh_zero_subscript     # use zsh array references (1-index)
+  --hz-setopt no_posix_aliases          # use zsh alias expansion
+  #--hz-setopt posix_argzero            # temporarily disable FUNCTION_ARGZERO
+  --hz-setopt no_posix_builtins         # use zsh builtin semantics
+  --hz-setopt no_posix_identifiers      # use zsh identifiers (allow -)
+  --hz-setopt no_posix_strings          # use zsh string $'…' NUL handling
+  --hz-setopt no_posix_traps            # use zsh EXIT traps when leaving functions
 
-  hz_setopt no_posix_aliases          # use zsh alias expansion
-  hz_setopt no_posix_builtins         # use zsh builtin semantics
-  hz_setopt no_posix_identifiers      # use zsh identifiers (allow -)
-  hz_setopt no_posix_strings          # use zsh string $'…' NUL handling
-  hz_setopt no_posix_traps            # use zsh EXIT traps when leaving functions
-
-  hz_setopt no_sh_file_expansion      # use zsh expansion precedence
-  hz_setopt no_sh_nullcmd             # use (READ)?NULLCMD, not :.
-  hz_setopt no_sh_option_letters      # don't interpret single option letters
-  hz_setopt no_sh_word_split          # `s="a b"; a=($s)' => array of length 1, not 2
-  hz_setopt traps_async               # Handle traps immediately, not on child exit.
+  --hz-setopt no_sh_file_expansion      # use zsh expansion precedence
+  --hz-setopt no_sh_nullcmd             # use (READ)?NULLCMD, not :.
+  --hz-setopt no_sh_option_letters      # don't interpret single option letters
+  --hz-setopt no_sh_word_split          # `s="a b"; a=($s)' => array of length 1, not 2
+  --hz-setopt traps_async               # Handle traps immediately, not on child exit.
 
   # [ shell state ]
-  #hz_setopt interactive              # Use the default
-  #hz_setopt login                    # Use the default
-  #hz_setopt privileged               # Use the default
-  #hz_setopt restricted               # Use the default
-  #hz_setopt shin_stdin               # Use the default
-  #hz_setopt single_command           # Use the default
+  #--hz-setopt interactive              # Use the default
+  #--hz-setopt login                    # Use the default
+  #--hz-setopt privileged               # Use the default
+  #--hz-setopt restricted               # Use the default
+  #--hz-setopt shin_stdin               # Use the default
+  #--hz-setopt single_command           # Use the default
 
   # [ zle ]
-  hz_setopt no_beep                   # beep on ZLE error
-  hz_setopt combining_chars           # handle multibyte combining chars right
-  hz_setopt no_emacs                  # let `bindkey` setup choose this
-  hz_setopt no_overstrike             # don't start ZLE in overstrike mode
-  hz_setopt no_single_line_zle        # use multiline editor
-  hz_setopt no_vi                     # let `bindkey` setup choose this
-  hz_setopt zle                       # use ZLE
+  --hz-setopt no_beep                   # beep on ZLE error
+  --hz-setopt combining_chars           # handle multibyte combining chars right
+  --hz-setopt no_emacs                  # let `bindkey` setup choose this
+  --hz-setopt no_overstrike             # don't start ZLE in overstrike mode
+  --hz-setopt no_single_line_zle        # use multiline editor
+  --hz-setopt no_vi                     # let `bindkey` setup choose this
+  --hz-setopt zle                       # use ZLE
 
-  unfunction hz_setopt
+  unfunction -- --hz-setopt
 }

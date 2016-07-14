@@ -1,0 +1,13 @@
+#autoload -U
+
+if not git-in-work-tree; then
+  print "${0}: not a repository work tree: ${PWD}" >&2
+  return 1
+fi
+
+local commit
+
+for commit in "${@}"; do
+  git update-ref \
+    -m "$(command git log -1 --pretty="format:%s" "$commit")" refs/stash "${commit}"
+done
