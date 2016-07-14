@@ -46,3 +46,12 @@
 [submodule "vendor/thoughtbot-dotfiles"]
 	path = vendor/thoughtbot-dotfiles
 	url = git://github.com/thoughtbot/dotfiles.git
+[submodule "vendor/glejeune-dotrc"]
+	path = vendor/glejeune-dotrc
+	url = git://github.com/glejeune/.dotrc.git
+[submodule "vendor/vincentbernat-zshrc"]
+	path = vendor/vincentbernat-zshrc
+	url = git://github.com/vincentbernat/zshrc.git
+[submodule "vendor/myfreeweb"]
+	path = vendor/myfreeweb
+	url = git://github.com/myfreeweb/dotfiles.git
