@@ -25,9 +25,6 @@
 [submodule "vendor/dotphiles"]
 	path = vendor/dotphiles
 	url = git://github.com/dotphiles/dotphiles.git
-[submodule "vendor/zshuery"]
-	path = vendor/zshuery
-	url = git://github.com/myfreeweb/zshuery.git
 [submodule "vendor/pfarrell"]
 	path = vendor/pfarrell
 	url = git://github.com/pfarrell/dotfiles.git
@@ -52,6 +49,3 @@
 [submodule "vendor/vincentbernat-zshrc"]
 	path = vendor/vincentbernat-zshrc
 	url = git://github.com/vincentbernat/zshrc.git
-[submodule "vendor/myfreeweb"]
-	path = vendor/myfreeweb
-	url = git://github.com/myfreeweb/dotfiles.git
