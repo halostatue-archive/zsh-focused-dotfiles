@@ -92,7 +92,7 @@ function()
             shift current_plugin_line
           fi
           ;;
-        alternates|"do"|directory|file|executable)
+        alternates|"do"|directory|file|executable|zsh-at-least)
           if [[ ${#current_plugin_line} = 0 ]]; then
             current_plugin_line[1]=(${current_plugin[directive]} ${line[1]})
             current_plugin[directive]="command"
@@ -108,6 +108,7 @@ function()
       esac
 
       current_plugin[cmd]=${current_plugin_line[1]}
+      current_plugin[found]=false
       shift current_plugin_line
 
       case ${current_plugin[directive]} in
@@ -115,11 +116,8 @@ function()
           current_plugin[cmd]=$(eval "builtin echo ${current_plugin[cmd]}")
           ${current_plugin[cmd]} ${current_plugin_line[*]} > /dev/null 2> /dev/null
           current_plugin[res]=${?}
-          if [[ ${current_plugin[rc]} = ${current_plugin[res]} ]]; then
+          [[ ${current_plugin[rc]} = ${current_plugin[res]} ]] &&
             current_plugin[found]=true
-          else
-            current_plugin[found]=false
-          fi
           ;;
         directory|file|executable)
           current_plugin[itemfound]=false
@@ -153,31 +151,25 @@ function()
           current_plugin[found]=${current_plugin[itemfound]}
           ;;
         alternates)
-          local altfound=false
           for alternate (${current_plugin[cmd]} ${current_plugin_line[*]}); do
             alt=$(command -v ${alternate})
             if [ -n "${alt}" ]; then
-              altfound=true
+              current_plugin[found]=true
               break
             fi
           done
 
-          current_plugin[found]=${altfound}
           ;;
         command)
           current_plugin[res]=$(command -v ${current_plugin[cmd]})
-
-          if [ -n "${current_plugin[res]}" ]; then
-            current_plugin[found]=true
-          else
-            current_plugin[found]=false
-          fi
+          [ -n "${current_plugin[res]}" ] && current_plugin[found]=true
+          ;;
+        zsh-at-least)
+          is-at-least ${current_plugin_line} && current_plugin[found]=true
           ;;
       esac
 
-      if not ${current_plugin[found]}; then
-        break
-      fi
+      ${current_plugin[found]} || break
     done < ${plugin_detect_file}
 
     if ${current_plugin[found]}; then

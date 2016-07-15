@@ -79,6 +79,7 @@ The directives are:
 * directory
 * file
 * executable
+* zsh-at-least
 
 A plug-in will only be activated if **all** of the directives in the detection
 script pass and should be kept fairly simple for speed purposes.
@@ -165,3 +166,9 @@ This will be true if the file `/etc/debian_version` exists.
 This will be true if the file `${GOROOT}/src/all.bash` exists and is
 executable; should the environment variable `${GOROOT}` not exist, the default
 value `${HOME}/go` will be used, looking for `${HOME}/go/src/all.bash`.
+
+### zsh-at-least
+
+   zsh-at-least 4.3.12
+
+The `zsh-at-least` directive tests that zsh is at least the specified version.
