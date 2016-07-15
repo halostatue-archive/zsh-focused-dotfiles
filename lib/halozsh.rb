@@ -56,7 +56,7 @@ class Halozsh
 
     installer = new(source_path, target_path)
     installer.define_default_tasks
-    installer.define_tasks_for(%W(zlogin zsh zshrc zprofile))
+    installer.define_tasks_for(%W(zlogin zsh zshrc zprofile zshenv))
     # Something broke here.
     installer.fix_prerequisites!
   end

@@ -1,0 +1,20 @@
+#! /usr/bin/env zsh
+
+if (( ${UID} == 0 )); then
+  builtin print "${0} cannot be run as root." >&2
+  exit 1
+fi
+
+unset REPORTTIME
+
+printed_version=false
+export HALOZSH_VERSION=0.9
+
+export HALOZSH_BN0=$(builtin echo ${0}(:t))
+export HALOZSH_DN0=$(builtin cd $(builtin echo ${0}(:h)); builtin pwd -P)
+export HALOZSH_ROOT=$(builtin echo ${HALOZSH_DN0}(:h))
+export HALOZSH_BIN=${HALOZSH_ROOT}/bin
+export HALOZSH_LIB=${HALOZSH_ROOT}/lib
+export HALOZSH_LIBEXEC=${HALOZSH_ROOT}/lib/exec
+
+ruby -Ilib -rhz -e "Hz::Installer.run('${HALOZH_ROOT}', '${HOME}')"
