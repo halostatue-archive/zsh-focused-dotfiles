@@ -2,6 +2,12 @@
 
 require_relative 'config'
 
+begin
+  require 'byebug'
+rescue LoadError
+  ni
+end
+
 class Hz::Installer < ::Hz
   def self.run(source, target, replace = false)
     new(source, target, replace).run
@@ -49,9 +55,21 @@ class Hz::Installer < ::Hz
   end
 
   def run
-    @config_map.each do |source, target|
+    result = @config_map.map do |source, target|
       prerequisites(source)
       try_replace_file(source, target)
+    end.compact
+
+    if result.empty?
+      cli.say "No files need to be updated."
+    elsif result.size < @config_map.size
+      if result.size == 1
+        cli.say "Updated one file."
+      else
+        cli.say "Updated #{result.size} files."
+      end
+    else
+      cli.say "Updated all files."
     end
   end
 
@@ -60,7 +78,7 @@ class Hz::Installer < ::Hz
   def replace_file(source, target)
     remove_file target
 
-    if @prerequisites[source].size > 1 or @needs_merge[source]
+    if prerequisites(source).size > 1 or needs_merge?(source, target)
       merge_file source, target
     else
       link_file source, target
@@ -68,24 +86,22 @@ class Hz::Installer < ::Hz
   end
 
   def remove_file(target)
-    if File.exist? target or File.symlink? target
+    if target.exist? or target.symlink?
       if backup_file target
-        puts "Removing target #{File.basename(target)}…"
-        FileUtils.rm target, :force => true
+        puts "Removing target #{target.basename}…"
+        target.unlink if target.exist?
       end
     end
   end
 
   def merge_file(source, target)
-    @current_file = File.basename(source)
+    @current_file = source.basename
 
     cli.say <<-SAY
-Creating target #{File.basename(target)} from #{@current_file} and local files…
+Creating target #{target.basename} from #{@current_file} and local files…
     SAY
 
-    contents = evaluate(source)
-
-    File.open(target, 'w') { |f| f.write contents }
+    target.write evaluate(source)
   end
 
   def include_file(filename_pattern)
@@ -112,12 +128,12 @@ Creating target #{File.basename(target)} from #{@current_file} and local files�
   end
 
   def link_file(source, target)
-    puts "Linking source #{File.basename(source)} as target #{File.basename(target)}…"
-    FileUtils.ln_s source, target
+    puts "Linking source #{source.basename} as target #{target.basename}…"
+    target.make_symlink(source)
   end
 
   def expand_filename_pattern(filename_pattern, current_file = nil)
-    fp = filename_pattern.
+    fp = filename_pattern.to_s.
       gsub(PLATFORM_FILES_RE, "platform/{PLATFORM}/{FILE}").
       gsub(USER_FILES_RE, "user/**/{FILE}").
       gsub(PLATFORM_RE, @ostype).
@@ -134,7 +150,7 @@ Creating target #{File.basename(target)} from #{@current_file} and local files�
 
   PLATFORM_RE       = %r{\{PLATFORM\}}
   CURRENT_FILE_RE   = %r{\{FILE\}}
-  USER_DATA_RE      = %r{<%=?.*user_data(?:\[|_lookup).*?%>}m
+  USER_DATA_RE      = %r{<%=?.*user_data_lookup.*?%>}m
   PLATFORM_FILES_RE = %r{\bplatform_files\b}
   USER_FILES_RE     = %r{\buser_files\b}
   TEMPLATE_MATCH_RE = %r{<%=?.*?%>}m
@@ -158,59 +174,57 @@ Creating target #{File.basename(target)} from #{@current_file} and local files�
       )
     .*?%>}mx
 
+  def needs_merge?(source, target)
+    return true unless target.exist?
+    return true unless @needs_merge[source.to_s]
+    mtime = target.mtime
+    prerequisites(source).any? { |f| f.mtime > mtime }
+  end
+
   def prerequisites(filename)
-    filename = filename.to_s
-    unless @prerequisites.key? filename
-      @prerequisites[filename] = [ filename ]
-      if File.file? filename
-        data = IO.binread(filename)
+    key = filename.to_s
+    unless @prerequisites.key?(key)
+      pq = @prerequisites[key] = [ filename ]
+      if filename.file?
+        data = filename.binread
 
-        unless @needs_merge.key? filename
-          needs_merge = !!(data =~ TEMPLATE_MATCH_RE)
-          @needs_merge[filename] = needs_merge
+        if !@needs_merge.key?(key) and (@needs_merge[key] = !!(data =~ TEMPLATE_MATCH_RE))
+          files = []
+          files << user_data_file if data =~ USER_DATA_RE
 
-          if needs_merge
-            files = []
-            files << user_data_file if data =~ USER_DATA_RE
+          included_files =
+            data.scan(INCLUDE_FILE_RE).flatten.compact.uniq.map { |ifn|
+              expand_filename_pattern(ifn, filename)
+          }.flatten.compact.uniq
 
-            included_files =
-              data.scan(INCLUDE_FILE_RE).flatten.compact.uniq.map { |ifn|
-                expand_filename_pattern(ifn, filename)
-            }.flatten.compact.uniq
-
-            included_files.each { |ifn| prerequisites(ifn) }
-
-            files += included_files
-            @prerequisites[filename] += files.compact
-          end
+          included_files.each { |ifn| files += prerequisites(ifn) }
+          pq += files.compact
         end
       end
     end
 
-    @prerequisites[filename]
+    @prerequisites[key]
   end
 
   def backup_file(target)
-    if File.symlink? target
+    if target.symlink?
       true
-    elsif File.directory? target
-      puts "Backing up target directory #{File.basename(target)}…"
-      FileUtils.mv target, "#{target}.backup"
-    elsif File.file? target
-      puts "Backing up target #{File.basename(target)}…"
-      FileUtils.cp target, "#{target}.backup"
+    elsif target.directory?
+      puts "Backing up target directory #{target.basename}…"
+      target.rename("#{target}.backup")
+    elsif target.file?
+      puts "Backing up target #{target.basename}…"
+      target.rename("#{target}.backup")
     else
-      raise "Unknown type for #{File.basename(target)}!"
+      raise "Unknown type for #{target.basename}!"
     end
     true
   end
 
   def evaluate(filename)
-    if File.exists? filename
+    if filename.exist?
       puts "\t#{relative_path(filename)}…"
-      data = File.open(filename) { |f| f.read }
-      erb = ERB.new(data, 0, "><>%")
-      erb.result(binding)
+      ERB.new(filename.read, 0, "><>%").result(binding)
     else
       puts "\t#{relative_path(filename)} (missing)…"
       ""
@@ -246,35 +260,40 @@ Creating target #{File.basename(target)} from #{@current_file} and local files�
   alias_method :when_in_path?, :in_path?
 
   def try_replace_file(source, target = source)
-    replace = false
-
     source = Pathname(source).expand_path
     target = Pathname(target).expand_path
 
     target.dirname.mkpath unless target.dirname == target_path
 
-    if File.exist? target
-      if replace_all?
-        replace = true
-      else
-        begin
+    replace =
+      if target.exist?
+        if replace_all?
+          true
+        elsif target.symlink? and target.readlink == source
+          # Do not try to do anything if the target is an extant link to the
+          # source file.
+          false
+        elsif !needs_merge?(source, target)
+          # Do not try to do anything if the target does not need replacing.
+          false
+        else
           case ask_overwrite(target)
           when 'y', 'Y'
-            replace = true
+            true
           when 'n', 'N'
             cli.say "Skipping target #{expand(target).basename}"
+            false
           when 'q', 'Q'
             cli.say 'Stopping.'
             exit
           when 'a', 'A'
             cli.say 'Replacing all files.'
-            replace = self.replace_all(true)
+            self.replace_all(true)
           end
         end
+      else
+        true
       end
-    else
-      replace = true
-    end
 
     replace_file(source, target) if replace
   end

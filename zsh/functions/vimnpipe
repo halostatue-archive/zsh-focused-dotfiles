@@ -1,0 +1,3 @@
+#autoload -Uz
+
+vim - -u NONE -es "+%normal $*" '+%print' '+:qa!' | tail -n +2

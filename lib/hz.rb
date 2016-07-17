@@ -28,4 +28,5 @@ class Hz
   end
 end
 
+require 'hz/backport'
 require 'hz/installer'

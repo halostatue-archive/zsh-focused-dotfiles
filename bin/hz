@@ -7,14 +7,45 @@ fi
 
 unset REPORTTIME
 
-printed_version=false
-export HALOZSH_VERSION=0.9
+export HZ_VERSION=1.0
+export HZ_BN0=${0:t}
+export HZ_DN0=$(builtin cd ${0:h}; builtin pwd -P)
+export HZ_RUN_RELATIVE=true
+[[ ${HZ_DN0} == ${0:h} ]] && HZ_RUN_RELATIVE=false
+export HZ_ROOT=${HZ_DN0:h}
+export HZ_BIN=${HZ_ROOT}/bin
+export HZ_LIB=${HZ_ROOT}/lib
+export HZ_LIBEXEC=${HZ_ROOT}/lib/exec
+export HZ_INTERNAL=${HZ_ROOT}/.hz-internal
 
-export HALOZSH_BN0=$(builtin echo ${0}(:t))
-export HALOZSH_DN0=$(builtin cd $(builtin echo ${0}(:h)); builtin pwd -P)
-export HALOZSH_ROOT=$(builtin echo ${HALOZSH_DN0}(:h))
-export HALOZSH_BIN=${HALOZSH_ROOT}/bin
-export HALOZSH_LIB=${HALOZSH_ROOT}/lib
-export HALOZSH_LIBEXEC=${HALOZSH_ROOT}/lib/exec
+export HZ_OPTION_FORCE=false
 
-ruby -Ilib -rhz -e "Hz::Installer.run('${HALOZH_ROOT}', '${HOME}')"
+builtin source ${HZ_LIB}/hz-core.zsh
+builtin source ${HZ_LIB}/hz-core-commands.zsh
+
+path+=(${HZ_BIN} ${HZ_LIBEXEC})
+
+local -a hz_modified_args &&
+  --hz-parse-global-opts "${@}" &&
+  set -- "${hz_modified_args[@]}" &&
+  unset hz_modified_args
+
+local hz_command=help
+
+(( ${#} )) && { hz_command=${1}; shift }
+
+cd ${HZ_ROOT}
+
+--hz-setup
+
+if --hz-has-function ${hz_command}; then
+  hz-${hz_command} "${@}"
+elif --hz-has-command ${hz_command}; then
+  exec hz-${hz_command} "${@}"
+else
+  hz-version >&2
+  builtin printf >&2 "\nUnknown command '${HZ_BN0} ${hz_command}'.\n"
+  hz-commands >&2
+  exit 1
+fi
+

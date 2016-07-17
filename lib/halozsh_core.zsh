@@ -1,6 +1,9 @@
 #! /usr/bin/env zsh
 
---halozsh-halt() {
+zmodload -m -F zsh/files b:zf_\*
+
+--halozsh-halt()
+{
   rc=${?}
 
   builtin printf "%s\n" "${@}" >&2
@@ -8,37 +11,62 @@
   exit ${rc}
 }
 
---halozsh-has-function() {
+--halozsh-has-function()
+{
   (( ${+functions[halozsh-${1}]} )) || return 1
 }
 
---halozsh-has-command() {
+--halozsh-has-command()
+{
   (( ${+commands[halozsh-${1}]} )) || return 1
 }
 
---halozsh-gem-install() {
-  gem install ${1} --no-ri --no-rdoc > /dev/null ||
+--halozsh-gem-install()
+{
+  command gem install ${1} --no-ri --no-rdoc > /dev/null ||
     --halozsh-halt "Could not install gem ${1}."
 }
 
---halozsh-gem-conditional-install() {
-  if [ $(gem list ${1} | grep -c ${1}) -lt 1 ]; then
+--halozsh-gem-conditional-install()
+{
+  if [ $(command gem list ${1} | command grep -c ${1}) -lt 1 ]; then
     --halozsh-gem-install ${1}
   fi
 }
 
---halozsh-rake() {
+--halozsh-rake()
+{
   --halozsh-install-rake
   --halozsh-install-highline
   rake -f ${HALOZSH_LIB}/halozsh.rake "${@}"
 }
 
 
-# Set up the gem environment
---halozsh-gem-setup() {
+# Set up the private gem environment, once. This function will undefine itself
+# once run.
+--halozsh-internal-gem-repo-setup()
+{
   # Handle an already-installed chruby specially by doing a reset (the same as
   # chruby_reset).
-  --halozsh-chruby-reset
+  if [[ -n "${RUBY_ROOT}" ]]; then
+    PATH=":${PATH}:"
+    PATH="${PATH//:${RUBY_ROOT}\/bin:/:}"
+    [ -n "${GEM_HOME}" ] && PATH="${PATH//:${GEM_HOME}\/bin:/:}"
+    [ -n "${GEM_ROOT}" ] && PATH="${PATH//:${GEM_ROOT}\/bin:/:}"
+
+    GEM_PATH=":${GEM_PATH}:"
+    GEM_PATH="${GEM_PATH//:${GEM_HOME}:/:}"
+    GEM_PATH="${GEM_PATH//:${GEM_ROOT}:/:}"
+    GEM_PATH="${GEM_PATH#:}"
+    GEM_PATH="${GEM_PATH%:}"
+    [ -z "${GEM_PATH}" ] && builtin unset GEM_PATH
+    builtin unset GEM_ROOT GEM_HOME
+
+    PATH="${PATH#:}"
+    PATH="${PATH%:}"
+    builtin unset RUBY_ROOT RUBY_ENGINE RUBY_VERSION RUBYOPT
+    builtin hash -r
+  fi
 
   eval "$(
   ruby - <<EOF
@@ -49,13 +77,14 @@ puts "export GEM_ROOT=#{Gem.default_dir.inspect};" if defined? Gem
 EOF
 )"
 
-  export GEM_HOME="${HALOZSH_ROOT}/.gem/${RUBY_ENGINE}/${RUBY_VERSION}"
+  export GEM_HOME="${HALOZSH_INTERNAL}/${RUBY_ENGINE}/${RUBY_VERSION}"
   export GEM_PATH="${GEM_HOME}${GEM_ROOT:+:${GEM_ROOT}}${GEM_PATH:+:${GEM_PATH}}"
   export PATH="${GEM_HOME}/bin${GEM_ROOT:+:${GEM_ROOT}/bin}:${PATH}"
-  mkdir -p ${GEM_HOME}
+  builtin zf_mkdir -p ${GEM_HOME}
 }
 
---halozsh-install-rake() {
+--halozsh-install-rake()
+{
   [ -n "${rake_version}" ] && return
 
   if --halozsh-has-command rake; then
@@ -70,27 +99,7 @@ EOF
   fi
 }
 
---halozsh-install-highline() {
+--halozsh-install-highline()
+{
   --halozsh-gem-conditional-install highline
-}
-
-function --halozsh-chruby-reset {
-  [ -z "${RUBY_ROOT}" ] && return
-
-  PATH=":${PATH}:"
-  PATH="${PATH//:${RUBY_ROOT}\/bin:/:}"
-  [ -n "${GEM_HOME}" ] && PATH="${PATH//:${GEM_HOME}\/bin:/:}"
-  [ -n "${GEM_ROOT}" ] && PATH="${PATH//:${GEM_ROOT}\/bin:/:}"
-
-  GEM_PATH=":${GEM_PATH}:"
-  GEM_PATH="${GEM_PATH//:${GEM_HOME}:/:}"
-  GEM_PATH="${GEM_PATH//:${GEM_ROOT}:/:}"
-  GEM_PATH="${GEM_PATH#:}"; GEM_PATH="${GEM_PATH%:}"
-  [ -z "${GEM_PATH}" ] && unset GEM_PATH
-  unset GEM_ROOT GEM_HOME
-
-  PATH="${PATH#:}"
-  PATH="${PATH%:}"
-  unset RUBY_ROOT RUBY_ENGINE RUBY_VERSION RUBYOPT
-  hash -r
 }

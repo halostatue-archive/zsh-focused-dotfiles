@@ -43,6 +43,8 @@ tags-ja
 
 # halozsh-specific files
 /.gem
+/.hzgem
+/.hz-internal
 /.vagrant/
 /config/hoe_template/minitest-travis/
 /config/m2/repository
