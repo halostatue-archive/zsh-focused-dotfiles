@@ -17,11 +17,13 @@ export HZ_BIN=${HZ_ROOT}/bin
 export HZ_LIB=${HZ_ROOT}/lib
 export HZ_LIBEXEC=${HZ_ROOT}/lib/exec
 export HZ_INTERNAL=${HZ_ROOT}/.hz-internal
+export HZ_TARGET=${HOME}
 
+export HZ_OPTION_DEBUG=false
 export HZ_OPTION_FORCE=false
 
-builtin source ${HZ_LIB}/hz-core.zsh
-builtin source ${HZ_LIB}/hz-core-commands.zsh
+builtin source ${HZ_LIB}/hz/core.zsh
+builtin source ${HZ_LIB}/hz/core/commands.zsh
 
 path+=(${HZ_BIN} ${HZ_LIBEXEC})
 

@@ -79,6 +79,7 @@ zmodload -m -F zsh/files b:zf_\*
 {
   --hz-once!
   --hz-internal-gem-repo-setup
+  ${HZ_OPTION_DEBUG} && --hz-install-gem byebug
 }
 
 # Set up the private gem environment, once. This function will undefine itself
@@ -132,9 +133,11 @@ EOF
 --hz-parse-global-opts()
 {
   --hz-once!
-  local -a force
+  local -a force debug
   force=()
-  zparseopts -D -K -E -a force f force -force
+  debug=()
+  zparseopts -D -K -E -a force f force -force D=debug debug=debug -debug=debug
   hz_modified_args=("${@}")
   (( ${#force} )) && HZ_OPTION_FORCE=true
+  (( ${#debug} )) && HZ_OPTION_DEBUG=true
 }

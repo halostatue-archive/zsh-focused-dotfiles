@@ -5,15 +5,22 @@ require 'pathname'
 require 'erb'
 require 'forwardable'
 
-begin
-  require 'psych'
+def optional_dependency(path)
+  require path
 rescue LoadError
   nil
 end
 
+optional_dependency 'psych'
 require 'yaml'
 
+optional_dependency 'byebug' if ENV['HZ_OPTION_DEBUG'] == 'true'
+
 class Hz
+  def self.run(*args)
+    new(*args).run
+  end
+
   def initialize(source_path, target_path)
     @config = Hz::Config.new(source_path, target_path)
   end
@@ -30,3 +37,4 @@ end
 
 require 'hz/backport'
 require 'hz/installer'
+require 'hz/user_data'

@@ -2,17 +2,7 @@
 
 require_relative 'config'
 
-begin
-  require 'byebug'
-rescue LoadError
-  ni
-end
-
 class Hz::Installer < ::Hz
-  def self.run(source, target, replace = false)
-    new(source, target, replace).run
-  end
-
   # Sets the replace-all mode for file replacement.
   def replace_all(value)
     @replace_all = !!value

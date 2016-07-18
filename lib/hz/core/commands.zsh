@@ -1,4 +1,3 @@
-#! /usr/bin/env zsh
 
 typeset -gA HZ_BANNER HZ_HELP HZ_USAGE
 
@@ -37,8 +36,7 @@ hz-help()
 HZ_BANNER[install]="Install Hz configuration."
 hz-install()
 {
-  --hz-install-gem byebug
-  --hz-ruby-hz "Hz::Installer.run('${HZ_ROOT}', '${HOME}', ${HZ_OPTION_FORCE:-false})"
+  --hz-ruby-hz "Hz::Installer.run('${HZ_ROOT}', '${HZ_TARGET}', ${HZ_OPTION_FORCE:-false})"
 }
 
 if ${HZ_RUN_RELATIVE}; then
@@ -55,5 +53,12 @@ once.
     builtin print "Bootstrapping Hz..."
     --hz-install-highline
     hz-user-setup
+    hz-install
   }
 fi
+
+HZ_BANNER[user-setup]="Configure user data."
+hz-user-setup()
+{
+  --hz-ruby-hz "Hz::UserData.run('${HZ_ROOT}', '${HZ_TARGET}')"
+}

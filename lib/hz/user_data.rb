@@ -13,10 +13,10 @@ class Hz::UserData < ::Hz
     "hoe.email.password" => "Hoe Email Password"
   }
 
-  def setup
+  def run
     require_user_file
     ask_user_data_by_keys(DEFAULT_USER_DATA.keys)
-    ask_user_data_by_keys(deep_keys(user_data).keys - DEFAULT_USER_DATA.keys)
+    ask_user_data_by_keys(deep_keys(user_data) - DEFAULT_USER_DATA.keys)
 
     cli.say "\n"
 
@@ -36,10 +36,10 @@ class Hz::UserData < ::Hz
       user_data.delete(key_path) if value.nil? or value.empty?
     end
 
-    cli.say("\n%-30s  %-40s" % %W(Key Value))
-    cli.say("--------------------  ----------------------------------------")
+    cli.say("\n%-30s\t%-40s\n" % %W(Key Value))
+    cli.say("------------------------------\t----------------------------------------\n")
     deep_keys(user_data).each do |key_path|
-      cli.say("%-30s  %-40s" % [ key_path.gsub(/\./, ' '), user_data_lookup(key_path) ])
+      cli.say("%-30s\t%-40s\n" % [ key_path.gsub(/\./, ' '), user_data_lookup(key_path) ])
     end
 
     cli.say "\n"
@@ -55,7 +55,7 @@ class Hz::UserData < ::Hz
   private
 
   def ask_user_data_by_keys(keys)
-    keys.each { ask_user_data(key) }
+    keys.each { |key| ask_user_data(key) }
   end
 
   def ask_user_data(key)
