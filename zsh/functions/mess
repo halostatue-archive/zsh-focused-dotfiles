@@ -1,23 +1,26 @@
 #autoload -U
 
-local -i _year=$(date +%Y)
-local -i _week=$(date +%W)
+local messpath now current link
 
-local _current="${MESS_PATH:=${HOME}/mess}/${_year}/$(printf '%02d' ${_week})"
-local _link="${MESS_PATH}/current"
+zstyle -s :hzsh:functions:mess path messpath
 
-if [[ ! -d ${_current} ]]; then
-  mkdir -p ${_current}
-  echo "Created messdir ${_current}"
+(( ${#messpath} )) || messpath=${HOME}/mess
+now=$(date +%Y)/$(printf '%02d' $(date +%W))
+current=${messpath}/${now}
+link=${messpath}/current
+
+if [[ ! -d "${current}" ]]; then
+  mkdir -p ${current}
+  print "Created '${now}'."
 fi
 
-if [[ -a ${_link} && ! -L ${_link} ]]; then
-  echo '"${_link}\" is not a symlink; something is wrong.'
+if [[ -a ${link} ]] && [[ ! -L ${link} ]]; then
+  print "'${link}' is not a symlink; something is wrong.'"
 else
-  if [[ ! ${_link} -ef ${_current} ]]; then
-    rm -f ${_link}
-    ln -s ${_current} ${_link}
+  if [[ ! ${link} -ef ${current} ]]; then
+    rm -f ${link}
+    ln -s ${current} ${link}
   fi
 
-  cd ${_current}
+  cd ${current}/${1}
 fi

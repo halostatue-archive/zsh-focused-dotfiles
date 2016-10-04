@@ -88,7 +88,7 @@
   --hz-keyname Control A beginning-of-line
   --hz-keyname Control E end-of-line
   --hz-keyname Control K kill-line
-  --hz-keyname Control L clear-scren
+  --hz-keyname Control L clear-screen
   --hz-keyname Control R history-incremental-search-backward
   --hz-keyname Control U kill-whole-line
   --hz-keyname Control V quoted-insert

@@ -1,0 +1,74 @@
+#!/usr/bin/env ruby
+#
+# Git commit-msg hook. If your branch name is in the form "t123", automatically
+# adds "Refs #123." to commit messages unless they mention "#123" already.
+# Include "#close" or "#finish" to add "Closes #123."
+#
+# For Pivotal Tracker, branch names like "s123" adds "[#123]".
+# Include "#close" or "#finish" to add "[Finishes #123]".
+#
+# If you include "#noref" in the commit message, nothing will be added to
+# the commit message, and the "#noref" itself will be stripped.
+#
+# By Henrik Nyh <http://henrik.nyh.se> 2009-09-10 under the MIT License.
+#
+#
+# Install:
+#
+# cd your_project
+# curl https://raw.github.com/henrik/dotfiles/master/git_template/hooks/commit-msg -o .git/hooks/commit-msg && chmod u+x .git/hooks/commit-msg
+#
+# Or store it centrally and symlink in your projects:
+#
+# curl --create-dirs -https://raw.github.com/henrik/dotfiles/master/git_template/hooks/commit-msg -o ~/.githooks/commit-msg && chmod u+x ~/.githooks/commit-msg
+# cd your_project
+# ln -s ~/.githooks/commit-msg .git/hooks
+#
+# Or set up a template for all your Git repos:
+# http://www.kernel.org/pub/software/scm/git/docs/git-init.html#_template_directory
+
+PREFIXES = {
+  # RedMine, Trac etc.
+  "t" => { :reference => "Refs #%s.", :finish => "Closes #%s." },
+  # Pivotal Tracker.
+  "s" => { :reference => "[#%s]",     :finish => "[Finishes #%s]" },
+}
+
+FLAGS = [
+  NOREF  = "noref",
+  CLOSE  = "close",
+  FINISH = "finish"
+]
+
+CLOSING_FLAGS = [ CLOSE, FINISH ]
+
+branchname = `git branch --no-color 2> /dev/null`[/^\* (.+)/, 1].to_s
+
+if m = branchname.match(/\A(#{Regexp.union(*PREFIXES.keys)})-?(\d+)/)
+  prefix, ticket_number = m.captures
+  finish    = PREFIXES[prefix][:finish] % ticket_number
+  reference = PREFIXES[prefix][:reference] % ticket_number
+else
+  exit
+end
+
+message_file = ARGV[0]
+message = File.read(message_file).strip
+exit if message.include?("##{ticket_number}")
+
+# Determine if any of the flags are included. Make a note of which and then remove it.
+
+message.sub!(/(?:^|\s)#(#{Regexp.union(*FLAGS)})\b/, '')
+flag = $1
+
+message =
+  case flag
+  when NOREF
+    message
+  when *CLOSING_FLAGS
+    [ message, finish ].join(" ")
+  else
+    [ message, reference ].join(" ")
+  end
+
+File.open(message_file, 'w') { |f| f.write message }

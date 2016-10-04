@@ -1,0 +1,52 @@
+[user]
+  name = <%= user_data['name'] %>
+  email = <%= user_data['email'] %>
+
+
+[core]
+  excludesfile = <%= ENV["HOME"] %>/.gitignore
+  pager = less -FRSX
+  whitespace=trailing-space,tab-in-indent,cr-at-eol,space-before-tab
+  autocrlf = input
+  safecrlf = true
+
+[merge]
+  tool = vimdiff
+
+[mergetool "vimdiff"]
+  cmd = vim -d "${LOCAL}" "${MERGED}" "${REMOTE}"
+  trustExitCode = true
+
+[alias]
+	hist2 = for-each-ref --count=5 --sort=-committerdate --format='%(refname:short)' refs/heads/
+	standup = shortlog --since=yesterday
+	subs = submodule foreach git pull origin master
+	today = shortlog --since=midnight
+	unamend = reset --soft HEAD@{1}
+	uncommit = reset --soft HEAD^
+	who = shortlog -s -n --no-merges
+
+
+[color]
+	status = auto
+	diff = auto
+	branch = auto
+
+[branch "master"]
+	merge = master
+
+[gist]
+	private = yes
+	extension = rb
+
+[init]
+	templatedir = ~/.git_template
+
+[push]
+	default = current
+
+[web]
+	browser = open
+
+[branch]
+	autosetuprebase = always

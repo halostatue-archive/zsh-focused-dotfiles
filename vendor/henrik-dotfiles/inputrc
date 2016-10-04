@@ -1,0 +1,23 @@
+set show-all-if-ambiguous on
+set completion-ignore-case on
+
+# http://www.reddit.com/r/commandline/comments/kbeoe/you_can_make_readline_and_bash_much_more_user/
+Control-j: menu-complete
+Control-k: menu-complete-backward
+
+# Map modifiers (xterm defaults)
+#
+# Figure out the code in Vim:
+#   * go into insert mode:
+#   * type ctrl+v
+#   * type the shortcut
+#
+# opt+left, opt+right outside tmux
+"\e[1;9D": backward-word
+"\e[1;9C": forward-word
+# opt+left, opt+right in tmux
+"\e[1;3D": backward-word
+"\e[1;3C": forward-word
+# shift+left, shift+right
+"\e[1;2D": backward-word
+"\e[1;2C": forward-word

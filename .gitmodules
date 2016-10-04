@@ -46,3 +46,33 @@
 [submodule "vendor/glejeune-dotrc"]
 	path = vendor/glejeune-dotrc
 	url = git://github.com/glejeune/.dotrc.git
+[submodule "vendor/beanaroo-dotfiles"]
+	path = vendor/beanaroo-dotfiles
+	url = git://github.com/beanaroo/dotfiles.git
+[submodule "vendor/desk"]
+	path = vendor/desk
+	url = git://github.com/jamesob/desk.git
+[submodule "vendor/pure"]
+	path = vendor/pure
+	url = git://github.com/sindresorhus/pure.git
+[submodule "vendor/jleclanche-dotfiles"]
+	path = vendor/jleclanche-dotfiles
+	url = git://github.com/jleclanche/dotfiles.git
+[submodule "vendor/tim"]
+	path = vendor/tim
+	url = git://github.com/ggustafsson/Tim.git
+[submodule "vendor/zplug"]
+	path = vendor/zplug
+	url = git://github.com/zplug/zplug.git
+[submodule "vendor/garybernhardt-dotfiles"]
+	path = vendor/garybernhardt-dotfiles
+	url = git://github.com/garybernhardt/dotfiles.git
+[submodule "vendor/andrew-radev-dotshell"]
+	path = vendor/andrew-radev-dotshell
+	url = git://github.com/AndrewRadev/dot-shell.git
+[submodule "vendor/zsh-async"]
+	path = vendor/zsh-async
+	url = git://github.com/mafredri/zsh-async.git
+[submodule "vendor/paulirish"]
+	path = vendor/paulirish
+	url = git://github.com/paulirish/dotfiles.git
