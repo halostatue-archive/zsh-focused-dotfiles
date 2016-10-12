@@ -1,0 +1,3 @@
+#autoload -U
+
+pgrep -of ${1} 2> /dev/null > /dev/null

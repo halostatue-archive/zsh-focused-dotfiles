@@ -2,7 +2,6 @@
 
 # Based on bashfinder: https://github.com/NapoleonWils0n/bashfinder.git
 
-
 function --update-finder-with-cwd()
 {
   case ${1} in

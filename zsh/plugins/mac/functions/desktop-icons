@@ -1,0 +1,46 @@
+#autoload -U
+
+# Show or hide all desktop icons. Hiding is useful when presenting.
+local show_icons domain key
+
+domain=com.apple.finder 
+key=CreateDesktop
+
+function --show-icons()
+{
+  defaults write ${domain} ${key} -bool ${1} && killall Finder
+}
+
+case "${1}" in
+  hide|off)
+    --show-icons true
+    ;;
+  show|on)
+    --show-icons false
+    ;;
+  toggle)
+    show_icons=$(defaults read com.apple.finder CreateDesktop 2> /dev/null)
+    case ${show_icons:-1} in
+      0)
+        --show-icons false
+        ;;
+      1)
+        --show-icons true
+        ;;
+    esac
+    ;;
+  status)
+    show_icons=$(defaults read com.apple.finder CreateDesktop 2> /dev/null)
+    case ${show_icons:-1} in
+      1)
+        print "Icons are displayed."
+        ;;
+      0)
+        print "Icons are not displayed."
+        ;;
+    esac
+    ;;
+  *)
+    return 1
+    ;;
+esac

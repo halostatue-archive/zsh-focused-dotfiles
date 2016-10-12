@@ -1,21 +1,22 @@
 #autoload -U
 
 local -a databases
-databases=( ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* )
+databases=(~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV*)
 
-local cmd=${1:l} db
+local cmd db dbcmd
 
-[[ -z "${cmd}" ]] && cmd=show
+cmd=${1:-show}
+dbcmd=(sqlite3 -separator ' | ')
 
 case "${cmd}" in
   show)
     for db (${databases}); do
-      sqlite3 "${db}" "SELECT LSQuarantineAgentName, LSQuarantineDataURLString FROM LSQuarantineEvent WHERE LSQuarantineDataURLString != '' ORDER BY LSQuarantineAgentName, LSQuarantineDataURLString"
+      ${dbcmd} "${db}" "SELECT LSQuarantineAgentName, LSQuarantineDataURLString FROM LSQuarantineEvent WHERE LSQuarantineDataURLString != '' ORDER BY LSQuarantineAgentName, LSQuarantineDataURLString;"
     done
     ;;
   clear)
     for db (${database}); do
-      sqlite3 "${db}" "DELETE LSQuarantineAgentName, LSQuarantineDataURLString FROM LSQuarantineEvent"
+      ${dbcmd} "${db}" "DELETE FROM LSQuarantineEvent;"
     done
     ;;
   *)

@@ -1,0 +1,8 @@
+#autoload -U
+
+local context name
+context=${1}
+name=${2}
+shift 2
+
+osascript -e "tell ${context} \"${name}\" ${*}" 2> /dev/null

@@ -205,6 +205,13 @@
   incoming         = !git-incoming
   outgoing         = !git-outgoing
 
+% on in_path?('git-repo') && user_data_lookup('bitbucket.user') do
+  bb = repo bb
+% end
+% on in_path?('git-repo') && user_data_lookup('github.oauth_token') do
+  hub = repo hub
+% end
+
 [advice]
   statusHints = false
 
@@ -241,11 +248,24 @@
   reflogexpire = 300
   reflogexpireunreachable = 90
 
+% on user_data_lookup 'github.user' do
 [github]
   user = <%= user_data_lookup 'github.user' %>
+% end
 
 [push]
   default = simple
+
+% on in_path?('git-repo') do
+%   on user_data_lookup('bitbucket.user') do
+[gitrepo "bitbucket"]
+  token = <%= user_data_lookup 'bitbucket.user' %>:<%= user_data_lookup 'bitbucket.password' %>
+%   end
+%   on user_data_lookup('github.oauth_token') do
+[gitrepo "github"]
+  token = <%= user_data_lookup 'github.oauth_token' %>
+%   end
+% end
 
 # URL shorthands
 [url "git@github.com:"]

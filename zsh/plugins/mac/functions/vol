@@ -1,7 +1,16 @@
 #autoload -Uz
 
-if [[ -n "${1}" ]]; then
-  osascript -e "set volume output volume $1"
-else
-  osascript -e "output volume of (get volume settings)"
-fi
+case ${1:-show} in
+  mute)
+    osascript -e 'set volume output muted true'
+    ;;
+  unmute)
+    osascript -e 'set volume output muted false'
+    ;;
+  [0-9]|[1-9][0-9]|100)
+    osascript -e "set volume output volume $1"
+    ;;
+  *)
+    osascript -e "output volume of (get volume settings)"
+    ;;
+esac

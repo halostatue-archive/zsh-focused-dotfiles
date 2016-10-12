@@ -18,8 +18,8 @@ tell application "iTerm"
   tell current terminal
     launch session "Default Session"
 
-    tell the last session
-      write text " cd \"${PWD}\"; source ${2}"
+    tell the current session
+      write text " cd \"${PWD}\"; cat ${2}; source ${2}"
     end tell
   end tell
 end tell
