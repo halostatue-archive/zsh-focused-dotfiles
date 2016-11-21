@@ -165,8 +165,9 @@ Creating target #{target.basename} from #{@current_file} and local files…
     .*?%>}mx
 
   def needs_merge?(source, target)
+    return false if source.directory?
+    return false unless @needs_merge[source.to_s]
     return true unless target.exist?
-    return true unless @needs_merge[source.to_s]
     mtime = target.mtime
     prerequisites(source).any? { |f| f.mtime > mtime }
   end
@@ -257,15 +258,15 @@ Creating target #{target.basename} from #{@current_file} and local files…
 
     replace =
       if target.exist?
-        if replace_all?
-          true
-        elsif target.symlink? and target.readlink == source
+        if target.symlink? and target.readlink == source
           # Do not try to do anything if the target is an extant link to the
           # source file.
           false
         elsif !needs_merge?(source, target)
           # Do not try to do anything if the target does not need replacing.
           false
+        elsif replace_all?
+          true
         else
           case ask_overwrite(target)
           when 'y', 'Y'
