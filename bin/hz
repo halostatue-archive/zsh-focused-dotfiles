@@ -39,15 +39,10 @@ local hz_command=help
 cd ${HZ_ROOT}
 
 --hz-setup
+--hz-unknown-command ${hz_command}
 
 if --hz-has-function ${hz_command}; then
   hz-${hz_command} "${@}"
 elif --hz-has-command ${hz_command}; then
   exec hz-${hz_command} "${@}"
-else
-  hz-version >&2
-  builtin printf >&2 "\nUnknown command '${HZ_BN0} ${hz_command}'.\n"
-  hz-commands >&2
-  exit 1
 fi
-

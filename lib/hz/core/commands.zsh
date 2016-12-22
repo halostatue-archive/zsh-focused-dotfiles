@@ -1,3 +1,4 @@
+#! /usr/bin/env zsh
 
 typeset -gA HZ_BANNER HZ_HELP HZ_USAGE
 
@@ -19,8 +20,8 @@ HZ_BANNER[help]='Show help for Hz or for an Hz command.'
 hz-help()
 {
   --hz-version
+  --hz-unknown-command ${1}
   --hz-usage ${1:-COMMAND}
-  # builtin print "\nUsage: hz ${1:-COMMAND} [OPTIONS]"
 
   if (( !${#} )); then
     --hz-show-commands
@@ -28,6 +29,8 @@ hz-help()
     builtin print ${HZ_HELP[${1}]}
   elif (( ${+HZ_BANNER[${1}]} )); then
     builtin print "\n${HZ_BANNER[${1}]}"
+  elif --hz-has-command ${1}; then
+    exec hz-${1} @help
   else
     builtin print "\nNo help for 'hz ${1}'."
   fi
