@@ -76,3 +76,6 @@
 [submodule "vendor/paulirish"]
 	path = vendor/paulirish
 	url = git://github.com/paulirish/dotfiles.git
+[submodule "vendor/hashrocket"]
+	path = vendor/hashrocket
+	url = git://github.com/hashrocket/dotmatrix
