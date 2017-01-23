@@ -1,27 +1,9 @@
 #! /usr/bin/env zsh
 
-# Load zsh/files with a zf_ prefix (e.g., zf_chgrp, etc.)
-zmodload -m -F zsh/files b:zf_\*
-
-# Place this at the top of any function to prevent it from being run more than
-# once.
---hz-once!()
-{
-  [[ ${funcstack[2]} == ${0} ]] || eval "${funcstack[2]}() { }"
-  true
-}
-
---hz-version()
-{
-  --hz-once!
-  builtin print "Hz v${HZ_VERSION}"
-}
-
---hz-unknown-command()
+--hz-report-unknown-command()
 {
   (( ${#} )) || return
-  --hz-has-function ${1} && return
-  --hz-has-command ${1} && return
+  --hz-has-hz-function-or-command ${1} && return
 
   hz-version >&2
   builtin printf >&2 "\nUnknown command '${HZ_BN0} ${1}'.\n"
@@ -30,55 +12,19 @@ zmodload -m -F zsh/files b:zf_\*
   exit 1
 }
 
---hz-usage()
+--hz-has-hz-function()
 {
-  --hz-once!
-  local caller=${${1:-${funcstack[2]}}/hz-}
-
-  builtin print "\nUsage: hz ${${HZ_USAGE[${caller}]}:-"${caller} [OPTIONS]"}"
+  --hz-has-function hz-${1}
 }
 
---hz-show-commands()
+--hz-has-hz-command()
 {
-  --hz-once!
-  local cmd short
-  local -a cmds
-
-  for cmd ($(builtin whence -m 'hz-*')); do
-    [[ ${cmd:t} == hz-*-help ]] && continue
-    [[ ${cmd:t} == hz-*-banner ]] && continue
-    cmds+=(${${cmd:t}/hz-})
-  done
-
-  builtin print "\nCommands:"
-  for cmd (${(ui)cmds}); do
-    if (( ${+HZ_BANNER[${cmd}]} )); then
-      builtin printf "\t%s\n\t\t%s\n" ${cmd} ${HZ_BANNER[${cmd}]}
-    elif --hz-has-command ${cmd}; then
-      builtin printf "\t%s\n\t\t(external)\n" ${cmd}
-    else
-      builtin printf "\t%s\n" ${cmd}
-    fi
-  done
+  --hz-has-command hz-${1}
 }
 
---hz-halt()
+--hz-has-hz-function-or-command()
 {
-  local rc=${?}
-
-  builtin printf "%s\n" "${@}" >&2
-
-  exit ${rc}
-}
-
---hz-has-function()
-{
-  (( ${+functions[hz-${1}]} ))
-}
-
---hz-has-command()
-{
-  (( ${+commands[hz-${1}]} ))
+  --hz-has-hz-function ${1} || --hz-has-hz-command ${1}
 }
 
 --hz-install-gem()

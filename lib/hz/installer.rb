@@ -164,6 +164,13 @@ Creating target #{target.basename} from #{@current_file} and local files…
       )
     .*?%>}mx
 
+  def needs_update?(source, target)
+    needs_merge?(source, target) || (
+      prerequisites(source).size == 1 &&
+      prerequisites(source).any? { |f| f.mtime > target.mtime }
+    )
+  end
+
   def needs_merge?(source, target)
     return false if source.directory?
     return false unless @needs_merge[source.to_s]
@@ -262,7 +269,8 @@ Creating target #{target.basename} from #{@current_file} and local files…
           # Do not try to do anything if the target is an extant link to the
           # source file.
           false
-        elsif !needs_merge?(source, target)
+        elsif !needs_update?(source, target)
+          # elsif !needs_merge?(source, target)
           # Do not try to do anything if the target does not need replacing.
           false
         elsif replace_all?

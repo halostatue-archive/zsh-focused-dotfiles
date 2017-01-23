@@ -9,13 +9,6 @@ $:.unshift SOURCE.join('lib')
 
 require 'halozsh'
 
-Halozsh.install_tasks(source: SOURCE, target: ENV['HOME'])
-
-task 'debug:env' do
-  require 'pp'
-  pp ENV
-end
-
 namespace :gem do
   desc "Install the default gems for the environment."
   task :default => [ "default/gems" ] do |t|
@@ -163,10 +156,6 @@ namespace :vendor do
       sh %Q(git submodule update --init --recursive)
     end
   end
-end
-
-task :backup do
-  sh %Q(tar cfz user-backup.tar.gz user)
 end
 
 # vim: syntax=ruby

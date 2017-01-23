@@ -18,11 +18,15 @@ export HZ_LIB=${HZ_ROOT}/lib
 export HZ_LIBEXEC=${HZ_ROOT}/lib/exec
 export HZ_INTERNAL=${HZ_ROOT}/.hz-internal
 export HZ_TARGET=${HOME}
+export HZ_PRINTABLE_ROOT=${HZ_ROOT/${HZ_TARGET}/\~}
 
 export HZ_OPTION_DEBUG=false
 export HZ_OPTION_FORCE=false
+export HZ_BASELIB=${HZ_LIB}/hz/base.zsh
+export HZ_CORELIB=${HZ_LIB}/hz/core.zsh
 
-builtin source ${HZ_LIB}/hz/core.zsh
+builtin source ${HZ_BASELIB}
+builtin source ${HZ_CORELIB}
 builtin source ${HZ_LIB}/hz/core/commands.zsh
 
 path+=(${HZ_BIN} ${HZ_LIBEXEC})
@@ -39,10 +43,10 @@ local hz_command=help
 cd ${HZ_ROOT}
 
 --hz-setup
---hz-unknown-command ${hz_command}
+--hz-report-unknown-command ${hz_command}
 
-if --hz-has-function ${hz_command}; then
+if --hz-has-hz-function ${hz_command}; then
   hz-${hz_command} "${@}"
-elif --hz-has-command ${hz_command}; then
+elif --hz-has-hz-command ${hz_command}; then
   exec hz-${hz_command} "${@}"
 fi

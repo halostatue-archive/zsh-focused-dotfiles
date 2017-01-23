@@ -1,0 +1,105 @@
+#! /usr/bin/env zsh
+
+if (( ${UID} == 0 )); then
+  builtin print "${0} cannot be run as root." >&2
+  exit 1
+fi
+
+if (( ${#HZ_ROOT} < 1 )); then
+  builtin print "Cannot run ${0} outside of Hz." >&2
+  exit 1
+fi
+
+builtin source ${HZ_BASELIB}
+
+--hz-subcommand-prefix hz-vendor
+
+HZ_BANNER[COMMAND]="Managed vendored repos in ${HZ_PRINTABLE_ROOT}."
+HZ_HELP[COMMAND]="
+${HZ_BANNER[COMMAND]}
+"
+
+if [[ ${1} == '-banner' ]]; then
+  builtin print ${HZ_BANNER[COMMAND]}
+  exit 0
+fi
+
+--hz-usage()
+{
+  --hz-once!
+  local caller=${${${1:-${funcstack[2]}}/${HZ_COMMANDS_PREFIX}}/hz-}
+
+  builtin print "\nUsage: hz vendor ${${HZ_USAGE[${caller}]}:-"${caller} [OPTIONS]"}"
+}
+
+hz-vendor--help()
+{
+  hz-help "${@}"
+}
+
+HZ_BANNER[add]="Add a new vendored repository"
+HZ_HELP[add]="
+Add a new vendored repository to '${HZ_PRINTABLE_ROOT}/vendor'. A git URL is
+required, and an alternate name may be provided.
+
+Example:
+
+    hz vendor add git://github.com/hashrocket/dotmatrix.git hashrocket
+"
+hz-vendor-add()
+{
+  local url name vendor
+  (( ${#} )) || --hz-halt "Need a git repository URL."
+
+  url="${1}"; shift
+  if (( ${#} )); then
+    name=${1}
+  else
+    name=$(basename ${url} .git)
+  fi
+  vendor=vendor/${name}
+
+  [ ! -d ${vendor} ] || --hz-halt "Vendor path ${name} already exists."
+
+  [[ ${url} =~ ^([-a-z0-9_]+)/([-a-z0-9_]+)$ ]] && url="git://github.com/${url}"
+
+  cd ${HZ_ROOT} &&
+    git submodule add ${url} ${vendor} &&
+    git submodule update --init --recursive ${vendor} &&
+    git commit .gitmodules ${vendor} -m "Adding submodule ${url} as ${vendor}."
+}
+
+HZ_BANNER[update]="Update or initialize the vendored repos"
+hz-vendor-update()
+{
+  local -a submodules
+  cd ${HZ_ROOT}
+
+  local init
+  init=false
+  for submodule ($(git submodule status | sed -e 's/ /:/g')); do
+    [[ ${submodule} =~ ^:- ]] && init=true
+    ${init} && break
+  done
+  ${init} && git submodule update --init --recursive
+
+  git submodule foreach 'git fetch -mp && git checkout $(git branch -a | awk "/remotes\/origin\/HEAD/ { sub(\"origin\/\", \"\", \$3); print \$3; }") && git pull'
+}
+
+HZ_BANNER[reset]="Reset vendored files to the original state"
+hz-vendor-reset()
+{
+  cd ${HZ_ROOT}
+  git submodule update --init --recursive
+}
+
+local vendor_command=-help
+
+(( ${#} )) && { vendor_command=${1}; shift }
+
+
+if --hz-has-hz-vendor-function ${vendor_command}; then
+  hz-vendor-${vendor_command} "${@}"
+fi
+
+cd ${HZ_ROOT}

@@ -1,11 +1,5 @@
 #! /usr/bin/env zsh
 
-typeset -gA HZ_BANNER HZ_HELP HZ_USAGE
-
-HZ_HELP=()
-HZ_BANNER=()
-HZ_USAGE=()
-
 HZ_BANNER[version]="Show the current version of Hz."
 hz-version() { --hz-version }
 
@@ -14,26 +8,6 @@ hz-commands()
 {
   --hz-once!
   hz-help
-}
-
-HZ_BANNER[help]='Show help for Hz or for an Hz command.'
-hz-help()
-{
-  --hz-version
-  --hz-unknown-command ${1}
-  --hz-usage ${1:-COMMAND}
-
-  if (( !${#} )); then
-    --hz-show-commands
-  elif (( ${+HZ_HELP[${1}]} )); then
-    builtin print ${HZ_HELP[${1}]}
-  elif (( ${+HZ_BANNER[${1}]} )); then
-    builtin print "\n${HZ_BANNER[${1}]}"
-  elif --hz-has-command ${1}; then
-    exec hz-${1} @help
-  else
-    builtin print "\nNo help for 'hz ${1}'."
-  fi
 }
 
 HZ_BANNER[install]="Install Hz configuration."
@@ -64,4 +38,17 @@ HZ_BANNER[user-setup]="Configure user data."
 hz-user-setup()
 {
   --hz-ruby-hz "Hz::UserData.run('${HZ_ROOT}', '${HZ_TARGET}')"
+}
+
+HZ_BANNER[user-backup]="Create an archive of user data"
+HZ_HELP[user-backup]=$'
+Backs up the current user data configuration as "user-backup.tar.gz".
+'
+hz-user-backup()
+{
+  if [[ -d user ]]; then
+    tar cfz user-backup.tar.gz user
+  else
+    builtin print "No user data to back up."
+  fi
 }
