@@ -1,0 +1,82 @@
+#! /usr/bin/env zsh
+
+if (( ${UID} == 0 )); then
+  builtin print "${0:t} cannot be run as root." >&2
+  exit 1
+fi
+
+if (( ${#HZ_ROOT} < 1 )); then
+  builtin print "Cannot run ${0:t} outside of Hz." >&2
+  exit 1
+fi
+
+if [[ ! ${OSTYPE} =~ darwin ]]; then
+  [[ ${1} == '-banner' ]] && exit 123
+  builtin print "Can only run ${0:t} on macOS." >&2
+  exit 1
+fi
+
+builtin source ${HZ_BASELIB}
+
+--hz-subcommand-prefix hz-homebrew
+
+HZ_BANNER[COMMAND]="Install Homebrew."
+HZ_HELP[COMMAND]="
+Install Homebrew. By default, installs to ~/.brew, but another path may be
+provided. If Homebrew is already installed, this will do nothing.
+
+Example:
+
+    hz homebrew
+    hz homebrew /usr/local
+    hz homebrew /opt/homebrew
+"
+
+--homebrew-help()
+{
+  hz-help "${@}"
+}
+
+--homebrew-already-installed()
+{
+  --hz-halt "Homebrew is already installed."
+}
+
+--homebrew-is-installed()
+{
+  --hz-has-command brew ||
+    [[ -e "${HOME}"/.brew/bin/brew ]] ||
+    [[ -e /usr/local/bin/brew ]] &&
+    --homebrew-already-installed
+
+  (( ${#} )) && [[ -e "${1}"/bin/brew ]] &&
+    --homebrew-already-installed
+}
+
+--homebrew-install()
+{
+  local brewpath
+  brewpath=$(builtin cd ${1:-~/.brew}; builtin pwd -P)
+
+  --homebrew-is-installed ${brewpath}
+  ruby ${HZ_ROOT}/lib/hz/homebrew/install.rb ${brewpath}
+
+  path=(${brewpath}/bin ${path})
+  brew doctor
+}
+
+if [[ ${1} == '-banner' ]]; then
+  builtin print ${HZ_BANNER[COMMAND]}
+  exit 0
+fi
+
+case ${1} in
+  -help|help)
+    --hz-version() { }
+    --hz-usage() { }
+    --homebrew-help
+    ;;
+  *)
+    --homebrew-install ${1}
+    ;;
+esac

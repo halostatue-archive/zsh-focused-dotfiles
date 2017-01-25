@@ -61,6 +61,7 @@ Manage your Hz dotfiles installation.
 {
   --hz-once!
   local cmd banner
+  local -i result
   local -a cmds
 
   for cmd ($(builtin whence -m ${HZ_COMMANDS_PREFIX}'*')); do
@@ -69,6 +70,7 @@ Manage your Hz dotfiles installation.
     cmds+=(${${cmd:t}/${HZ_COMMANDS_PREFIX}})
   done
 
+  (( ${#cmds} )) || return
   builtin print "Known Commands:"
   for cmd (${(ui)cmds}); do
     if (( ${+HZ_BANNER[${cmd}]} )); then
@@ -78,7 +80,15 @@ Manage your Hz dotfiles installation.
         banner=$(${HZ_COMMANDS_PREFIX}${cmd}-banner)
       else
         banner=$(${HZ_COMMANDS_PREFIX}${cmd} -banner)
-        [[ $? -ne 0 ]] && banner=
+        case $? in
+          0)    # Success, banner is set.
+            : ;;
+          123)  # This command is invisible.
+            continue ;;
+          *)    # Failure
+            banner=
+            ;;
+        esac
       fi
 
       (( !${#banner} )) && --hz-has-${HZ_COMMANDS_PREFIX}command ${cmd} &&

@@ -1,12 +1,12 @@
 #! /usr/bin/env zsh
 
 if (( ${UID} == 0 )); then
-  builtin print "${0} cannot be run as root." >&2
+  builtin print "${0:t} cannot be run as root." >&2
   exit 1
 fi
 
 if (( ${#HZ_ROOT} < 1 )); then
-  builtin print "Cannot run ${0} outside of Hz." >&2
+  builtin print "Cannot run ${0:t} outside of Hz." >&2
   exit 1
 fi
 
@@ -97,9 +97,12 @@ local vendor_command=-help
 
 (( ${#} )) && { vendor_command=${1}; shift }
 
-
 if --hz-has-hz-vendor-function ${vendor_command}; then
   hz-vendor-${vendor_command} "${@}"
-fi
+else
+  --hz-version >&2
+  builtin printf >&2 "\nUnknown command '${HZ_BN0} vendor ${vendor_command}'.\n"
+  hz-vendor--help >&2
 
-cd ${HZ_ROOT}
+  exit 1
+fi
