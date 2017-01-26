@@ -103,3 +103,6 @@
 [submodule "vendor/zpm"]
 	path = vendor/zpm
 	url = git://github.com/zpm-zsh/zpm
+[submodule "vendor/ztanesh"]
+	path = vendor/ztanesh
+	url = git://github.com/miohtama/ztanesh
