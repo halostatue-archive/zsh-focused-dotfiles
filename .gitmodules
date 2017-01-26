@@ -97,3 +97,6 @@
 [submodule "vendor/zoppo"]
 	path = vendor/zoppo
 	url = git://github.com/zoppo/zoppo
+[submodule "vendor/zplugin"]
+	path = vendor/zplugin
+	url = git://github.com/psprint/zplugin
