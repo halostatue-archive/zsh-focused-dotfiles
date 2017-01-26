@@ -91,3 +91,6 @@
 [submodule "vendor/zilsh"]
 	path = vendor/zilsh
 	url = git://github.com/zilsh/zilsh
+[submodule "vendor/zim"]
+	path = vendor/zim
+	url = git://github.com/Eriner/zim
