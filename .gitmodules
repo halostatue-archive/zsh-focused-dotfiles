@@ -106,3 +106,6 @@
 [submodule "vendor/ztanesh"]
 	path = vendor/ztanesh
 	url = git://github.com/miohtama/ztanesh
+[submodule "vendor/zulu"]
+	path = vendor/zulu
+	url = git://github.com/zulu-zsh/zulu
