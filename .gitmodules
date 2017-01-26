@@ -100,3 +100,6 @@
 [submodule "vendor/zplugin"]
 	path = vendor/zplugin
 	url = git://github.com/psprint/zplugin
+[submodule "vendor/zpm"]
+	path = vendor/zpm
+	url = git://github.com/zpm-zsh/zpm
