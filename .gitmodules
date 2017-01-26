@@ -82,3 +82,6 @@
 [submodule "vendor/zeesh"]
 	path = vendor/zeesh
 	url = git://github.com/zeekay/zeesh
+[submodule "vendor/pumice"]
+	path = vendor/pumice
+	url = git://github.com/ryutamaki/pumice
