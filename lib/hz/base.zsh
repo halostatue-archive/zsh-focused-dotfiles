@@ -21,7 +21,6 @@ Manage your Hz dotfiles installation.
   builtin print "Hz v${HZ_VERSION}"
 }
 
-
 --hz-usage()
 {
   --hz-once!

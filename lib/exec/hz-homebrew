@@ -56,10 +56,10 @@ Example:
 --homebrew-install()
 {
   local brewpath
-  brewpath=$(builtin cd ${1:-~/.brew}; builtin pwd -P)
+  brewpath=$(builtin cd "${1:-~/.brew}"; builtin pwd -P)
 
-  --homebrew-is-installed ${brewpath}
-  ruby ${HZ_ROOT}/lib/hz/homebrew/install.rb ${brewpath}
+  --homebrew-is-installed "${brewpath}"
+  ruby "${HZ_LIBHZ}"/homebrew/install.rb "${brewpath}"
 
   path=(${brewpath}/bin ${path})
   brew doctor
@@ -77,6 +77,6 @@ case ${1} in
     --homebrew-help
     ;;
   *)
-    --homebrew-install ${1}
+    --homebrew-install "${1}"
     ;;
 esac

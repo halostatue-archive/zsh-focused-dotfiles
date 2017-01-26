@@ -1,3 +1,8 @@
+# Hz
+
+This repository contains a fairly extensive set of configuration files and a
+deep zsh configuration
+
 # halostatue's Zsh Configuration
 
 This repository has my (fairly extensive) configuration files and standard
@@ -10,8 +15,8 @@ on Windows in the past and may still work).
 
 ## Prerequisites
 
-* Ruby 1.9.3 or later
-* Rake 10.0 or later
+* Ruby 1.9.3 or later (Ruby 2.0 is preferred)
+* Rake 10.0 or later (Rake 11 is preferred)
 
 ## Installation
 
@@ -58,6 +63,8 @@ plug-ins as a whole will load last.
 
 > NOTE: plug-ins do not currently load last. This is changing as more of the
 > shell system is moving toward plug-in definitions.
+
+## Changes 
 
 ## Inspiration
 
