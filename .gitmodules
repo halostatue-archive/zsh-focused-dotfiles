@@ -76,3 +76,6 @@
 [submodule "vendor/hashrocket"]
 	path = vendor/hashrocket
 	url = git://github.com/hashrocket/dotmatrix
+[submodule "vendor/ant-zsh"]
+	path = vendor/ant-zsh
+	url = git://github.com/anthraxx/ant-zsh
