@@ -1,4 +1,5 @@
 ---
+# source-file: target-file
 config/ssh-config: .ssh/config
 config/gnupg: .gnupg/gpg.conf
 config/hub: .config/hub
