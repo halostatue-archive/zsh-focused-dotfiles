@@ -88,3 +88,6 @@
 [submodule "vendor/zgen"]
 	path = vendor/zgen
 	url = git://github.com/tarjoilija/zgen
+[submodule "vendor/zilsh"]
+	path = vendor/zilsh
+	url = git://github.com/zilsh/zilsh
