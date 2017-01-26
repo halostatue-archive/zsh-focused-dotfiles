@@ -94,3 +94,6 @@
 [submodule "vendor/zim"]
 	path = vendor/zim
 	url = git://github.com/Eriner/zim
+[submodule "vendor/zoppo"]
+	path = vendor/zoppo
+	url = git://github.com/zoppo/zoppo
