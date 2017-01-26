@@ -79,3 +79,6 @@
 [submodule "vendor/ant-zsh"]
 	path = vendor/ant-zsh
 	url = git://github.com/anthraxx/ant-zsh
+[submodule "vendor/zeesh"]
+	path = vendor/zeesh
+	url = git://github.com/zeekay/zeesh
