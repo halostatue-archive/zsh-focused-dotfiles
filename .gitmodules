@@ -85,3 +85,6 @@
 [submodule "vendor/pumice"]
 	path = vendor/pumice
 	url = git://github.com/ryutamaki/pumice
+[submodule "vendor/zgen"]
+	path = vendor/zgen
+	url = git://github.com/tarjoilija/zgen
