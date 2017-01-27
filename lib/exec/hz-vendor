@@ -61,7 +61,7 @@ hz-vendor-add()
 
   [ ! -d ${vendor} ] || --hz-halt "Vendor path ${name} already exists."
 
-  [[ ${url} =~ ^([-a-z0-9_]+)/([-a-z0-9_]+)$ ]] && url="git://github.com/${url}"
+  [[ ${url} =~ ^([-A-Za-z0-9_]+)/([-A-Za-z0-9_]+)$ ]] && url="git://github.com/${url}"
 
   cd ${HZ_ROOT} &&
     git submodule add ${url} ${vendor} &&
