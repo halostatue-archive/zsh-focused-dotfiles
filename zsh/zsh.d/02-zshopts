@@ -209,14 +209,16 @@ function()
   #--hz-setopt shin_stdin               # Use the default
   #--hz-setopt single_command           # Use the default
 
-  # [ zle ]
-  --hz-setopt no_beep                   # beep on ZLE error
-  --hz-setopt combining_chars           # handle multibyte combining chars right
-  --hz-setopt no_emacs                  # let `bindkey` setup choose this
-  --hz-setopt no_overstrike             # don't start ZLE in overstrike mode
-  --hz-setopt no_single_line_zle        # use multiline editor
-  --hz-setopt no_vi                     # let `bindkey` setup choose this
-  --hz-setopt zle                       # use ZLE
+  if is-interactive; then
+    # [ zle ]
+    --hz-setopt no_beep                 # beep on ZLE error
+    --hz-setopt combining_chars         # handle multibyte combining chars right
+    --hz-setopt no_emacs                # let `bindkey` setup choose this
+    --hz-setopt no_overstrike           # don't start ZLE in overstrike mode
+    --hz-setopt no_single_line_zle      # use multiline editor
+    --hz-setopt no_vi                   # let `bindkey` setup choose this
+    --hz-setopt zle                     # use ZLE
+  fi
 
   unfunction -- --hz-setopt
 }
