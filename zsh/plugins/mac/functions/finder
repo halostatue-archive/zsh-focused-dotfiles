@@ -57,6 +57,9 @@ case "${1}" in
   list|icon|column)
     --update-finder-with-cwd ${1}
     ;;
+  pwd)
+    --get-frontmost-finder-path
+    ;;
   cd)
     cd "$(--get-frontmost-finder-path)"
     ;;
@@ -75,13 +78,14 @@ case "${1}" in
   *)
     [ -n "${1}" ] && printf >&2 "error: Unknown command ${1}.\n\n"
     cat >&2 <<EOS
-usage: ${0} [track|untrack|cd]
+usage: ${0} [track|untrack|cd|pwd]
        ${0} [list|icon|column]
        ${0} [clean|show-hidden|hide-hidden]
 
     track         Makes the frontmost Finder window track with the current
                   directory.
     untrack       Removes Finder directory tracking.
+    pwd           Display the current directory to the current Finder path.
     cd            Changes the current directory to the current Finder path.
     list          Changes the frontmost Finder window to the list view of the
                   current path.
