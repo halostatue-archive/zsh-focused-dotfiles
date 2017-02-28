@@ -17,22 +17,7 @@ function()
       } &!
 
       { # Run this in the background
-        local dir zwc
-        local -i i
-        local -a files
-
-        for (( i = 1; i <= ${#fpath}; ++i )); do
-          dir=${fpath[i]}
-          zwc=${dir:t}.zwc
-          [[ ${dir} == (.|..) || ${dir} == (.|..)/* ]] && continue
-          files=($dir/*(N-.))
-          if [[ -w ${dir:h} && -n ${files} ]]; then
-            files=(${${(M)files%/*/*}#/})
-            if (cd ${dir:h} && zrecompile -p -U -z ${zwc} ${files} ); then
-              fpath[i]=${fpath[i]}.zwc
-            fi
-          fi
-        done
+        --zrecompile
       } &!
     fi
   }

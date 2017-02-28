@@ -1,4 +1,13 @@
 #! /bin/zsh
 
-git status -s | \
-  awk '/^R/ { print $4; } /^[AM]/ { print $2; } /^ M/ { print $2; }'
+case ${1:--known} in
+  -all|--all)
+    selector=$'/^R/ { print $4; } /^[AM]/ { print $2; } /^ M/ { print $2; }
+/^[?]{2}/ { print $2; }'
+    ;;
+  *)
+    selector=$'/^R/ { print $4; } /^[AM]/ { print $2; } /^ M/ { print $2; }'
+    ;;
+esac
+
+git status -s | awk "${selector}"
