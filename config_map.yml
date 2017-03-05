@@ -4,3 +4,5 @@ config/ssh-config: .ssh/config
 config/gnupg: .gnupg/gpg.conf
 config/hub: .config/hub
 config/gem-credentials.yml: .gem/credentials
+config/aws-credentials: .aws/credentials
+config/aws-config: .aws/config
