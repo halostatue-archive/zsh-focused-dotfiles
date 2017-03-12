@@ -10,4 +10,7 @@ function()
   mkdir -p ${GOPATH}
 
   cdpath+=(${GOPATH}/src{,/*(/N),/*/*(/N)})
+
+  # The bin/gobin command depends on binstale, so let’s find it and install it.
+  has-command binstale || go get -u github.com/shurcooL/binstale
 }
