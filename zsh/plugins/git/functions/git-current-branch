@@ -7,4 +7,4 @@ if [[ ${ret} !=  0 ]]; then
   [[ ${ret} == 128 ]] && return
   ref=$(command git rev-parse --short HEAD 2> /dev/null) || return
 fi
-print ${ref#refs/heads}
+print ${ref#refs/heads/}

@@ -267,6 +267,14 @@
 %   end
 % end
 
+% on in_path?('git-lfs') do
+[filter "lfs"]
+  process = git-lfs filter-process
+  required = true
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+% end
+
 # URL shorthands
 [url "git@github.com:"]
   insteadOf = "gh:"
@@ -283,4 +291,4 @@
 <%= include_platform_files %>
 <%= include_user_files %>
 
-# vim: ft=gitconfig
+# vim: ft=gitconfig syntax=gitconfig

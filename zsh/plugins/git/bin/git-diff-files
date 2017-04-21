@@ -1,4 +1,23 @@
 #! /bin/zsh
 
-git diff --name-status --no-renames ${1:-master..} | \
-  awk '/^[AM]/ { print $2; }'
+declare -a params
+declare plist all range
+declare -i plist_size
+
+zparseopts -D -a params all -all
+
+plist=${params[@]}
+plist_size=${#plist}
+
+if (( ${plist_size} )); then
+  [[ ${plist[(i)-all]} -le ${plist_size} ]] && all=true
+  [[ ${plist[(i)--all]} -le ${plist_size} ]] && all=true
+fi
+
+if ${all}; then
+  git diff --name-status ${1:-master..} | \
+    awk '/^R/ { print $3; } /^[AM]/ { print $2; }'
+else
+  git diff --name-status --no-renames ${1:-master..} | \
+    awk '/^[AM]/ { print $2; }'
+fi

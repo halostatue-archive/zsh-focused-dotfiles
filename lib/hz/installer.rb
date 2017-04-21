@@ -196,7 +196,7 @@ Creating target #{target.basename} from #{@current_file} and local files…
           }.flatten.compact.uniq
 
           included_files.each { |ifn| files += prerequisites(ifn) }
-          pq += files.compact
+          pq.concat(files).compact!
         end
       end
     end

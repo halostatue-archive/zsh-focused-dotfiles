@@ -1,95 +1,178 @@
 #! /usr/bin/env ruby
 
-class Info
-  attr_reader :command, :status, :url, :reason, :details
+class GoBin
+  class Info
+    attr_reader :command, :status, :url, :reason, :details
 
-  def initialize(name)
-    @command = name
-    @status = nil
-    @details = []
-  end
+    def home_url
+      @home_url ||=
+        if url =~ %r{((?:bitbucket.org|github.com)/(?:[^/]+/[^/]+))(?:/.*)$}
+          Regexp.last_match(1)
+        else
+          url
+        end
+    end
 
-  def detail(tuple_line)
-    if tuple_line =~ %r{^\t(?<status>.+): (?<url>\S+)(?:$| \((?<reason>.+)\)$)}
-      @status = true
-      @details << Regexp.last_match
+    def initialize(name)
+      @command = name
+      @status = nil
+      @details = []
+    end
+
+    def detail(tuple_line)
+      if tuple_line =~ %r{^\t(?<status>.+): (?<url>\S+)(?:$| \((?<reason>.+)\)$)}
+        @status = true
+        @details << Regexp.last_match
+      end
+    end
+
+    def stale?
+      status == 'stale'
+    end
+
+    def format
+      "#{command}\n#{format_details}"
+    end
+
+    def format_details
+      details.map { |detail|
+        str = "\t#{detail[:status]}: #{detail[:url]}"
+        str = "#{str} (#{detail[:reason]})" if detail[:reason]
+        str
+      }.join("\n")
+    end
+
+    def resolve!
+      reason = @details.min { |a, b| a[:url].length <=> b[:url].length }
+      @status = reason[:status]
+      @url = reason[:url]
+      @reason = reason[:reason]&.strip
+    end
+
+    def inspect
+      "<#{command}@#{url} #{status} =#{reason}>"
     end
   end
 
-  def stale?
-    status == 'stale'
+  def self.run(args)
+    new.run(args)
   end
 
-  def format
-    "#{command}\n#{format_details}"
+  def initialize
+    @binaries = %x(binstale).split($/).map(&:chomp).each_with_object({}) { |line, info|
+      case line
+      when /^\t\(no source package found\)/
+        unless info[:current].status
+          info.delete(info[:current].command)
+          info.delete(:current)
+        end
+      when /^\t/
+        raise 'Details before command.' unless info[:current]
+        info[:current].detail(line)
+      when /^\S+$/
+        info[:current] = info[line] = Info.new(line)
+      end
+    }
+    binaries.each_value(&:resolve!)
   end
 
-  def format_details
-    details.map { |detail|
-      str = "\t#{detail[:status]}: #{detail[:url]}"
-      str = "#{str} (#{detail[:reason]})" if detail[:reason]
-      str
-    }.join("\n")
+  def run(args)
+    command, *params = args
+
+    case command
+    when nil
+      format_all
+    when /stale/i
+      format_stale
+    when /(?:home|browse|open)$/i
+      open_home(params)
+    when /update/i
+      update(params)
+    when /info/i
+      info(params)
+    else
+      args.map!(&:downcase)
+      if args.any? { |name| binaries.key?(name) }
+        info(args)
+      else
+        $stderr.puts "Unknown command '#{ARGV[0]}'."
+        3
+      end
+    end
   end
 
-  def resolve!
-    reason = @details.min { |a, b| a[:url].length <=> b[:url].length }
-    @status = reason[:status]
-    @url = reason[:url]
-    @reason = reason[:reason]&.strip
+  private
+
+  def format_all
+    puts binaries.each_value.map(&:format)
+    0
   end
 
-  def inspect
-    "<#{command}@#{url} #{status} =#{reason}>"
+  def format_stale
+    puts binaries.each_value.lazy.select(&:stale?).map(&:format).force
+    0
   end
+
+  def open_home(bins)
+    if bins.empty?
+      $stderr.puts 'Need at least one binary as an argument to open the home URLs.'
+      return 1
+    end
+
+    pids = bins.map { |name|
+      if binaries.key?(name)
+        bin = binaries[name]
+        puts "Opening home URL (#{bin.home_url}) for #{name}..."
+        Process.spawn('open', "https://#{bin.home_url}")
+      else
+        puts "No binary '#{name}'."
+        nil
+      end
+    }.compact
+
+    Process.waitall unless pids.empty?
+
+    0
+  end
+
+  def update(bins)
+    if bins.empty?
+      $stderr.puts 'Need at least one binary as an argument to update.'
+      return 1
+    end
+
+    pids = bins.map { |name|
+      if binaries.key?(name)
+        bin = binaries[name]
+        puts "Updating #{bin.format}"
+        Process.spawn('go', 'get', '-u', bin.url)
+      else
+        puts "No binary '#{name}' to update."
+        nil
+      end
+    }.compact
+
+    Process.waitall unless pids.empty?
+
+    0
+  end
+
+  def info(bins)
+    if bins.empty?
+      $stderr.puts 'Need at least one binary to provide info on.'
+      return 1
+    end
+
+    bins.map!(&:downcase)
+
+    puts binaries.each_value.lazy.select { |bin|
+      bins.include?(bin.command.downcase)
+    }.map(&:format).force
+
+    0
+  end
+
+  attr_reader :binaries
 end
 
-stale = %x(binstale).split($/).map(&:chomp).each_with_object({}) { |line, info|
-  case line
-  when /^\t\(no source package found\)/
-    info.delete(:current) unless info[:current].status
-  when /^\t/
-    raise 'Details before command.' unless info[:current]
-    info[:current].detail(line)
-  when /^\S+$/
-    info[:current] = info[line] = Info.new(line)
-  end
-}
-stale.each_value(&:resolve!)
-
-if ARGV[0].nil?
-  puts stale.each_value.map(&:format)
-elsif stale.key?(ARGV[0].downcase)
-  puts stale[ARGV[0].downcase].format
-elsif ARGV[0].downcase == 'stale'
-  puts stale.each_value.select(&:stale?).map(&:format)
-elsif ARGV[0] =~ /^(?:home|browse|open)$/i
-  if ARGV[1].nil?
-    $stderr.puts 'Will not open all home URLs at once.'
-    exit 1
-  elsif not stale.key?(ARGV[1])
-    $stderr.puts "No known binary '#{ARGV[1]}'."
-    exit 2
-  end
-
-  bin = stale[ARGV[1]]
-  puts "Opening #{bin.format}"
-
-  exec 'open', "https://#{bin.url}"
-elsif ARGV[0].downcase == 'update'
-  if ARGV[1].nil?
-    $stderr.puts 'Need a binary to update.'
-    exit 1
-  elsif not stale.key?(ARGV[1])
-    $stderr.puts "No known binary '#{ARGV[1]}'."
-    exit 2
-  end
-
-  bin = stale[ARGV[1]]
-  puts "Updating #{bin.format}"
-
-  exec 'go', 'get', '-u', bin.url
-else
-  $stderr.puts "Unknown command '#{ARGV[0]}'."
-  exit 3
-end
+exit GoBin.run(ARGV)
