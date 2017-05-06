@@ -243,7 +243,8 @@ Creating target #{target.basename} from #{@current_file} and local files…
     return unless path.exist?
 
     pattern = yield if block_given?
-    "#{pattern.to_s.gsub(%r{\{PATH\}}, path.to_s)}\n"
+    pattern ||= '{PATH}'
+    "#{pattern.to_s.gsub(%r{\{PATH\}}, path.to_s)}"
   end
   alias_method :when_path_exist?, :path_exist?
 
@@ -251,7 +252,8 @@ Creating target #{target.basename} from #{@current_file} and local files…
     env_path.each do |root|
       next unless root.join(path).exist?
       pattern = yield if block_given?
-      return "#{pattern.to_s.gsub(%r{\{PATH\}}, path.to_s)}\n"
+      pattern ||= '{PATH}'
+      return "#{pattern.to_s.gsub(%r{\{PATH\}}, root.join(path).to_s)}"
     end
     nil
   end

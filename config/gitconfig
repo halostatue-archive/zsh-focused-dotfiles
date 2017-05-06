@@ -1,4 +1,5 @@
 [user]
+  useconfigonly = true
   name = <%= user_data_lookup 'name' %>
   email = <%= user_data_lookup 'email' %>
 
@@ -31,6 +32,7 @@
   tool = gvimdiff
   # Include summaries of merged commits in newly created merge commit messages
   log = true
+  conflictstyle = diff3
 
 [mergetool "gvimdiff"]
   cmd = gvim -d --remote-wait-silent "${LOCAL}" "${MERGED}" "${REMOTE}"
@@ -40,11 +42,23 @@
   cmd = vim -d "${LOCAL}" "${MERGED}" "${REMOTE}"
   trustExitCode = true
 
+% on in_path?('icdiff') do
+[difftool "icdiff"]
+  cmd = icdiff --line-numbers "${LOCAL}" "${REMOTE}"
+% end
+
 [format]
   pretty = %C(yellow)%h%C(reset) %C(red)%ad%C(reset) | %s%d %C(green)[%aN]%C(reset)
 
+[stash]
+  showpatch = true
+
 [log]
   date = short
+  decorate = full
+
+[pull]
+  ff = only
 
 [alias]
   # Smooth out the git-cli surface
@@ -52,6 +66,7 @@
   remotes  = remote -v
   stashes  = stash list
   tags     = tag -l
+  prune = fetch --prune
 
   nevermind  = !git reset --hard HEAD && git clean -fd
   hardreset  = reset --hard HEAD
@@ -59,6 +74,7 @@
   unstage    = reset -q HEAD --
   unamend    = reset --soft HEAD@{1}
   uncommit   = reset --soft HEAD~
+  undo = reset --soft HEAD^
   fast-amend = commit --amend --no-edit
   amend      = !git-amend
 
@@ -75,6 +91,7 @@
 
   unmerged-branches = branch --no-merged
   unstash = stash pop
+  stash-all = stash save --include-untracked
 
   what = show -w
   untrack = rm -r --cached
@@ -87,92 +104,90 @@
   mergetrail = log --ancestry-path --merges
 
   # Simple functionality extension
-  addp          = add -p
-  cat           = -p cat-file -p
-  changelog     = log --pretty=format:\" * %s\"
-  changes       = log --pretty=format:\"%h %cr %cn %C(green)%s%C(reset)\" --name-status
-  co            = checkout
-  dump          = cat-file -p
-  filelog       = log -u
-  findnext      = rev-list --reverse -n1 HEAD..master
-  go            = checkout -b
+  addp      = add -p
+  cat       = -p cat-file -p
+  changelog = log --pretty=format:\" * %s\"
+  changes   = log --pretty=format:\"%h %cr %cn %C(green)%s%C(reset)\" --name-status
+  glog      = log --graph --pretty=format:'%C(red)%h%C(reset) -%C(yellow)%d%C(reset) %s %C(green)(%cr) %C(bold blue){%an}%C(reset)'
+  co        = checkout
+  dump      = cat-file -p
+  filelog   = log -u
+  findnext  = rev-list --reverse -n1 HEAD..master
+  go        = checkout -b
   branchout = checkout -b
-  hist          = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
-  hist2         = for-each-ref --count=5 --sort=-committerdate --format='%(refname:short)' refs/heads/
-  ignored       = ls-files --others -i --exclude-standard
-  lastd         = diff HEAD^
-  last = log -1 HEAD --format=format:"%Cred%H"
+  hist      = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+  hist2     = for-each-ref --count=5 --sort=-committerdate --format='%(refname:short)' refs/heads/
+  hist3     = log --pretty=format:\"%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(red)|%C(reset) %s %C(bold blue)[%an]%C(reset)%C(yellow)%d%C(reset)\" --graph --date=short
+  ignored   = ls-files --others -i --exclude-standard
+  lastd     = diff HEAD^
+  last      = log -1 HEAD --format=format:"%Cred%H"
+  fpush     = push --force-with-lease
 
-  history = log -10 --format=format:'%C(green)%h %C(reset)• %s (%cN, %ar)'
-  graph = log --graph -10 --branches --remotes --tags  --format=format:'%C(green)%h %C(reset)• %<(75,trunc)%s (%cN, %cr) %C(red)%d' --date-order
-  ld            = log --topo-order --stat --patch --full-diff --pretty=format:'%C(bold)%C(yellow)Commit:%C(reset) %C(yellow)%H%C(red)%d%n%C(bold)%C(yellow)Author:%C(reset) %C(cyan)%an <%= "<%ae>" %>%n%C(bold)%C(yellow)Date:%C(reset)   %C(blue)%ai (%ar)%C(reset)%n%+B'
-  lg            = log --graph --pretty=format:'%C(red)%h%C(reset) -%C(yellow)%d%C(reset) %s %C(green)(%cd)%C(reset)' --abbrev-commit --date=short
-  lga           = log --topo-order --all --graph --pretty=format:'%C(yellow)%h %C(cyan)%cn%C(reset) %s %C(red)%d%C(reset)%n'
-  lgs           = log --topo-order --all --graph --pretty=format:'%C(yellow)%h%C(reset) %s %C(red)%d%C(reset)%n'
-  ll            = log --pretty=oneline --abbrev-commit --max-count=15
-  llf           = fsck --lost-found
-  lm            = log --topo-order --pretty=format:'%s'
-  logg          = log --graph --all --decorate
-  logo          = log --oneline --graph --all --decorate
-  logt          = log --date-order --graph --tags --simplify-by-decoration --pretty=format:'%ai %h %C(Yellow)%d%C(reset)'
-  longline      = log --abbrev-commit --graph --pretty=format:'%C(yellow bold)%h%C(reset) by %C(red)%an%C(reset) (%ar)%C(cyan bold)%d%C(reset)%n%s%n%b' --all
-  ls            = log --topo-order --stat --pretty=format:'%C(bold)%C(yellow)Commit:%C(reset) %C(yellow)%H%C(red)%d%n%C(bold)%C(yellow)Author:%C(reset) %C(cyan)%an <%= "%ae" %>%n%C(bold)%C(yellow)Date:%C(reset)   %C(blue)%ai (%ar)%C(reset)%n%+B'
-  lt            = log --topo-order --pretty=format:'%C(yellow)%h %C(cyan)%cn %C(blue)%cr%C(reset) %s'
-  pull-rebase   = pull --rebase
-  rclone        = clone --reference /git/cache.git/
-  rebase-abort  = rebase --abort
-  rebase-skip   = rebase --skip
-  review        = merge --no-ff --no-commit
-  sa            = status -sb --ignore-submodules=untracked
-  short         = log --pretty=format:\"%h %cr %cn %C(green)%s%C(reset)\"
-  shortnocolor  = log --pretty=format:\"%h %cr %cn %s\"
-  sm            = status -sb -uno --ignore-submodules=untracked
-  staged        = diff --cached
-  standup       = shortlog --since=yesterday
-  stc           = diff --stat --name-status --cached
-  summary = status -u -s
-  subdo         = submodule foreach git
-  subs          = submodule foreach git pul origin master
-  today         = shortlog --since=midnight
-  type          = cat-file -t
-  vgc           = repack -f -a -d --depth=250 --window=250
-  who           = shortlog -s -n --no-merges
-% on path_exist?(packages_file('willgit/bin/git-wtf')) do
-  wtfs          = wtf -s -r -k
-% end
-% on path_exist?(packages_file('hub/bin/hub')) do
-  home          = browse
-% end
+  history      = log -10 --format=format:'%C(green)%h %C(reset)• %s (%cN, %ar)'
+  graph        = log --graph -10 --branches --remotes --tags  --format=format:'%C(green)%h %C(reset)• %<(75,trunc)%s (%cN, %cr) %C(red)%d' --date-order
+  ld           = log --topo-order --stat --patch --full-diff --pretty=format:'%C(bold)%C(yellow)Commit:%C(reset) %C(yellow)%H%C(red)%d%n%C(bold)%C(yellow)Author:%C(reset) %C(cyan)%an <%= "<%ae>" %>%n%C(bold)%C(yellow)Date:%C(reset)   %C(blue)%ai (%ar)%C(reset)%n%+B'
+  lg           = log --graph --pretty=format:'%C(red)%h%C(reset) -%C(yellow)%d%C(reset) %s %C(green)(%cd)%C(reset)' --abbrev-commit --date=short
+  lga          = log --topo-order --all --graph --pretty=format:'%C(yellow)%h %C(cyan)%cn%C(reset) %s %C(red)%d%C(reset)%n'
+  lgs          = log --topo-order --all --graph --pretty=format:'%C(yellow)%h%C(reset) %s %C(red)%d%C(reset)%n'
+  lg2          = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen%cn%Creset %Cblue(%cr)%Creset' --abbrev-commit --date=relative
+  lg3            = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue){%an}%Creset' --abbrev-commit
+  ll           = log --pretty=oneline --abbrev-commit --max-count=15
+  llf          = fsck --lost-found
+  lm           = log --topo-order --pretty=format:'%s'
+  logg         = log --graph --all --decorate
+  logo         = log --oneline --graph --all --decorate
+  logt         = log --date-order --graph --tags --simplify-by-decoration --pretty=format:'%ai %h %C(Yellow)%d%C(reset)'
+  longline     = log --abbrev-commit --graph --pretty=format:'%C(yellow bold)%h%C(reset) by %C(red)%an%C(reset) (%ar)%C(cyan bold)%d%C(reset)%n%s%n%b' --all
+  ls           = log --topo-order --stat --pretty=format:'%C(bold)%C(yellow)Commit:%C(reset) %C(yellow)%H%C(red)%d%n%C(bold)%C(yellow)Author:%C(reset) %C(cyan)%an <%= "%ae" %>%n%C(bold)%C(yellow)Date:%C(reset)   %C(blue)%ai (%ar)%C(reset)%n%+B'
+  lt           = log --topo-order --pretty=format:'%C(yellow)%h %C(cyan)%cn %C(blue)%cr%C(reset) %s'
+  pull-rebase  = pull --rebase
+  rclone       = clone --reference /git/cache.git/
+  rebase-abort = rebase --abort
+  rebase-skip  = rebase --skip
+  review       = merge --no-ff --no-commit
+  sa           = status -sb --ignore-submodules=untracked
+  short        = log --pretty=format:\"%h %cr %cn %C(green)%s%C(reset)\"
+  shortnocolor = log --pretty=format:\"%h %cr %cn %s\"
+  sm           = status -sb -uno --ignore-submodules=untracked
+  staged       = diff --cached
+  standup      = shortlog --since=yesterday
+  stc          = diff --stat --name-status --cached
+  summary      = status -u -s
+  subdo        = submodule foreach git
+  subs         = submodule foreach git pul origin master
+  today        = shortlog --since=midnight
+  type         = cat-file -t
+  vgc          = repack -f -a -d --depth=250 --window=250
+  who          = shortlog -s -n --no-merges
 % on in_path?('diff-so-fancy') do
-  dsf           = "!f() { [ \"$GIT_PREFIX\" != \"\" ] && cd "$GIT_PREFIX"; git diff --color $@ | diff-so-fancy | less --tabs=4 -RFX; }; f"
-  ssf           = "!f() { [ \"$GIT_PREFIX\" != \"\" ] && cd "$GIT_PREFIX"; git show --color $@ | diff-so-fancy | less --tabs=4 -RFX; }; f"
+  dsf          = "!f() { [ \"$GIT_PREFIX\" != \"\" ] && cd "$GIT_PREFIX"; git diff --color $@ | diff-so-fancy | less --tabs=4 -RFX; }; f"
+  ssf          = "!f() { [ \"$GIT_PREFIX\" != \"\" ] && cd "$GIT_PREFIX"; git show --color $@ | diff-so-fancy | less --tabs=4 -RFX; }; f"
 % end
-  latest        = for-each-ref --count=30 --sort=-committerdate refs/heads/ --format='%(refname:short)'
-
+  latest       = for-each-ref --count=30 --sort=-committerdate refs/heads/ --format='%(refname:short)'
 
   # More complex functionality
-  add-unmerged      = !git add $(git ls-files --unmerged | cut -f2 | sort -u)
-  checkoutnext      = !git checkout $(git findnext)
-  cherry-continue   = !git add -u . && git cherry-pick --continue
-  clean-local       = "!for d in $(git merged-local); do git branch -d $d; done"
-  credit            = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
-  current-branch    = !git symbolic-ref HEAD 2> /dev/null | sed -e 's!refs/heads/!!'
-  datetag           = !git tag $(date '+%Y%m%d%H%M')-1
-  debug             = !GIT_PAGER= gdb --args git
-  edit-last-commit  = !$EDITOR $(git diff-tree -r --name-only 'HEAD' 'HEAD~1')
-  edit-unmerged     = !$EDITOR $(git ls-files --unmerged | cut -f2 | sort -u)
-  file-blame        = !git ls-files | xargs -n1 -I{} git log -1 --pretty=format:'%ci {}' -- {}
-  gvc               = "!f() { EDITOR=\"gvim --servername git --remote-wait-silent\" git commit ${@}; }; f"
-  merged-local      = "!git wtf -s -r | grep '^(x' | awk '{ print $2; }'"
-  merged-remote     = "!git wtf -s -r | grep '^{x' | awk '{ print $2; }'"
-  rebase-continue   = !git add -u . && git rebase --continue
-  pr                = !git-new-pull-request
-  push-head         = !git push origin $(git symbolic-ref HEAD)
-  pushall           = !git remote | xargs -n1 git push
-  pushalltags       = !git remote | xargs -n1 git push --tags
-  subup             = !git submodule foreach git checkout master && git submodule foreach git pull
-  top               = !eval cd "$(pwd)/$(git rev-parse --show-cdup)" && pwd
-  update-rebase     = !git fetch -mp && git pull-rebase
+  add-unmerged     = !git add $(git ls-files --unmerged | cut -f2 | sort -u)
+  checkoutnext     = !git checkout $(git findnext)
+  cherry-continue  = !git add -u . && git cherry-pick --continue
+  clean-local      = "!for d in $(git merged-local); do git branch -d $d; done"
+  credit           = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+  current-branch   = !git symbolic-ref HEAD 2> /dev/null | sed -e 's!refs/heads/!!'
+  datetag          = !git tag $(date '+%Y%m%d%H%M')-1
+  debug            = !GIT_PAGER= gdb --args git
+  edit-last-commit = !$EDITOR $(git diff-tree -r --name-only 'HEAD' 'HEAD~1')
+  edit-unmerged    = !$EDITOR $(git ls-files --unmerged | cut -f2 | sort -u)
+  file-blame       = !git ls-files | xargs -n1 -I{} git log -1 --pretty=format:'%ci {}' -- {}
+  gvc              = "!f() { EDITOR=\"gvim --servername git --remote-wait-silent\" git commit ${@}; }; f"
+  rebase-continue  = !git add -u . && git rebase --continue
+  pr               = !git-new-pull-request
+  push-head        = !git push origin $(git symbolic-ref HEAD)
+  pushall          = !git remote | xargs -n1 git push
+  pushalltags      = !git remote | xargs -n1 git push --tags
+  subup            = !git submodule foreach git checkout master && git submodule foreach git pull
+  top              = !eval cd "$(pwd)/$(git rev-parse --show-cdup)" && pwd
+  update-rebase    = !git fetch -mp && git pull-rebase
+  rebase-original  = "!git show $(cat .git/rebase-apply/original-commit)"
+  git              = !git
 # clean-remote      = "!for d in $(git merged-remote); do git push origin :$d; done"
 
   # Not sure I'm going to use these.
@@ -224,6 +239,7 @@
   frag = magenta bold
   old = red bold
   new = green bold
+  diff = always
 
 [color "branch"]
   current = yellow reverse
@@ -232,9 +248,9 @@
   plain = red bold
 
 [color "status"]
-  added = yellow
-  changed = green bold
-  untracked = blue bold
+  added = green
+  changed = yellow bold
+  untracked = white bold
 
 [diff]
   mnemonicprefix = true
@@ -255,6 +271,10 @@
 
 [push]
   default = simple
+  followtags = true
+
+[status]
+  showuntrackedfiles = all
 
 % on in_path?('git-repo') do
 %   on user_data_lookup('bitbucket.user') do
