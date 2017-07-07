@@ -1,11 +1,22 @@
 #compdef cap
 
-# Shows Capistrano tasks.
 if [ -f Capfile ]; then
+  local recent
   recent=$(last-modified .cap_tasks~ Capfile **/deploy.rb)
-  if [[ $recent != '.cap_tasks~' ]]; then
-    cap --tasks | grep '#' | cut -d " " -f 2 > .cap_tasks~
-    # cap show_tasks -q | cut -d " " -f 1 | sed -e '/^ *$/D' -e '1,2D'
+
+  if [[ ${recent} != '.cap_tasks~' ]]; then
+    local cap
+
+    if [ -e bin/cap ]; then
+      cap=bin/cap
+    elif [ -f Gemfile ]; then
+      cap="bundle exec cap"
+    else
+      cap=cap
+    fi
+
+    ${cap} --tasks | grep '#' | cut -d ' ' -f 2 > .cap_tasks 2>/dev/null
   fi
+
   compadd $(cat .cap_tasks~)
 fi

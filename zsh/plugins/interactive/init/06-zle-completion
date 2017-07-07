@@ -87,7 +87,7 @@ zstyle ':completion:*:default' list-prompt '%S%M matches%s'
 #[ -r ~/.ssh/config ] && hosts=(${${${$(grep '^Host' ~/.ssh/config)}##Host }##[*0-9]*})
 #[ -r ~/.ssh/known_hosts ] && hosts=(${${${${(f)"$(<$HOME/.ssh/known_hosts)"}:#[0-9]*}%\*}%,*})
 
-zstyle ':completion:*' hosts $(_ssh_hosts)
+zstyle ':completion:*' hosts $(--ssh-hosts)
 # zstyle ':completion:*:hosts' list-colors '=(#b)(*)(.corp.ssv.com)=01;30=01;31' '=[^.]#=01;31'
 
 function()

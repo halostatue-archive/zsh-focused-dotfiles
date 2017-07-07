@@ -72,6 +72,7 @@ conditions the must all be met during the detection phase(s). This file is
 
 The directives are:
 
+* always
 * command
 * alternates
 * do
@@ -83,6 +84,12 @@ The directives are:
 
 A plug-in will only be activated if **all** of the directives in the detection
 script pass and should be kept fairly simple for speed purposes.
+
+### always
+
+    always
+
+Always enable this plug-in. This should not be used with any other type.
 
 ### command, alternates
 

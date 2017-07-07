@@ -3,5 +3,13 @@
 function()
 {
   export FZF_DEFAULT_OPTS="-x"
+  if has pt; then
+    export FZF_DEFAULT_COMMAND='pt -g "" --hidden --ignore .git'
+  elif has ag; then
+    export FZF_DEFAULT_COMMAND='ag -g "" --hidden --ignore .git'
+  fi
+
+  export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND}"
+
   source ${HOME}/.fzf.zsh
 }

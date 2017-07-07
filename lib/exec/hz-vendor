@@ -83,7 +83,7 @@ hz-vendor-update()
   done
   ${init} && git submodule update --init --recursive
 
-  git submodule foreach 'git fetch -mp && git checkout $(git branch -a | awk "/remotes\/origin\/HEAD/ { sub(\"origin\/\", \"\", \$3); print \$3; }") && git pull'
+  git submodule foreach 'git fetch -mp && git checkout $(git branch -a | awk "/remotes\/origin\/HEAD/ { sub(\"origin/\", \"\", \$3); print \$3; }") && git pull'
 }
 
 HZ_BANNER[reset]="Reset vendored files to the original state"

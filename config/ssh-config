@@ -5,6 +5,9 @@ UseRoaming no
 ServerAliveCountMax 6
 ServerAliveInterval 30
 
+<%= include_user_files %>
+<%= include_platform_files %>
+
 % on in_path?('krssh') do |path|
 Host *
   PKCS11Provider <%= Pathname(path).join('../../lib/kr-pkcs11.so').expand_path %>
@@ -15,9 +18,6 @@ Host *
   IdentityFile ~/.ssh/id_ecdsa
   IdentityFile ~/.ssh/id_dsa
 % end
-
-<%= include_platform_files %>
-<%= include_user_files %>
 
 # Default
 # Host *

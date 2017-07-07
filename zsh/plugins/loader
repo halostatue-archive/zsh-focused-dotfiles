@@ -101,6 +101,9 @@ function()
         command)
           :
           ;;
+        always)
+          :
+          ;;
         *)
           current_plugin_line[1]=(${current_plugin[directive]} ${line[1]})
           current_plugin[directive]="command"
@@ -109,9 +112,12 @@ function()
 
       current_plugin[cmd]=${current_plugin_line[1]}
       current_plugin[found]=false
-      shift current_plugin_line
+      (( ${#current_plugin_line} )) && shift current_plugin_line
 
       case ${current_plugin[directive]} in
+        always)
+          current_plugin[found]=true
+          ;;
         do-return|do)
           current_plugin[cmd]=$(eval "builtin echo ${current_plugin[cmd]}")
           ${current_plugin[cmd]} ${current_plugin_line[*]} > /dev/null 2> /dev/null

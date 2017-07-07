@@ -1,0 +1,19 @@
+#autoload -U
+
+--ssh_known_hosts()
+{
+  [ -r ${1} ] && awk '{ print $1 }' ${1} | grep -v '^|1|' | tr , '\n'
+}
+
+--ssh_config_hosts()
+{
+  [ -r ${1} ] && awk '/^[Hh]ost[ \t]+[a-z]/ { print $2 }' ${1} | grep -v '^\*$'
+}
+
+local -a hosts
+hosts+=($(--ssh_config_hosts "${HOME}/.ssh/config"))
+hosts+=($(--ssh_config_hosts "/etc/ssh/ssh_config"))
+hosts+=($(--ssh_known_hosts "${HOME}/.ssh/known_hosts"))
+hosts+=($(--ssh_known_hosts "/etc/ssh/known_hosts"))
+
+echo ${(iou)hosts}

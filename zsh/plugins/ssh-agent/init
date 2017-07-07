@@ -67,13 +67,13 @@ function __saplugin__add_identities()
     if [ ${#selected_identities} -eq 0 ]; then
       selected_identities=(id_rsa id_dsa identity)
     fi
-
-    # Eliminate identities that aren't present.
-    for id in "${selected_identities[@]}"; do
-      [ -f "${HOME}/.ssh/${id}" ] ||
-        selected_identities[(i)${id}]=()
-    done
   fi
+
+  # Eliminate identities that aren't present.
+  for id in "${selected_identities[@]}"; do
+    [ -f "${HOME}/.ssh/${id}" ] ||
+      selected_identities[(i)${id}]=()
+  done
 
   local -a added_identities
   added_identities=(${^$(ssh-add -L | cut -f3 -d' ')}(N:t))
