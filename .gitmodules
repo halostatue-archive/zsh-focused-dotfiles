@@ -127,3 +127,6 @@
 [submodule "vendor/marceldiass"]
 	path = vendor/marceldiass
 	url = git://github.com/marceldiass/dotfiles
+[submodule "vendor/davidkna"]
+	path = vendor/davidkna
+	url = git://github.com/davidkna/dotfiles
