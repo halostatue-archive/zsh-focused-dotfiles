@@ -121,3 +121,6 @@
 [submodule "vendor/pragmaticivan"]
 	path = vendor/pragmaticivan
 	url = git://github.com/pragmaticivan/dotfiles
+[submodule "vendor/wkentaro"]
+	path = vendor/wkentaro
+	url = git://github.com/wkentaro/dotfiles
