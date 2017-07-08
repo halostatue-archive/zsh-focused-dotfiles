@@ -112,3 +112,6 @@
 [submodule "vendor/caarlos0"]
 	path = vendor/caarlos0
 	url = git://github.com/caarlos0/dotfiles
+[submodule "vendor/oieduardorabelo"]
+	path = vendor/oieduardorabelo
+	url = git://github.com/oieduardorabelo/dotfiles
