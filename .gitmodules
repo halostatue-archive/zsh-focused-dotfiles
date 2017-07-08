@@ -118,3 +118,6 @@
 [submodule "vendor/nisaacson"]
 	path = vendor/nisaacson
 	url = git://github.com/nisaacson/dotfiles
+[submodule "vendor/pragmaticivan"]
+	path = vendor/pragmaticivan
+	url = git://github.com/pragmaticivan/dotfiles
