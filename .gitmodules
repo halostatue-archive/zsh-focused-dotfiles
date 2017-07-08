@@ -124,3 +124,6 @@
 [submodule "vendor/wkentaro"]
 	path = vendor/wkentaro
 	url = git://github.com/wkentaro/dotfiles
+[submodule "vendor/marceldiass"]
+	path = vendor/marceldiass
+	url = git://github.com/marceldiass/dotfiles
