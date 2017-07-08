@@ -109,3 +109,6 @@
 [submodule "vendor/zulu"]
 	path = vendor/zulu
 	url = git://github.com/zulu-zsh/zulu
+[submodule "vendor/caarlos0"]
+	path = vendor/caarlos0
+	url = git://github.com/caarlos0/dotfiles
