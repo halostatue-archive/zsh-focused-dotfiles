@@ -139,3 +139,6 @@
 [submodule "vendor/zr"]
 	path = vendor/zr
 	url = git://github.com/jedahan/zr
+[submodule "vendor/zsh-quickstart-kit"]
+	path = vendor/zsh-quickstart-kit
+	url = git://github.com/unixorn/zsh-quickstart-kit
