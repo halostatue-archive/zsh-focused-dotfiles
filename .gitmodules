@@ -136,3 +136,6 @@
 [submodule "vendor/zit"]
 	path = vendor/zit
 	url = git://github.com/m45t3r/zit
+[submodule "vendor/zr"]
+	path = vendor/zr
+	url = git://github.com/jedahan/zr
