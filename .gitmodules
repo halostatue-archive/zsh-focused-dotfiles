@@ -130,3 +130,6 @@
 [submodule "vendor/davidkna"]
 	path = vendor/davidkna
 	url = git://github.com/davidkna/dotfiles
+[submodule "vendor/ax-zsh"]
+	path = vendor/ax-zsh
+	url = git://github.com/alexbarton/ax-zsh
