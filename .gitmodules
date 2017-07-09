@@ -142,3 +142,6 @@
 [submodule "vendor/zsh-quickstart-kit"]
 	path = vendor/zsh-quickstart-kit
 	url = git://github.com/unixorn/zsh-quickstart-kit
+[submodule "vendor/awesome-zsh-plugins"]
+	path = vendor/awesome-zsh-plugins
+	url = git://github.com/unixorn/awesome-zsh-plugins
