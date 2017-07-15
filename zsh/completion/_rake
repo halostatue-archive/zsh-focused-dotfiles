@@ -1,4 +1,5 @@
 #compdef rake
+#autoload
 
 if [ -f Rakefile ]; then
   local recent

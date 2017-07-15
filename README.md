@@ -15,8 +15,8 @@ on Windows in the past and may still work).
 
 ## Prerequisites
 
-* Ruby 1.9.3 or later (Ruby 2.0 is preferred)
-* Rake 10.0 or later (Rake 11 is preferred)
+* Ruby 2.0 or later
+* Rake 11 or later
 
 ## Installation
 

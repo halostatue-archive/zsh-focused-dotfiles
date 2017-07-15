@@ -3,4 +3,11 @@
 function()
 {
   add-paths-before-if ${HOME}/.cargo/bin
+
+  local toolchain
+  toolchain=$(rustup show | grep nightly | grep -i $(uname) | head -1)
+  if [[ -n "${toolchain}" ]]; then
+    RUST_SRC_PATH=${HOME}/.rustup/toolchains/${toolchain}/lib/rustlib/src/rust/src
+    export RUST_SRC_PATH
+  fi
 }
