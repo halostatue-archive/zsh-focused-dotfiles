@@ -148,3 +148,6 @@
 [submodule "vendor/mhinz-dotfiles"]
 	path = vendor/mhinz-dotfiles
 	url = git://github.com/mhinz/dotfiles
+[submodule "vendor/zsh-bundle-exec"]
+	path = vendor/zsh-bundle-exec
+	url = git://github.com/rhysd/zsh-bundle-exec
