@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 # Initialize zsh completion and cache completion (and other cacheables) in
-# ${HOME}/.zsh-cache.
+# ${HOME}/.cache/zsh
 
 function --hzsh-is-caching()
 {
@@ -12,7 +12,7 @@ function --hzsh-cache-path-internal()
 {
   local cache_path
   zstyle -s :hzsh cache-path cache_path
-  cache_path=${cache_path:-${HOME}/.zsh-cache}
+  cache_path=${cache_path:-${HOME}/.cache/zsh}
   [[ -d "${cache_path}" ]] || mkdir -p "${cache_path}"
   echo ${cache_path}(:A)
 }
@@ -28,6 +28,15 @@ function --hzsh-cache-path()
     echo ${cache_path}(:A)
   else
     --hzsh-cache-path-internal
+  fi
+}
+
+function --hzsh-completion-path()
+{
+  if --hzsh-is-caching; then
+    --hzsh-cache-path completion
+  else
+    echo "{HOME}"/.zsh-completion
   fi
 }
 

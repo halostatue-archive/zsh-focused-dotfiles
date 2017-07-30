@@ -2,10 +2,9 @@
 
 zmodload zsh/complist
 
-if is-mac; then
-  fignore+=(DS_Store)
-fi
+is-mac && fignore+=(DS_Store)
 fignore+=(swo swp)
+fpath+=($(--hzsh-completion-path))
 
 function bash_source()
 {
@@ -31,7 +30,7 @@ function()
 {
   if --hzsh-is-caching; then
     zstyle ':completion:*' use-cache on
-    zstyle ':completion:*' cache-path $(--hzsh-cache-path)/complete-cache
+    zstyle ':completion:*' cache-path $(--hzsh-cache-path completion-cache)
   fi
 }
 

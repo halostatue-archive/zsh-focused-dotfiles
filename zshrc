@@ -7,7 +7,7 @@
 #   * oh-my-zsh: https://github.com/robbyrussell/oh-my-zsh/
 
 # zsh works better with caching. The hzsh system prefers to use a single
-# directory (by default ${HOME}/.zsh-cache) for items it knows about, including
+# directory (by default ${HOME}/.cache/zsh) for items it knows about, including
 # certain parts of the completion cache, function and plug-in temporary
 # directories (where possible), and zcompdumps.
 #
@@ -18,8 +18,8 @@
 # zstyle :hzsh use-cache off
 
 # Uncomment and modify the next line to change the default path.
-#
-#     zstyle :hzsh cache-path ${HOME}/.zsh_cache
+#     zstyle :hzsh cache-path ${HOME}/.cache/zsh
+#     zstyle :hzsh cache-path ${HOME}/.zsh-cache # old default
 
 # Enable plug-ins that do not have detection files. There are three ways to do
 # this:

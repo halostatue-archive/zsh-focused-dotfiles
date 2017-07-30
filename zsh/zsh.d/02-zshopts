@@ -76,7 +76,12 @@ function()
   --hz-setopt NO_NULL_GLOB              # don't delete unmatched globs
   --hz-setopt NUMERIC_GLOB_SORT         # sort in numeric order rather than lexicographic
   --hz-setopt RC_EXPAND_PARAM           # foo${xx}bar where xx is (a b c) = fooabar ...
-  --hz-setopt REMATCH_PCRE              # Use PCRE matching with =~.*
+
+  if is-mac; then
+    --hz-setopt NO_RE_MATCH_PCRE        # Use POSIX re matching with =~.*
+  else
+    --hz-setopt RE_MATCH_PCRE           # Use PCRE re matching with =~.*
+  fi
   --hz-setopt NO_SH_GLOB                # allow globbing with [(|)<]
   --hz-setopt UNSET                     # unset parameters are empty, not parameters.*
   --hz-setopt NO_WARN_CREATE_GLOBAL     # No warning on assigned global param in function.
@@ -176,7 +181,7 @@ function()
 
   # [ shell emulation ]
   #--hz-setopt append_create            # redirection with append will create new files
-  --hz-setopt no_bash_rematch           # use $MATCH/$match, not $BASH_REMATCH
+  --hz-setopt NO_BASH_REMATCH           # use $MATCH/$match, not $BASH_REMATCH
   --hz-setopt no_bsd_echo               # use zsh echo, not BSD echo(1).
   #--hz-setopt no_continue_on_error     # do not act like interactive shell
   --hz-setopt no_csh_junkie_history     # zsh history references, not csh.

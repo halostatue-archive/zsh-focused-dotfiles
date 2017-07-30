@@ -7,11 +7,14 @@ function()
   local param
   zstyle -s :hzsh:plugins:zsh-bookmarks cache-path param
 
-  if --hzsh-is-caching; then
-    export __hzsh_zsh_bookmarks_cache=${param:-$(--hzsh-cache-path)/zbookmarks}
+  if [[ -n "${param}" ]]; then
+    __hzsh_zsh_bookmarks_cache="${param}"
+  elif --hzsh-is-caching; then
+    __hzsh_zsh_bookmarks_cache="$(--hzsh-cache-path zbookmarks)"
   else
-    export __hzsh_zsh_bookmarks_cache=${param:-${HOME}/.zbookmarks}
+    __hzsh_zsh_bookmarks_cache="${HOME}"/.zbookmarks
   fi
+  export __hzsh_zsh_bookmarks_cache
 
   command mkdir -p ${__hzsh_zsh_bookmarks_cache}
 

@@ -6,7 +6,8 @@ autoload colors zsh/terminfo
 function()
 {
   if --hzsh-is-caching; then
-    local cache=$(--hzsh-cache-path)
+    local cache
+    cache=$(--hzsh-cache-path)
     [ -w "${cache}" ] && HISTFILE="${cache}/History"
   fi
 }
