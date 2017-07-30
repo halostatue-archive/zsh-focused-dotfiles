@@ -159,17 +159,21 @@
   type         = cat-file -t
   vgc          = repack -f -a -d --depth=250 --window=250
   who          = shortlog -s -n --no-merges
+  latest       = for-each-ref --count=30 --sort=-committerdate refs/heads/ --format='%(refname:short)'
 % on in_path?('diff-so-fancy') do
   dsf          = "!f() { [ \"$GIT_PREFIX\" != \"\" ] && cd "$GIT_PREFIX"; git diff --color $@ | diff-so-fancy | less --tabs=4 -RFX; }; f"
   ssf          = "!f() { [ \"$GIT_PREFIX\" != \"\" ] && cd "$GIT_PREFIX"; git show --color $@ | diff-so-fancy | less --tabs=4 -RFX; }; f"
 % end
-  latest       = for-each-ref --count=30 --sort=-committerdate refs/heads/ --format='%(refname:short)'
+% on in_path?('git-wtf') do
+  clean-local   = "!for d in $(git merged-local); do git branch -d $d; done"
+  merged-local  = "!git wtf -s -r | awk '/^\\(x\\)/ { print $2; }'"
+  merged-remote = "!git wtf -s -r | awk '/^\\{x\\}/ { print $2; }'"
+% end
 
   # More complex functionality
   add-unmerged     = !git add $(git ls-files --unmerged | cut -f2 | sort -u)
   checkoutnext     = !git checkout $(git findnext)
   cherry-continue  = !git add -u . && git cherry-pick --continue
-  clean-local      = "!for d in $(git merged-local); do git branch -d $d; done"
   credit           = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
   current-branch   = !git symbolic-ref HEAD 2> /dev/null | sed -e 's!refs/heads/!!'
   datetag          = !git tag $(date '+%Y%m%d%H%M')-1
