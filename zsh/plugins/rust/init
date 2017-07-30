@@ -1,0 +1,29 @@
+#! zsh
+
+function()
+{
+  add-paths-before-if ${HOME}/.cargo/bin
+
+  if has rustup; then
+    local toolchain rustup_base
+    rustup_base="${HOME}/.rustup/toolchains"
+    toolchain=$(rustup show | grep nightly | grep -i $(uname) | head -1 | awk '{ print $1; }')
+
+    if [[ -n "${toolchain}" ]]; then
+      RUST_SRC_PATH="${rustup_base}/${toolchain}/lib/rustlib/src/rust/src"
+      export RUST_SRC_PATH
+    fi
+
+    local recent completion_fpath
+    completion_fpath="$(--hzsh-completion-path)"
+    recent=$(last-modified "$(which rustup)" "${completion_fpath}/_rustup")
+
+    [[ ${recent} =~ '_rustup$' ]] || rustup completions zsh > "${completion_fpath}/_rustup"
+    fpath+=("${completion_fpath}")
+
+    toolchain=$(rustup show | grep stable | grep -i $(uname) | head -1 | awk '{ print $1; }')
+    if [[ -n "${toolchain}" ]]; then
+      fpath+=("${rustup_base}/${toolchain}/share/zsh/site-functions")
+    fi
+  fi
+}
