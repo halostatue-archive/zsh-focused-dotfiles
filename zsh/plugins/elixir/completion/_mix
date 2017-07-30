@@ -1,6 +1,9 @@
 #compdef mix
 #autoload
 
+local REPORTTIME
+REPORTTIME=-1
+
 # Elixir mix zsh completion
 mix_help=$(mix help \
                      | tr -s ' '            \
