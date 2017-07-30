@@ -1,7 +1,9 @@
 #autoload -U
 
-local bn=$(basename ${0})
-local hf="$(pwd -P)/.local_history"
+local bn
+bn=$(basename ${0})
+local hf
+hf="$(pwd -P)/.local_history"
 
 function __hzsh_hwd-error()
 {

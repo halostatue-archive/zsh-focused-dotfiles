@@ -10,7 +10,8 @@ local _title
 _title="${*}"
 
 if (( ${#use_cwd} + ${#cwd_before} + ${#cwd_after} )); then
-  local cwd=$(basename $(pwd))
+  local cwd
+  cwd="${PWD:t}"
   if (( ${#_title} )); then
     if (( ${#cwd_after} )); then
       _title="${_title} ${cwd}"

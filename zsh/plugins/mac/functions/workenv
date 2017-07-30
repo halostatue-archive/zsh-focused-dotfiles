@@ -1,6 +1,7 @@
 #autoload -U
 
-local Workenv=$(basename ${0})
+local Workenv
+Workenv=${0:t}
 
 function {
   function --workenv-increment-count() {

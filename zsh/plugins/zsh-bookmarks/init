@@ -10,7 +10,7 @@ function()
   if [[ -n "${param}" ]]; then
     __hzsh_zsh_bookmarks_cache="${param}"
   elif --hzsh-is-caching; then
-    __hzsh_zsh_bookmarks_cache="$(--hzsh-cache-path zbookmarks)"
+    assign-output-to __hzsh_zsh_bookmarks_cache --hzsh-cache-path zbookmarks
   else
     __hzsh_zsh_bookmarks_cache="${HOME}"/.zbookmarks
   fi

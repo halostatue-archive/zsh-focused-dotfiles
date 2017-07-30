@@ -1,5 +1,6 @@
 #autoload -U
 
-local _pwd=$(--paste-from-clipboard) &&
-  echo "${_pwd}" &&
-  eval cd "${_pwd}"
+local dir
+assign-output-to dir --paste-from-clipboard &&
+  echo "${dir}" &&
+  eval cd "${dir}"

@@ -28,8 +28,8 @@ zmodload zsh/parameter
 #                                 zsh_root/plugins).
 #
 # Because these variables are internal, they are prefixed with '__hzsh_'.
-export __hzsh_zsh_root=$(builtin echo ${0}(:A:h))
-export __hzsh_dotfile_root=$(builtin echo ${__hzsh_zsh_root}(:h))
+export __hzsh_zsh_root=${0:A:h}
+export __hzsh_dotfile_root=${__hzsh_zsh_root:h}
 export __hzsh_package_root="${__hzsh_dotfile_root}/packages"
 export __hzsh_plugins_path="${__hzsh_zsh_root}/plugins"
 

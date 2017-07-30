@@ -1,7 +1,7 @@
 #autoload -U
 
 local Tab
-Tab="$(basename "${0}")"
+Tab="${0:t}"
 
 function {
   function --tab-run-osascript()

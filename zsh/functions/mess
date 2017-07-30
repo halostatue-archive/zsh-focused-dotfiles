@@ -1,11 +1,15 @@
 #autoload -U
 
+zmodload zsh/datetime
+
 local messpath now current link
 
 zstyle -s :hzsh:functions:mess path messpath
 
 (( ${#messpath} )) || messpath=${HOME}/mess
-now=$(date +%Y)/$(printf '%02d' $(date +%W))
+
+assign-output-to now strftime "%Y/%V" "${EPOCHSECONDS}"
+
 current=${messpath}/${now}
 link=${messpath}/current
 

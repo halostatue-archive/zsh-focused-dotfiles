@@ -2,6 +2,4 @@
 
 chpwd_functions+='ztodo'
 
-if --hzsh-is-caching; then
-  zstyle ':ztodo:*' cache-file $(--hzsh-cache-path)/ztodolist
-fi
+--hzsh-is-caching && zstyle ':ztodo:*' cache-file $(--hzsh-cache-path)/ztodolist

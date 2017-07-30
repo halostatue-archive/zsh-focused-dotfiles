@@ -7,11 +7,14 @@ function()
   local param
   zstyle -s :hzsh:plugins:git git-identity-path param
 
-  if --hzsh-is-caching; then
-    export __hzsh_plugins_git_identity_path="${param:-$(--hzsh-cache-path)}/git-identities"
+  if [[ -n "${param}" ]]; then
+    __hzsh_plugins_git_identity_path="${param}/git-identities"
+  elif --hzsh-is-caching; then
+    __hzsh_plugins_git_identity_path="$(--hzsh-cache-path)/git-identities"
   else
-    export __hzsh_plugins_git_identity_path="${current_plugin_path}/identities"
+    __hzsh_plugins_git_identity_path="${current_plugin_path}/identities"
   fi
+  export __hzsh_plugins_git_identity_path
 
   if [ -n "${FULLNAME}" ]; then
     export GIT_AUTHOR_NAME="${FULLNAME}"

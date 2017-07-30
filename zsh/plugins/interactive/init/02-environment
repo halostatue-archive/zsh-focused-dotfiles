@@ -7,7 +7,7 @@ function()
 {
   if --hzsh-is-caching; then
     local cache
-    cache=$(--hzsh-cache-path)
+    assign-output-to cache --hzsh-cache-path
     [ -w "${cache}" ] && HISTFILE="${cache}/History"
   fi
 }

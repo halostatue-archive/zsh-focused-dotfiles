@@ -2,7 +2,7 @@
 
 if [ -f Capfile ]; then
   local recent
-  recent=$(last-modified .cap_tasks~ Capfile **/deploy.rb)
+  assign-output-to recent last-modified .cap_tasks~ Capfile **/deploy.rb
 
   if [[ ${recent} != '.cap_tasks~' ]]; then
     local cap
@@ -15,8 +15,8 @@ if [ -f Capfile ]; then
       cap=cap
     fi
 
-    ${cap} --tasks | grep '#' | cut -d ' ' -f 2 > .cap_tasks 2>/dev/null
+    ${cap} --tasks | awk '/#/ { print $2; }' > .cap_tasks~ 2>/dev/null
   fi
 
-  compadd $(cat .cap_tasks~)
+  compadd -- $(<.cap_tasks~)
 fi

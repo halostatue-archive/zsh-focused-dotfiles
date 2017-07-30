@@ -9,7 +9,7 @@ local text
 if [ -t 0 ]; then # argument
   text="$1"
 else # pipe
-  text=$(cat)
+  text=$(cat -)
 fi
 
 body=$(echo "$text" | sed -E 's|$|<br>|g')

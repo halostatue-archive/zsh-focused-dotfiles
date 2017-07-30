@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Usage: sshenv <command>
 #
 # Setup environment for MacOS's built-in ssh-agent and execute
@@ -6,19 +6,18 @@
 # for authentication.
 
 test $# -eq 0 && {
-    cat $0          |
-    grep '^#'       |
-    grep -v /bin/sh |
+    grep '^#' "${0}" |
+    grep -v /bin/sh  |
     cut -c3-
     exit
 }
 
-SSH_AUTH_SOCK=$(
-  /usr/sbin/lsof -U |
-  grep Listeners    |
-  grep ssh-agent    |
-  awk '{print $8}'
-)
+SSH_AUTH_SOCK="$(
+/usr/sbin/lsof -U |
+grep Listeners    |
+grep ssh-agent    |
+awk '{print $8}'
+)"
 export SSH_AUTH_SOCK
 
 exec "$@"

@@ -2,7 +2,8 @@
 
 function()
 {
-  local real_git=$(whence -p git)
+  local real_git
+  assign-output-to real_git whence -p git
 
   autoload -Uz vcs_info
   zstyle ':vcs_info:*' formats '%b '

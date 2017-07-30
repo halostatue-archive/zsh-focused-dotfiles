@@ -8,9 +8,12 @@ function()
 
     if --hzsh-is-caching; then
       { # Run this in the background
+        local cache
+        assign-output-to cache --hzsh-cache-path
+
         local -a files
         files=(${HOME}/.z{login,profile,compdump,sh{env,rc{,-local}}})
-        files+=($(--hzsh-cache-path)/zcomp-${HOST})
+        files+=(${cache}/zcomp-${HOST})
         for f ($files); do
           [[ -f ${f} ]] && zrecompile -qp ${f} && rm -f ${f}.zwc.old
         done

@@ -54,13 +54,15 @@ _gem() {
 }
 
 __all_gems() {
-  _gem_names=($(${service} list | awk '{print $1}'))
-  compadd "$@" -k _gem_names
+  local -a gem_names
+  gem_names=($(${service} list | awk '{print $1}'))
+  compadd "$@" -k gem_names
 }
 
 __all_gems_all() {
-  _gem_names=($(gem list | awk '{print $1}') "--all")
-  compadd "$@" -k _gem_names
+  local -a gem_names
+  gem_names=($(${service} list | awk '{print $1}') "--all")
+  compadd "$@" -k gem_names
 }
 
 __gem_help_arguments() {

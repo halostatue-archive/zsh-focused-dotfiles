@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+#
 #/ Usage: man.cx [<section>] <topic>...
 #/ Open manpage <topic> on http://man.cx. When <section> is given, it
 #/ must start with a numeric. Multiple <topic>s may be specified.
@@ -12,25 +13,21 @@ set -e
 
 # Command to use when opening URLs. Use the first one found on
 # PATH, unless the BROWSER environment variable is already set.
-: ${BROWSER:=$(
-    for c in xdg-open open firefox
-    do command -v $c && break
-    done
-  )}
+: "${BROWSER:="$(command -v xdg-opn open firefox | head -1)"}"
 
 # The man.cx root URL
 MANCX_URL="http://man.cx"
 
 # Write usage and bail out with no args or with --help.
-test $# -eq 0 -o $(expr "$*" : ".*--help") -ne 0 && {
-    grep ^#/ < $0 |
+test $# -eq 0 -o "$(expr "$*" : ".*--help")" -ne 0 && {
+    grep ^#/ < "${0}" |
     cut -c4-
     exit
 }
 
 # Bail out if we couldn't find a browser.
 test -z "$BROWSER" && {
-    echo "$(basename $0): BROWSER not set and no opening program found" 2>&1
+    echo "$(basename "${0}"): BROWSER not set and no opening program found" 2>&1
     exit 1
 }
 

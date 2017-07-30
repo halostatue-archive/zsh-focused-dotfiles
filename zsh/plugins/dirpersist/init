@@ -38,14 +38,15 @@ function()
   if [[ -n "${param}" ]]; then
     __hzsh_dirpersist_cache="${param}"
   elif --hzsh-is-caching; then
-    __hzsh_dirpersist_cache="$(--hzsh-cache-path dirpersist)"
+    assign-output-to __hzsh_dirpersist_cache --hzsh-cache-path dirpersist
   else
     __hzsh_dirpersist_cache="${HOME}"/.zdirpersist
   fi
   export __hzsh_dirpersist_cache
 
   local -i count=0
-  [ -f ${HOME}/.zlogout ] && count=$(grep -c 'dirpersist-store' ${HOME}/.zlogout)
+  [ -f ${HOME}/.zlogout ] && \
+    assign-output-to count grep -c 'dirpersist-store' ${HOME}/.zlogout
 
   if [ ${count} -eq 0 ]; then
     if read -q \?"Would you like to set up your .zlogout for use with dirpersist? (y/n) "; then
