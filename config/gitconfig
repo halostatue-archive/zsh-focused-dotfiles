@@ -8,6 +8,15 @@
   templatedir = <%= home %>/.git_template
 % end
 
+% on in_path?('krgpg') do |path|
+[gpg]
+  program = <%= path %>
+[commit]
+	gpgSign = true
+[tag]
+	forceSignAnnotated = true
+% end
+
 [difftool]
   prompt = false
 

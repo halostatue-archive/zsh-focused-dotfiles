@@ -64,3 +64,5 @@ zstyle :hzsh:prompt:vcs_info enable git cvs svn hg bzr
 # Do the real work of loading based on the above settings and the defaults in
 # the prompt management scripts.
 source ${HOME}/.zsh/loader ${1:-zshrc}
+
+export GPG_TTY=$(tty)
