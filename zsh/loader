@@ -25,13 +25,13 @@ zmodload zsh/parameter
 #   package_root  ROOT/packages   Where some dotfile-installed packages reside
 #                                 providing functionality we want (through
 #                                 plug-in operations, see the README in
-#                                 zsh_root/plugins).
+#                                 zsh_root/hzplugs).
 #
 # Because these variables are internal, they are prefixed with '__hzsh_'.
 export __hzsh_zsh_root=${0:A:h}
 export __hzsh_dotfile_root=${__hzsh_zsh_root:h}
 export __hzsh_package_root="${__hzsh_dotfile_root}/packages"
-export __hzsh_plugins_path="${__hzsh_zsh_root}/plugins"
+export __hzsh_plugins_path="${__hzsh_zsh_root}/hzplugs"
 
 # Show a warning if we don't meet the minimum required version. Note that
 # because anonymous functions were introduced in zsh 4.3.7, the rest of the

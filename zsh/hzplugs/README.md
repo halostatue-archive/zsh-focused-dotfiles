@@ -14,7 +14,7 @@ and at least one item that changes the environment:
 
 A zsh plug-in for `git` might have a directory structure like this:
 
-    plugins/
+    hzplugs/
       git/
         bin/
           git-tag-versions
@@ -31,9 +31,9 @@ A zsh plug-in for `git` might have a directory structure like this:
 
 ## Plug-in Activation
 
-During the initialization of the Zsh environment, `~/.zsh/plugins/loader` will
+During the initialization of the Zsh environment, `~/.zsh/hzplugs/loader` will
 be run. This script loops through the immediate subsdirectories of the plug-in
-path (set by default to `~/.zsh/plugins`):
+path (set by default to `~/.zsh/hzplugs`):
 
 1.  If the directory name (which is treated as the plug-in name) is present in
     the style `:hzsh:plugins disabled` or the style `:hzsh:plugins:NAME
