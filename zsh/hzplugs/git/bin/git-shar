@@ -1,0 +1,23 @@
+#!/bin/sh
+# git shar [FILES] - share files as git-apply compatible patches
+
+printf "#!/bin/sh
+# This is a git-shar archive (produced by $(git version)).
+# Run as shell script or pipe to 'git -C <target> apply' to extract.
+# Created on $(date).
+
+# This shar contains:
+# length mode       name
+# ------ ---------- ----------------------------------------
+"
+find "$@" -prune -printf '# %6s %M %p\n'
+printf "
+git apply <<'EOF'
+"
+
+for file; do
+	git --no-pager diff --binary /dev/null "$file"
+done
+
+printf "EOF
+"

@@ -1,0 +1,55 @@
+#! bash
+# shellcheck source=/dev/null
+
+layout_gb()
+{
+  export GOPATH
+  GOPATH="${PWD}"/vendor:"${PWD}"
+  PATH_add "${PWD}"/vendor/bin
+  PATH_add bin
+}
+
+layout_haskell()
+{
+  PATH_add ~/.cabal/bin
+  [ -d .cabal-sandbox ] || cabal sandbox init
+  PATH_add .cabal-sandbox/bin
+  export GHC_PACKAGE_PATH
+  GHC_PACKAGE_PATH="$(cabal exec -- sh -c "echo \$GHC_PACKAGE_PATH")"
+}
+
+layout_virtualenv()
+{
+  source "${1}"/bin/activate
+}
+
+layout_virtualenvwrapper()
+{
+  layout_virtualenv "${WORKON_HOME}"/"${1}"
+}
+
+use_kerl()
+{
+  source "$(kerl path "${1}")/activate"
+}
+
+use_pyenv()
+{
+  local python_root
+  python_root="${HOME}/.pyenv/versions/${1}"
+  load_prefix "${python_root}"
+  if [[ -x "${python_root}"/bin/python3 ]]; then
+    layout python3 "${python_root}"/bin/python3
+  else
+    layout python "${python_root}"/bin/python
+  fi
+}
+
+use_docker-machine()
+{
+  local env machine_cmd
+  env="${1:-default}"
+  echo Docker machine: "${env}"
+  machine_cmd=$(docker-machine env --shell bash "${env}")
+  eval "${machine_cmd}"
+}

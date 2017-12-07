@@ -1,0 +1,3 @@
+#! zsh
+
+(( ${+commands[direnv]} )) && eval "$(direnv hook "${SHELL}")"

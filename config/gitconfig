@@ -8,17 +8,13 @@
   templatedir = <%= home %>/.git_template
 % end
 
-% on in_path?('krgpg') do |path|
-[gpg]
-  program = <%= path %>
-[commit]
-	gpgSign = true
-[tag]
-	forceSignAnnotated = true
-% end
-
 [difftool]
   prompt = false
+
+[diff]
+  mnemonicprefix = true
+  compactionHeuristic = true
+  renames = copies
 
 [diff "ruby"]
   funcname = ^ *\\(\\(class\\|module\\|def\\) .*\\)
@@ -32,7 +28,7 @@
 
 [core]
   excludesfile = <%= home %>/.gitignore
-  pager = less -FRSX
+  pager = less -+$LESS -FRSX
   whitespace=trailing-space,tab-in-indent,cr-at-eol,space-before-tab
   autocrlf = input
   safecrlf = true
@@ -64,7 +60,7 @@
 
 [log]
   date = short
-  decorate = full
+  decorate = auto
 
 [pull]
   ff = only
@@ -74,8 +70,11 @@
   branches = branch -a
   remotes  = remote -v
   stashes  = stash list
+  sl = stash list --name-status --pretty='format:%gd [%ar]: %s'
   tags     = tag -l
   prune = fetch --prune
+  prev = checkout HEAD^
+  rank = shortlog -sn --no-merges
 
   nevermind  = !git reset --hard HEAD && git clean -fd
   hardreset  = reset --hard HEAD
@@ -140,11 +139,15 @@
   lgs          = log --topo-order --all --graph --pretty=format:'%C(yellow)%h%C(reset) %s %C(red)%d%C(reset)%n'
   lg2          = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen%cn%Creset %Cblue(%cr)%Creset' --abbrev-commit --date=relative
   lg3            = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue){%an}%Creset' --abbrev-commit
+  lg4 = log --date=short --pretty='%cd %h%d %s'
+  leg = log --date=short --pretty='%cd %h%d %cE: %s'
   ll           = log --pretty=oneline --abbrev-commit --max-count=15
   llf          = fsck --lost-found
   lm           = log --topo-order --pretty=format:'%s'
   logg         = log --graph --all --decorate
   logo         = log --oneline --graph --all --decorate
+  tree = log --oneline --decorate --graph
+  news = log -p @{1}..
   logt         = log --date-order --graph --tags --simplify-by-decoration --pretty=format:'%ai %h %C(Yellow)%d%C(reset)'
   longline     = log --abbrev-commit --graph --pretty=format:'%C(yellow bold)%h%C(reset) by %C(red)%an%C(reset) (%ar)%C(cyan bold)%d%C(reset)%n%s%n%b' --all
   ls           = log --topo-order --stat --pretty=format:'%C(bold)%C(yellow)Commit:%C(reset) %C(yellow)%H%C(red)%d%n%C(bold)%C(yellow)Author:%C(reset) %C(cyan)%an <%= "%ae" %>%n%C(bold)%C(yellow)Date:%C(reset)   %C(blue)%ai (%ar)%C(reset)%n%+B'
@@ -161,6 +164,9 @@
   staged       = diff --cached
   standup      = shortlog --since=yesterday
   stc          = diff --stat --name-status --cached
+  d = diff -c HEAD
+  dd = diff -c HEAD --name-status
+  st = status -s uno
   summary      = status -u -s
   subdo        = submodule foreach git
   subs         = submodule foreach git pul origin master
@@ -265,11 +271,6 @@
   changed = yellow bold
   untracked = white bold
 
-[diff]
-  mnemonicprefix = true
-  compactionHeuristic = true
-  ; renames = copies
-
 [pack]
   threads = 0
 
@@ -320,6 +321,16 @@
 [difftool "delta"]
   cmd = delta \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
 % end
+
+% on in_path?('krgpg') do |path|
+[gpg]
+  program = <%= path %>
+[commit]
+	gpgSign = true
+[tag]
+	forceSignAnnotated = true
+% end
+
 
 <%= include_platform_files %>
 <%= include_user_files %>

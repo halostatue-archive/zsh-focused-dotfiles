@@ -8,6 +8,9 @@ ServerAliveInterval 30
 <%= include_user_files %>
 <%= include_platform_files %>
 
+Host *^*
+  ProxyCommand ssh-chain %h %p
+
 % on in_path?('krssh') do |path|
 Host *
   PKCS11Provider <%= Pathname(path).join('../../lib/kr-pkcs11.so').expand_path %>

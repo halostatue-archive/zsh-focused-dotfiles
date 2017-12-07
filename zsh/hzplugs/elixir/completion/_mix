@@ -45,6 +45,9 @@ case ${state} in
       (help)
         _arguments ':feature:__task_list'
         ;;
+      (run)
+        _files
+        ;;
       (test)
         _files
         ;;
