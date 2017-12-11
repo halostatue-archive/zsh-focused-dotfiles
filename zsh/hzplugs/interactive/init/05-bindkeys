@@ -22,7 +22,7 @@
   bindkey -e
 
   # Use human-friendly identifiers
-  typeset -gA Key
+  local -A Key
   Key=(
   'Control'      '\C-'
   'ControlLeft'  '\e[1;5D \e[5D \e\e[D \eOd \eOD'
@@ -55,61 +55,84 @@
   'BackTab'      "${terminfo[kcbt]}"
   )
 
-  function --hz-keyname()
+  function --hz-boundkey()
   {
+    case "$(bindkey "${1}")" in
+      *undefined-key)
+        return 1
+        ;;
+      *)
+        return 0
+        ;;
+    esac
+  }
+
+  function --hz-bindkey()
+  {
+    local -a only_unbound
+    local key
+
+    builtin zparseopts -D -E -K \
+      only-unbound=only_unbound -only-unbound=only_unbound
+
     (( ${#Key[${1}]} )) || return
-    [[ -n "${Key[${1}]}" ]] || return
 
     if (( ${#} == 3 )); then
-      bindkey "${Key[${1}]}${2}" ${3}
+      key="${Key[${1}]}${2}"
+
+      (( ${#only_unbound} )) && --hz-boundkey "${key}" && return
+
+      bindkey "${key}" "${3}"
     else
-      local key name bindfunc
-      name=${1}
-      bindfunc=${2}
+      local name bindfunc
+      name="${1}"
+      bindfunc="${2}"
 
       for key in "${(s: :)Key[${name}]}"; do
-        bindkey ${key} ${bindfunc}
+        (( ${#only_unbound} )) && --hz-boundkey "${key}" && next
+        bindkey "${key}" "${bindfunc}"
       done
     fi
   }
 
-  --hz-keyname Home beginning-of-line
-  --hz-keyname End end-of-line
-  --hz-keyname ControlLeft backward-word
-  --hz-keyname ControlRight forward-word
+  # --hz-bindkey Home beginning-of-line
+  # --hz-bindkey End end-of-line
+  # --hz-bindkey ControlLeft backward-word
+  # --hz-bindkey ControlRight forward-word
 
-  # --hz-keyname Insert overwrite-mode
+  # --hz-bindkey Insert overwrite-mode
 
-  --hz-keyname Delete delete-char
-  --hz-keyname Backspace backward-delete-char
-  --hz-keyname Left backward-char
-  --hz-keyname Right forward-char
+  --hz-bindkey Delete delete-char
+  --hz-bindkey Backspace backward-delete-char
+  --hz-bindkey Left backward-char
+  --hz-bindkey Right forward-char
 
-  --hz-keyname Control A beginning-of-line
-  --hz-keyname Control E end-of-line
-  --hz-keyname Control K kill-line
-  --hz-keyname Control L clear-screen
-  --hz-keyname Control R history-incremental-search-backward
-  --hz-keyname Control U kill-whole-line
-  --hz-keyname Control V quoted-insert
-  --hz-keyname Control W backward-kill-word
-  --hz-keyname Control N down-history
-  --hz-keyname Control P up-history
+  --hz-bindkey Control A beginning-of-line
+  --hz-bindkey Control E end-of-line
+  --hz-bindkey Control K kill-line
+  --hz-bindkey Control L clear-screen
+  --hz-bindkey --only-unbound Control R history-incremental-search-backward
+  --hz-bindkey Control U kill-whole-line
+  --hz-bindkey Control V quoted-insert
+  --hz-bindkey Control W backward-kill-word
+  --hz-bindkey Control N down-history
+  --hz-bindkey Control P up-history
 
-  --hz-keyname BackTab reverse-menu-complete
+  --hz-bindkey BackTab reverse-menu-complete
 
-  --hz-keyname Escape "[A" history-beginning-search-backward
-  --hz-keyname Escape "[B" history-beginning-search-forward
+  --hz-bindkey Escape "[A" history-beginning-search-backward
+  --hz-bindkey Escape "[B" history-beginning-search-forward
 
-  --hz-keyname Escape H run-help
-  --hz-keyname Escape h run-help
+  --hz-bindkey Escape H run-help
+  --hz-bindkey Escape h run-help
 
-  --hz-keyname Escape m copy-prev-shell-word
+  --hz-bindkey Escape m copy-prev-shell-word
 
   bindkey ' ' magic-space
 
-  --hz-keyname Control Og noglob-command-line
-  --hz-keyname Control Os sudo-command-line
+  --hz-bindkey Control Og noglob-command-line
+  --hz-bindkey Control Os sudo-command-line
+  --hz-bindkey Control Ox sub-command-line
 
   autoload -Uz -- --rationalise-dot
   zle -N -- --rationalise-dot
@@ -117,5 +140,5 @@
 
   bindkey -s $'\u00a0' '^u'
 
-  unfunction -- --hz-keyname
+  unfunction -- --hz-bindkey --hz-boundkey
 }

@@ -48,9 +48,19 @@
   trustExitCode = true
 
 % on in_path?('icdiff') do
+[diff]
+  tool = icdiff
+
 [difftool "icdiff"]
   cmd = icdiff --line-numbers "${LOCAL}" "${REMOTE}"
+
+[alias]
+  showtool = "!f() { git difftool --tool icdiff ${1:-HEAD}^ ${1:-HEAD}; }; f"
+  added = difftool --cached
 % end
+
+[pager]
+  difftool = true
 
 [format]
   pretty = %C(yellow)%h%C(reset) %C(red)%ad%C(reset) | %s%d %C(green)[%aN]%C(reset)
@@ -183,6 +193,9 @@
   clean-local   = "!for d in $(git merged-local); do git branch -d $d; done"
   merged-local  = "!git wtf -s -r | awk '/^\\(x\\)/ { print $2; }'"
   merged-remote = "!git wtf -s -r | awk '/^\\{x\\}/ { print $2; }'"
+% end
+% on in_path?('fzf') do
+  fzflog = "!git log --color=always --format=\"%C(auto)%h%d %s %C(black)%C(bold)%cr\" \"${@}\" | fzf --ansi| awk '{print $1}' | pbcopy"
 % end
 
   # More complex functionality

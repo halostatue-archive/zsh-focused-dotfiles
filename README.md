@@ -1,7 +1,7 @@
 # Hz
 
-This repository contains a fairly extensive set of configuration files and a
-deep zsh configuration
+This repository contains a fairly extensive set of configuration files with a
+deep zsh configuration.
 
 # halostatue's Zsh Configuration
 
@@ -15,6 +15,8 @@ on Windows in the past and may still work).
 
 ## Prerequisites
 
+> Note: This will be changing in thre future.
+
 * Ruby 2.0 or later
 * Rake 11 or later
 
@@ -22,9 +24,11 @@ on Windows in the past and may still work).
 
     git clone git://github.com/halostatue/dotfiles ~/.dotfiles
     cd ~/.dotfiles
-    bin/halozsh bootstrap
+    bin/hz bootstrap
 
 ### Template Files
+
+> Note: the implementation format of the template formats will be changing.
 
 Files can be installed in one of two ways: linking or template generation. A
 *template* file is one that will be run through `erb` to evaluate the contents
@@ -91,3 +95,56 @@ repositories and other places on the 'net that I'm not even sure of anymore.
 ### oh-my-zsh
 
 * https://github.com/robbyrussell/oh-my-zsh
+
+## Startup Order
+
+ |                  | Interactive login | Interactive non-login | Script | 
+ | ---------------- | :---------------- | :-------------------- | :----- | 
+ | /etc/zshenv      |     A             |     A                 |   A    | 
+ | ~/.zshenv        |     B             |     B                 |   B    | 
+ | /etc/zprofile    |     C             |                       |        | 
+ | ~/.zprofile      |     D             |                       |        | 
+ | /etc/zshrc       |     E             |     C                 |        | 
+ | ~/.zshrc         |     F             |     D                 |        | 
+ | /etc/zlogin      |     G             |                       |        | 
+ | ~/.zlogin        |     H             |                       |        | 
+ |                  |                   |                       |        | 
+ | ~/.zlogout       |     I             |                       |        | 
+ | /etc/zlogout     |     J             |                       |        | 
+
+
+Here is a non-exclusive list of what each file tends to contain:
+
+Since `.zshenv` is always sourced, it often contains exported variables that
+should be available to other programs. For example, `$PATH`, `$EDITOR`, and
+`$PAGER` are often set in `.zshenv`. Also, you can set `$ZDOTDIR` in `.zshenv`
+to specify an alternative location for the rest of your zsh configuration.
+
+`.zshrc` is for interactive shell configuration. You set options for the
+interactive shell there with the setopt and unsetopt commands. You can also
+load shell modules, set your history options, change your prompt, set up zle
+and completion, et cetera. You also set any variables that are only used in the
+interactive shell (e.g. `$LS_COLORS`).
+
+`.zlogin` is sourced on the start of a login shell. This file is often used to
+start X using startx. Some systems start X on boot, so this file is not always
+very useful.
+
+`.zprofile` is basically the same as `.zlogin` except that it's sourced
+directly before `.zshrc` is sourced instead of directly after it. According to
+the zsh documentation, "`.zprofile` is meant as an alternative to `.zlogin` for
+ksh fans; the two are not intended to be used together, although this could
+certainly be done if desired."
+
+`.zlogout` is sometimes used to clear and reset the terminal.
+
+## Profiling
+
+Add `zmodload zsh/zprof at` the top of your `.zshrc` and run `zprof`.
+
+## Tracing
+
+You can trace what zsh is doing (note that the tracing itself will slow things
+down, but in a mostly-uniform manner). Add `setopt prompt_subst; zmodload
+zsh/datetime; PS4='+[$EPOCHREALTIME]%N:%i> '; set -x` at the top of your
+`.zshrc`.

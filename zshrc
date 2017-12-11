@@ -66,3 +66,5 @@ zstyle :hzsh:prompt:vcs_info enable git cvs svn hg bzr
 source ${HOME}/.zsh/loader ${1:-zshrc}
 
 export GPG_TTY=$(tty)
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

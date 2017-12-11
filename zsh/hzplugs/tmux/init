@@ -1,0 +1,29 @@
+#! zsh
+
+function()
+{
+  if has fzf; then
+    tm() {
+      local change
+      if [[ -n "${TMUX}" ]]; then
+        change="switch-client"
+      else
+        change="attach-session"
+      fi
+
+      if (( ${#1} )); then 
+        tmux "${change}" -t "${1}" 2>/dev/null ||
+         (tmux new-session -d -s "${1}" && tmux "${change}" -t "${1}")
+      else
+        local session
+        session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | fzf -0 -1)
+
+        if (( $? == 0 )); then
+          tmux "${change}" -t "${session}"
+        else
+          echo "No sessions found."
+        fi
+      fi
+    }
+  fi
+}

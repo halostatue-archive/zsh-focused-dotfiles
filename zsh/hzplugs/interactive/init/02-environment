@@ -18,8 +18,8 @@ typeset -ga preexec_functions
 typeset -ga precmd_functions
 typeset -ga chpwd_functions
 
-HISTSIZE=10000                  # size of history
-SAVEHIST=10000                  # maximum of history events to be save
+HISTSIZE=70000                  # size of history
+SAVEHIST=30000                  # maximum of history events to be save
 
 LOGCHECK=60                     # watch login/logout every 60 seconds
 watch=(notme)                   # watch login/logout

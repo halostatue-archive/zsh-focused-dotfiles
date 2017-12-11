@@ -5,6 +5,8 @@ function()
   export FZF_DEFAULT_OPTS="-x"
   if has pt; then
     export FZF_DEFAULT_COMMAND='pt -g "" --hidden --ignore .git'
+  elif has rg; then
+    export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow -g "!{.git,node_modules}/*" 2> /dev/null'
   elif has ag; then
     export FZF_DEFAULT_COMMAND='ag -g "" --hidden --ignore .git'
   fi
@@ -12,4 +14,17 @@ function()
   export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND}"
 
   source ${HOME}/.fzf.zsh
+
+  function __vim_fzf()
+  {
+    vim "$(fzf)"
+  }
+
+  function __gvim_fzf()
+  {
+    gvim "$(fzf)"
+  }
+
+  bindkey "\C-Op" __vim_fzf
+  bindkey "\C-Ov" __gvim_fzf
 }
