@@ -35,4 +35,5 @@ else
   add-paths-before-if ${HOME}/.dotfiles/bin
   add-paths-before-if ${HOME}/.dotfiles/zsh/${OSTYPE}/bin
   add-paths-before-if ${HOME}/bin
+  add-paths-before-if ${HOME}/.local/bin
 fi

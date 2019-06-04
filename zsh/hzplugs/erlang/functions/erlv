@@ -3,6 +3,6 @@
 local -i erlv
 erlv=$(erl -eval 'io:fwrite(erlang:system_info(otp_release)), halt().' -noshell)
 
-for f (${${${$(which erl):A}:h}:h}/releases/${erlv}/OTP_{VERSION,RELEASE}); do
+for f (${${${$(which erl):A}:h}:h}/releases/${erlv}/OTP_{VERSION,RELEASE}(N)); do
   cat $f
 done

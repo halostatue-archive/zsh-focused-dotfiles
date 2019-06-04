@@ -53,3 +53,5 @@ tags-ja
 /packages
 /user
 /user-backup.tar.gz
+
+.byebug_history

@@ -2,5 +2,9 @@
 
 function()
 {
-  test -s "${HOME}/.kiex/scripts/kiex" && source "${HOME}/.kiex/scripts/kiex"
+  local kiex
+  kiex="${HOME}/.kiex/scripts/kiex.bash"
+  test -s "${kiex}" && source "${kiex}"
+
+  add-paths-before-if "${HOME}/.mix"
 }

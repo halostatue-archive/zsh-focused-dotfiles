@@ -1,0 +1,8 @@
+#autoload -U
+
+if has cargo; then
+  local -a cargo_bins
+  cargo_bins=(${$(which cargo):h}/${1}(.N))
+
+  (( ${#cargo_bins} ))
+fi

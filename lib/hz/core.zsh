@@ -30,7 +30,7 @@
 --hz-install-gem()
 {
   if (( $(command gem list ${1} | command grep -c ${1}) < 1 )); then
-    command gem install ${1} --no-ri --no-rdoc > /dev/null ||
+    command gem install ${1} > /dev/null ||
       --hz-halt "Could not install gem ${1}."
   fi
 }

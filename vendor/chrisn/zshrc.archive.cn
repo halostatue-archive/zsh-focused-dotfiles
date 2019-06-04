@@ -1,0 +1,124 @@
+# == ZSH ARCHIVE
+
+# less commmonly used functions go here
+# 29mar2016  +chris+
+
+
+# Complete from tmux pane.
+# http://blog.plenz.com/2012-01/zsh-complete-words-from-tmux-pane.html
+# 20jan2012  +chris+
+_tmux_pane_words() {
+  local expl
+  local -a w
+  if [[ -z "$TMUX_PANE" ]]; then
+    _message "not running inside tmux!"
+    return 1
+  fi
+  w=( ${(u)=$(tmux capture-pane \; show-buffer \; delete-buffer)} )
+  _wanted values expl 'words from current tmux pane' compadd -a w
+}
+zle -C tmux-pane-words-prefix   complete-word _generic
+bindkey '^X^T' tmux-pane-words-prefix
+zstyle ':completion:tmux-pane-words-prefix:*' completer _tmux_pane_words
+zstyle ':completion:tmux-pane-words-prefix:*' ignore-line current
+
+
+# search dirstack with ~[name]
+# 16nov2013  +chris+
+# 29mar2016  +chris+  archived, obsolete due to zz
+#                     (could use zsh_directory_name with zz...)
+_mydirstack() {
+  local -a lines list
+  for d in $dirstack; do
+    lines+="$(($#lines+1)) -- $d"
+    list+="$#lines"
+  done
+  _wanted -V directory-stack expl 'directory stack' \
+    compadd "$@" -ld lines -S']/' -Q -a list
+}
+zsh_directory_name() {
+  case $1 in
+    c) _mydirstack;;
+    n) case $2 in
+         <0-9>) reply=($dirstack[$2]);;
+         *) reply=($dirstack[(r)*$2*]);;
+       esac;;
+    d) false;;
+  esac
+}
+
+# perflog -- log performance metrics of process using looped ps
+# e.g. perflog -C firefox
+perflog() {
+  while sleep 1; do
+    ps h -o pcpu,bsdtime,vsz,rsz,pmem,pid,comm "$@"
+  done | awk 'function p(x) { return x > 10240 ? int(x/1024) "M" : x "k" }
+              { split($2, t, ":")
+                if (t[1]>60) $2 = sprintf("%dh%02d:%02d", t[1]/60, t[1]%60, t[2])
+                printf("%s %3d%%CPU %9s  %6s %6s %2d%%MEM  %5d %s\n",
+                       strftime("%H:%M:%S"), $1, $2, p($3), p($4), $5, $6, $7) }'
+}
+
+# sfetch (sftp|scp)://HOST/PATH [DEST] -- file by scp/sftp with resuming
+# 19sep2011  +chris+
+sfetch() {
+  curl -k -u $USER -C- ${2:--O}${2:+-o $2} $1
+}
+
+# s -- select line using vim
+# 23jul2015  +chris+
+s() {
+  vim - '+set nomod | map <buffer><C-M> :.w >>/proc/self/fd/3 \| :qall!<C-M> |
+           vmap <buffer><C-M> :'\''<,'\''>w >>/proc/self/fd/3 \| :qall!<C-M>' \
+    3>&1 >/dev/tty
+}
+
+# use-context -- enable ConTeXt paths
+# 16aug2011  +chris+
+use-context() {
+  export TEXMFOS=/opt/context-minimals/texmf-linux-64
+  export TEXMFCACHE=$HOME/.cache/texmf-cache
+  export PATH=$TEXMFOS/bin:$PATH
+  export OSFONTDIR="$HOME/.fonts;/usr/share/fonts;"
+}
+
+# vv -- open file:line: in vim, defaulting to X selection
+# 28aug2013  +chris+
+vv() {
+  case ${1:=$(xsel)} in
+    *:<->:) v ${1%:};;
+    *:<->) [[ -e ${1%:*} ]] && vim +${1##*:} ${1%:*};;
+    *) [[ -e $1 ]] && vim $1
+  esac
+}
+
+# hsh FILES... - paste to hsh.link
+# 02sep2014  +chris+
+hsh() {
+  cat "$@" | curl -sF 'content=<-' http://hsh.link/
+}
+
+# hshclip CLIPBOARD FILES... - copy/paste to hsh.link clipboard
+# 03sep2014  +chris+
+hshclip() {
+  local clip=${1?no clipboard name given}
+  shift
+  case "$1" in
+    +) shift; cat -- "$@" | curl -sF 'content=<-' -F append=1 http://hsh.link/$clip;;
+    *) if [ -t 0 -a "$#" -eq 0 ]; then
+         curl -s http://hsh.link/$clip
+       else     
+         cat -- "$@" | curl -sF 'content=<-' http://hsh.link/$clip
+       fi
+  esac
+}
+alias xx="hshclip chris2"
+
+# xless - run less in seperate terminal
+# 05oct2014  +chris+
+xless() {
+  {
+    exec {stdin}<&0 {stderr}>&2
+    exec urxvt -e sh -c "less ${(j: :)${(qq)@}} </dev/fd/$stdin 2>/dev/fd/$stderr"
+  } &!
+}

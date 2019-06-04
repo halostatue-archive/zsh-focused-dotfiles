@@ -1,0 +1,83 @@
+# .zshenv - environment variables for zsh
+
+# DO NOT LOAD /etc/profile which resets stuff here.
+# 07dec2011  +chris+
+setopt NO_GLOBAL_RCS
+
+# == ENVIRONMENT
+
+export PATH
+
+# setpath [FRONT] [-- BACK] - set $PATH, optionally put FRONT first, BACK last
+setpath() {
+  path=(
+    ~/bin
+    ~/.gem/ruby/*/bin(Nn[-1])
+    ~/.opam/current/bin
+    ~/.cabal/bin
+    ~/.go/bin
+    /usr/local/sbin
+    /usr/local/bin
+    /usr/sbin
+    /usr/bin
+    /sbin
+    /bin
+    /usr/games
+    /usr/games/bin
+  )
+  path=( "$@[1,$@[(i)--]-1]" ${(u)path:A}(N-/) "$@[$@[(i)--]+1,-1]" )
+}
+setpath
+
+export GOPATH=~/.go:/usr/lib/go/site
+export OCAML_TOPLEVEL_PATH=~/.opam/system/lib/toplevel
+export CAML_LD_LIBRARY_PATH=~/.opam/system/lib/stublibs:/usr/lib/ocaml/stublibs
+
+# Unix means English.  But do use UTF8!  And sort like real men.
+export LANG=en_US.UTF-8
+export LC_CTYPE=$LANG
+export LC_COLLATE=C
+
+# less: use UTF-8, no secondary screen,
+# don't ignore case in man-db man(1) (which prepends -i to $LESS).
+export LESSCHARSET=UTF-8
+export LESS=X-+I
+
+# 18mar2014  +chris+
+# 20mar2014  +chris+
+export MANSECT=8:2:3:1:1p:6:n:3perl:l:0:0p:5:4:9:7
+
+# mdocml
+# 08feb2015  +chris+
+export PAGER=less
+export MANPATH=/usr/local/share/man:/usr/share/man:/opt/plan9/man
+
+# Nethack options
+# 28oct2002  +chris+
+export NETHACKOPTIONS=DECgraphics,!eight_bit_tty,time,!autopickup,color,showexp
+
+export EDITOR=/usr/bin/vim
+
+export NNTPSERVER=news.in-ulm.de                                                
+
+export CVS_RSH=ssh
+
+export SSH_ASKPASS=~/bin/gnome-ssh-askpass
+export GNOME_SSH_ASKPASS_GRAB_SERVER=true
+
+# XDG, 15jul2010
+export XDG_DESKTOP_DIR="$HOME/DesktoP"
+export XDG_DOWNLOAD_DIR="$HOME/mess/current"
+export XDG_MUSIC_DIR="$HOME/Music"
+
+# disable at-spi2 crap, 23jan2013
+export NO_AT_BRIDGE=1
+
+# TeX files
+# 27apr2015  +chris+
+export TEXMFHOME=~/.texmf
+
+# load various profiles
+for rc in apache-ant chromium-pepper-flash jdk jre mercurial mozilla-common perlbin plan9 texlive 10_openjdk; do
+  [ -r /etc/profile.d/$rc.sh ] && source /etc/profile.d/$rc.sh
+done

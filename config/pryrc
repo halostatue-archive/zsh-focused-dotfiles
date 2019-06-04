@@ -9,8 +9,32 @@ if rubyrc.exist?
   include RubyRCInit
 end
 
-begin
+class KCSApp
+  def initialize(id, secret)
+    @id, @secret = id, secret
+  end
 
+  def padlock(nonce)
+    require 'digest/sha2'
+    Digest::SHA256.hexdigest("#{@id}:#{nonce}:#{@secret}").upcase
+  end
+
+  def header(nonce)
+    require 'base64'
+    Base64.urlsafe_encode64("#{@id}:#{nonce}:#{padlock(nonce)}")
+  end
+
+  def verify(value)
+    require 'base64'
+    i, n, p = Base64.decode64(value).split(':')
+    fail "ID #{i} does not match #{@id}" unless @id == i
+    q = padlock(n)
+    fail "Padlocks do not match: provided #{p}, computed: #{q}" unless q == p.upcase
+    true
+  end
+end
+
+begin
   Pry.config.editor = 'vim'
 
   if Pry.plugins.has_key? "debugger"

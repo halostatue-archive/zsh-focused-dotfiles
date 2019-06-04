@@ -67,4 +67,5 @@ source ${HOME}/.zsh/loader ${1:-zshrc}
 
 export GPG_TTY=$(tty)
 
+return 0
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

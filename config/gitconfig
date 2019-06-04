@@ -8,8 +8,8 @@
   templatedir = <%= home %>/.git_template
 % end
 
-[difftool]
-  prompt = false
+[branch]
+  autosetuprebase = always
 
 [diff]
   mnemonicprefix = true
@@ -19,8 +19,22 @@
 [diff "ruby"]
   funcname = ^ *\\(\\(class\\|module\\|def\\) .*\\)
 
-[branch]
-  autosetuprebase = always
+[diff "elixir"]
+  funcname = ^ *\\(\\(defmodule\\|defimpl\\|defprotocol\\|def\\) .*\\)
+
+[difftool]
+  prompt = false
+
+% on in_path?('icdiff') do
+[difftool "icdiff"]
+  cmd = icdiff --line-numbers "${LOCAL}" "${REMOTE}"
+% end
+
+% on in_path?('delta') do
+[difftool "delta"]
+  cmd = delta \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
+% end
+
 
 [rebase]
   autostash = true
@@ -46,18 +60,6 @@
 [mergetool "vimdiff"]
   cmd = vim -d "${LOCAL}" "${MERGED}" "${REMOTE}"
   trustExitCode = true
-
-% on in_path?('icdiff') do
-[diff]
-  tool = icdiff
-
-[difftool "icdiff"]
-  cmd = icdiff --line-numbers "${LOCAL}" "${REMOTE}"
-
-[alias]
-  showtool = "!f() { git difftool --tool icdiff ${1:-HEAD}^ ${1:-HEAD}; }; f"
-  added = difftool --cached
-% end
 
 [pager]
   difftool = true
@@ -144,7 +146,7 @@
   history      = log -10 --format=format:'%C(green)%h %C(reset)• %s (%cN, %ar)'
   graph        = log --graph -10 --branches --remotes --tags  --format=format:'%C(green)%h %C(reset)• %<(75,trunc)%s (%cN, %cr) %C(red)%d' --date-order
   ld           = log --topo-order --stat --patch --full-diff --pretty=format:'%C(bold)%C(yellow)Commit:%C(reset) %C(yellow)%H%C(red)%d%n%C(bold)%C(yellow)Author:%C(reset) %C(cyan)%an <%= "<%ae>" %>%n%C(bold)%C(yellow)Date:%C(reset)   %C(blue)%ai (%ar)%C(reset)%n%+B'
-  lg           = log --graph --pretty=format:'%C(red)%h%C(reset) -%C(yellow)%d%C(reset) %s %C(green)(%cd)%C(reset)' --abbrev-commit --date=short
+  lg           = log --graph --pretty=format:'%C(red)%h%C(reset) -%C(yellow)%d%C(reset) %s %C(green)(%cd) [%an]%C(reset)' --abbrev-commit --date=short
   lga          = log --topo-order --all --graph --pretty=format:'%C(yellow)%h %C(cyan)%cn%C(reset) %s %C(red)%d%C(reset)%n'
   lgs          = log --topo-order --all --graph --pretty=format:'%C(yellow)%h%C(reset) %s %C(red)%d%C(reset)%n'
   lg2          = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen%cn%Creset %Cblue(%cr)%Creset' --abbrev-commit --date=relative
@@ -196,6 +198,11 @@
 % end
 % on in_path?('fzf') do
   fzflog = "!git log --color=always --format=\"%C(auto)%h%d %s %C(black)%C(bold)%cr\" \"${@}\" | fzf --ansi| awk '{print $1}' | pbcopy"
+% end
+
+% on in_path?('icdiff') do
+  showtool = "!f() { git difftool --tool icdiff ${1:-HEAD}^ ${1:-HEAD}; }; f"
+  added = difftool --cached
 % end
 
   # More complex functionality
@@ -330,11 +337,6 @@
 [url "git@bitbucket.org:"]
   insteadOf = "bb:"
 
-% on in_path?('delta') do
-[difftool "delta"]
-  cmd = delta \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
-% end
-
 % on in_path?('krgpg') do |path|
 [gpg]
   program = <%= path %>
@@ -343,7 +345,6 @@
 [tag]
 	forceSignAnnotated = true
 % end
-
 
 <%= include_platform_files %>
 <%= include_user_files %>

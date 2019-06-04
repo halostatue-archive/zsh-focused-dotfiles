@@ -1,0 +1,49 @@
+[user]
+	name = Christian Neukirchen
+	email = chneukirchen@gmail.com
+[core]
+	excludesfile = ~/.gitignore
+	pager = less -+$LESS -FRX
+[init]
+	templatedir = /var/empty
+[color]
+	ui = false
+	interactive = auto
+[color "interactive"]
+	prompt = bold normal
+	help = black
+[push]
+	default = matching
+[diff]
+	renames = copies
+[merge]
+	log = true
+[log]
+	decorate = auto
+[alias]
+	st = status -s -uno
+	stu = status -s
+	ix = diff --cached
+	d = diff -c HEAD
+	dd = diff -c HEAD --name-status
+	tree = log --oneline --decorate --graph
+	news = log -p @{1}..
+	lg = log --date=short --pretty='%cd %h%d %s'
+	leg = log --date=short --pretty='%cd %h%d %cE: %s'
+	puff = pull --ff-only
+	sprunge = "!_(){ git format-patch --stdout \"$@\" |curl -sF 'sprunge=<-' http://sprunge.us ;}; _"
+	prev = checkout HEAD^
+	ignored = ls-files --others -i --exclude-standard
+	madd = "!git diff --name-only --diff-filter=U -z | xargs -0r grep -LZ '<<<<<<<' | xargs -0r git add -v"
+	this = "!git rev-parse --show-prefix 2>/dev/null || { git init && git add . && git commit -m \"Initial import of ${PWD##*/}\";}"
+	git = !git
+	sl = stash list --name-status --pretty='format:%gd [%ar]: %s'
+	autosquash = "!git rebase -i --autosquash $(git merge-base HEAD ${@:-'@{u}'})"
+	rank = shortlog -sn --no-merges
+	restore = "!git checkout $(git rev-list -1 @ -- \"$1\")^ -- \"$1\""
+	scissor = "!_(){ git format-patch --stdout \"${@:-@^}\" | awk 'BEGIN{print \"-- >8 --\"} !/^From/ && !/^Date/' ;}; _"
+	sub = submodule update --init --recursive
+	refresh = "!git diff -z --relative --name-only @^ | GIT_COMMITTER_DATE=$(git show -s --format=%cI @) xargs -0r git commit --amend --no-edit"
+	renames = "!_() { git log --name-status --format= --diff-filter=R --reverse \"$@\" | awk -F\"\\t\" 'BEGIN{PROCINFO[\"sorted_in\"]=\"@val_str_asc\"}/^R/{m[$3]=m[$2]?m[$2]:$2;delete m[$2]}END{for(f in m)if(m[f]!=f)print m[f]\" => \"f}'; }; _"
+[github]
+	user = chneukirchen

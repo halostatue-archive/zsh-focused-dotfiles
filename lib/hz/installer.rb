@@ -222,7 +222,7 @@ Creating target #{target.basename} from #{@current_file} and local files…
   def evaluate(filename)
     if filename.exist?
       puts "\t#{relative_path(filename)}…"
-      ERB.new(filename.read, 0, "><>%").result(binding)
+      ERB.new(filename.read, trim_mode: '%<>').result(binding)
     else
       puts "\t#{relative_path(filename)} (missing)…"
       ""

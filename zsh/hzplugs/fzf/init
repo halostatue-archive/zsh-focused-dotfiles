@@ -2,29 +2,45 @@
 
 function()
 {
-  export FZF_DEFAULT_OPTS="-x"
   if has pt; then
-    export FZF_DEFAULT_COMMAND='pt -g "" --hidden --ignore .git'
+    export FZF_CTRL_T_COMMAND='pt -g "" --hidden --ignore .git'
   elif has rg; then
-    export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow -g "!{.git,node_modules}/*" 2> /dev/null'
+    export FZF_CTRL_T_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow -g "!{.git,node_modules}/*" 2> /dev/null'
   elif has ag; then
-    export FZF_DEFAULT_COMMAND='ag -g "" --hidden --ignore .git'
+    export FZF_CTRL_T_DEFAULT_COMMAND='ag -g "" --hidden --ignore .git'
   fi
 
-  export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND}"
+  local preview
+  if has highlight || has bat; then
+    preview='highlight -O xterm256 -l {} 2> /dev/null || bat --color=always {} || '
+  fi
+  preview="(${preview}cat {} || tree -C {}) | head -200"
+
+  export FZF_CTRL_T_OPTS="--preview='${preview}' --select-1 --exit-0"
+
+  # Need to find an installed fd, because fd is a builtin MacOS utility, too.
+  local -a fd_list
+  fd_list=()
+
+  if has brew; then
+    fd_list=($(brew --prefix)/Cellar/fd/*(/N))
+  elif has cargo; then
+    fd_list=(${$(which cargo):h}/fd(.N))
+  fi
+
+  if (( ${#fd_list} )); then
+    export FZF_ALT_C_COMMAND='fd -L -t d .'
+  fi
+  export FZF_ALT_C_OPTS="--preview='tree -C {} | head -200' --header-lines=1 --select-1 --exit-0"
+
+  export FZF_CTRL_R_OPTS="--preview='echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
+
+  #export FZF_DEFAULT_OPTS="--bind='ctrl-o:execute(code {})+abort,ctrl-e:execute(vim {})+abort,ctrl-v:execute(gvim {})+abort'"
+
+  unique-manpath -b ${HOME}/.fzf/man
 
   source ${HOME}/.fzf.zsh
 
-  function __vim_fzf()
-  {
-    vim "$(fzf)"
-  }
-
-  function __gvim_fzf()
-  {
-    gvim "$(fzf)"
-  }
-
-  bindkey "\C-Op" __vim_fzf
-  bindkey "\C-Ov" __gvim_fzf
+  # bindkey "\C-Op" __vim_fzf
+  # bindkey "\C-Ov" __gvim_fzf
 }

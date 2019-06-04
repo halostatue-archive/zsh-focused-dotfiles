@@ -2,8 +2,12 @@
 ForwardAgent yes
 HashKnownHosts no
 UseRoaming no
+ControlMaster auto
+# ControlPath ~/.tmp/ssh_%r@%h:%p
+ControlPersist 5m
 ServerAliveCountMax 6
 ServerAliveInterval 30
+VerifyHostKeyDNS yes
 
 <%= include_user_files %>
 <%= include_platform_files %>
@@ -15,6 +19,7 @@ Host *^*
 Host *
   PKCS11Provider <%= Pathname(path).join('../../lib/kr-pkcs11.so').expand_path %>
   ProxyCommand <%= path %> %h %p
+  IdentityFile ~/.ssh/id_krypton
   IdentityFile ~/.ssh/id_kryptonite
   IdentityFile ~/.ssh/id_ed25519
   IdentityFile ~/.ssh/id_rsa
@@ -37,20 +42,6 @@ Host *
 # # thanks:
 # #  http://blogs.perl.org/users/smylers/2011/08/ssh-productivity-tips.html
 # #  https://stribika.github.io/2015/01/04/secure-secure-shell.html
-
-# ControlMaster auto
-# ControlPath ~/.tmp/ssh_%r@%h:%p
-# ControlPersist 5m
-# TCPKeepAlive no
-# ServerAliveInterval 60
-# ServerAliveCountMax 10
-# HostbasedAuthentication no
-# RhostsRSAAuthentication no
-# HashKnownHosts no
-# CheckHostIP yes
-# VerifyHostKeyDNS yes
-# StrictHostKeyChecking ask
-# UseRoaming no
 
 # Host *
 #   HashKnownHosts yes

@@ -11,9 +11,9 @@ HZ_BANNER=()
 HZ_USAGE=()
 HZ_COMMANDS_PREFIX=hz-
 
-HZ_HELP[COMMAND]="
+HZ_HELP[COMMAND]=$'
 Manage your Hz dotfiles installation.
-"
+'
 
 --hz-version()
 {
@@ -150,4 +150,14 @@ hz-help()
   --hz-has-${HZ_COMMANDS_PREFIX}function ${1} || --hz-has-${HZ_COMMANDS_PREFIX}command ${1}
 }
 '
+}
+
+--hz-no-version()
+{
+  --hz-version() { }
+}
+
+--hz-no-usage()
+{
+  --hz-usage() { }
 }

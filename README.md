@@ -15,7 +15,7 @@ on Windows in the past and may still work).
 
 ## Prerequisites
 
-> Note: This will be changing in thre future.
+> Note: This will be changing in the future.
 
 * Ruby 2.0 or later
 * Rake 11 or later
