@@ -48,6 +48,7 @@ tags-ja
 /.hz-internal
 /.vagrant/
 /config/hoe_template/minitest-travis/
+/fish/fishd.*
 /config/m2/repository
 /config/lein/indices/
 /packages
