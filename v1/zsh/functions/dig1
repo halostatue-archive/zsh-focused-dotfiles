@@ -1,6 +1,0 @@
-#autoload -U
-
-# short form of dig
-
-dig +noauthority +noadditional +noqr +nostats +noidentify +nocmd \
-  +noquestion +nocomments ${@}

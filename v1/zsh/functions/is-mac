@@ -1,4 +1,0 @@
-#autoload -U
-
-autoload is-os
-is-os darwin

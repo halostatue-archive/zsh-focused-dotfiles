@@ -1,4 +1,0 @@
-#autoload -U
-
-perl -e "binmode(STDOUT, ':utf8'); print \"${@}\""
-echo

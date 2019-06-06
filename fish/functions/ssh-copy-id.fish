@@ -1,0 +1,1 @@
+/Users/austin/.dotfiles/fish/packages/fish-utils/functions/ssh-copy-id.fish

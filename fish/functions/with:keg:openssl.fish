@@ -1,0 +1,1 @@
+/Users/austin/.dotfiles/fish/packages/fish-brew/functions/with:keg:openssl.fish

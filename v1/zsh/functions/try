@@ -1,5 +1,0 @@
-#autoload -U
-
-{
-  "${@}"
-} &> /dev/null

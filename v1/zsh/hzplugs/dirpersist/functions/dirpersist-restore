@@ -1,3 +1,0 @@
-#autoload -U
-
-[ -f "${__hzsh_dirpersist_cache}" ] && source "${__hzsh_dirpersist_cache}"

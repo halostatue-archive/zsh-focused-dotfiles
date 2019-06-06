@@ -1,9 +1,0 @@
-#autoload -U
-
-local Sum=0 Num
-while read Num; do
-  [ -z "${Num}" ] && break
-  Sum=$(( ${Sum} + ${Num} ))
-done
-echo "======"
-echo ${Sum}

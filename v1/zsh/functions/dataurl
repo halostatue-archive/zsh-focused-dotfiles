@@ -1,8 +1,0 @@
-#autoload -U
-
-local mime_type
-assign-output-to mime_type file -b --mime-type "${1}"
-
-[[ ${mime_type} == text/* ]] && mime_type="${mime_type};charset=utf-8"
-
-echo "data:${mime_type};base64,$(openssl base64 -in "${1}" | tr -d '\n')"

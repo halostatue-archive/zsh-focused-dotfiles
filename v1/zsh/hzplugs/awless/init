@@ -1,6 +1,0 @@
-#! zsh
-
-function()
-{
-  source <(awless completion zsh)
-}

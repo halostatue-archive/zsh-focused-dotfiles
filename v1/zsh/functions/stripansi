@@ -1,3 +1,0 @@
-#autoload -U
-
-perl -pe 's/\e\[?.*?[\@-~]//g'

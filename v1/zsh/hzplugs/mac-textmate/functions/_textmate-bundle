@@ -1,4 +1,0 @@
-#compdef textmate-bundle
-
-bundle_path="${HOME}/Library/Application Support/TextMate/Bundles"
-compadd -- $(print -l ${bundle_path}/*.tmbundle(:t:r))

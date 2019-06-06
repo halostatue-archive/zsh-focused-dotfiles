@@ -1,6 +1,0 @@
-#autoload -U
-
-local dir
-assign-output-to dir --paste-from-clipboard &&
-  echo "${dir}" &&
-  eval cd "${dir}"

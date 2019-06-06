@@ -1,4 +1,0 @@
-#autoload -U
-
-echo "${PWD/${HOME}/~}" | --copy-to-clipboard &&
-  --paste-from-clipboard

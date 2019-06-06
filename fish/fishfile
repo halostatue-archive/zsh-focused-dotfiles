@@ -21,3 +21,14 @@ fishpkg/fish-get-file-age
 ~/.dotfiles/fish/packages/fish-rake
 fishpkg/fish-git-util
 oh-my-fish/plugin-aws
+oh-my-fish/plugin-cd
+oh-my-fish/plugin-tab
+~/.dotfiles/fish/packages/fish-brew
+oh-my-fish/plugin-balias
+oh-my-fish/plugin-bak
+oh-my-fish/plugin-hash
+oh-my-fish/plugin-config
+oh-my-fish/plugin-rustup
+oh-my-fish/plugin-errno
+oh-my-fish/plugin-license
+oh-my-fish/plugin-technicolor
