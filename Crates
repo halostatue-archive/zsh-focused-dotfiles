@@ -33,7 +33,7 @@ git-historian
 git-journal
 hyperfine
 just
-loop
+loop-rs
 racer
 ripgrep
 rls

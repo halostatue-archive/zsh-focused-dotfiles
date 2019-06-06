@@ -9,7 +9,7 @@ function mess -d 'Create a mess work path'
         echo Created $now.
     end
 
-    if test -a $link
+    if test -e $link
         and not test -L link
         echo "$link is not a symlink; something is wrong."
     else
@@ -18,6 +18,6 @@ function mess -d 'Create a mess work path'
             ln -s $current $link
         end
 
-        cd $current/$argv[1]
+        cd (string join '/' $current $argv)
     end
 end
