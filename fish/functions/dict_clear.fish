@@ -1,0 +1,1 @@
+/Users/austin/.dotfiles/fish/packages/fish-dict/functions/dict_clear.fish

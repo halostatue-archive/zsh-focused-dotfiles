@@ -6,7 +6,7 @@ config/hub: .config/hub
 config/gem-credentials.yml: .gem/credentials
 config/aws-credentials: .aws/credentials
 config/aws-config: .aws/config
-config/fish: .config/fish
+fish: .config/fish
 config/htoprc: .config/htop/htoprc
 config/NuGet.Config: .config/NuGet/NuGet.Config
 config/gitk: .config/git/gitk

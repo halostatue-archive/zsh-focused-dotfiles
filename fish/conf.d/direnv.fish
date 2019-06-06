@@ -1,0 +1,1 @@
+/Users/austin/.dotfiles/fish/packages/fish-direnv/conf.d/direnv.fish

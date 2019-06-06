@@ -1,0 +1,1 @@
+/Users/austin/.dotfiles/fish/packages/fish-utils/functions/latest_modified_file.fish

@@ -222,7 +222,13 @@ Creating target #{target.basename} from #{@current_file} and local files…
   def evaluate(filename)
     if filename.exist?
       puts "\t#{relative_path(filename)}…"
-      ERB.new(filename.read, trim_mode: '%<>').result(binding)
+      erb =
+        if RUBY_VERSION < '2.6'
+          ERB.new(filename.read, nil, '%<>')
+        else
+          ERB.new(filename.read, trim_mode: '%<>')
+        end
+      erb.result(binding)
     else
       puts "\t#{relative_path(filename)} (missing)…"
       ""
