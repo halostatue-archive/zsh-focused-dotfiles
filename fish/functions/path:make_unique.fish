@@ -11,11 +11,15 @@ function path:make_unique -d 'Makes sure that each entry in $PATH or $MANPATH is
     set -l value
 
     for item in $$var
-        string match -qe $item $value
+        string match -qr "^$item\$" $value
         and continue
 
         set value $value $item
     end
 
-    set $var $value
+    if test -z {$_flag_n}
+        set $var $value
+    else
+        echo "set $var $value"
+    end
 end
