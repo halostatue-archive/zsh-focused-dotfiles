@@ -1,1 +1,3 @@
-/Users/austin/.dotfiles/fish/packages/fish-utils/functions/is:mac.fish
+function is:mac -d 'Returns true if the OS is MacOS (Darwin)'
+    is:os darwin
+end

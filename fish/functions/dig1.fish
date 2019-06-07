@@ -1,1 +1,4 @@
-/Users/austin/.dotfiles/fish/packages/fish-utils/functions/dig1.fish
+function dig1 -d 'Fast query domain results from dig'
+    dig +noauthority +noadditional +noqr +nostats +noidentify +nocmd \
+        +noquestion +nocomments $argv
+end

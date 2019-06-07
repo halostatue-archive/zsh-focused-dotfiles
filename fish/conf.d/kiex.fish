@@ -1,1 +1,2 @@
-/Users/austin/.dotfiles/fish/packages/fish-kiex/conf.d/kiex.fish
+test -s {$HOME}/.kiex/scripts/kiex.fish
+and source {$HOME}/.kiex/scripts/kiex.fish

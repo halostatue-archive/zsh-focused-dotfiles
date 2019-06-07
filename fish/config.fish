@@ -33,8 +33,11 @@ end
 test -d $HOME/.bin
 and path:unique $HOME/.bin
 
-path:make_unique
+functions -q path:make_unique
+and path:make_unique
 
-set CDPATH ~/.links/ ~/dev ~/dev/kinetic ~/oss ~/oss/github ~
+set CDPATH . ~/.links/ ~/dev ~/dev/kinetic ~/oss ~/oss/github ~
 
-function l; ll $argv; end
+function l
+    ll $argv
+end
