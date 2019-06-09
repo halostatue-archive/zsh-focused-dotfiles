@@ -1,1 +1,0 @@
-/Users/austin/.dotfiles/fish/packages/fish-rake/functions/clean-rake-cache.fish

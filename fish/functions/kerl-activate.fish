@@ -1,1 +1,0 @@
-/Users/austin/.dotfiles/fish/packages/fish-kerl/functions/kerl-activate.fish
