@@ -1,7 +1,0 @@
-#autoload -U
-
-local attr
-
-for attr (com.apple.{metadata:{kMDItemDownloadedDate,kMDItemWhereFroms},quarantine}); do
-  xattr -r -d "${attr}" "${@}"
-done

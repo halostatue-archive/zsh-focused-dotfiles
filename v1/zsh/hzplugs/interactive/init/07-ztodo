@@ -1,5 +1,0 @@
-#!/bin/zsh
-
-chpwd_functions+='ztodo'
-
---hzsh-is-caching && zstyle ':ztodo:*' cache-file $(--hzsh-cache-path)/ztodolist

@@ -1,8 +1,0 @@
-#autoload -U
-
-if has-app Dash.app; then
-  open "dash://${*}"
-else
-  echo >&2 "Dash.app is not installed."
-  return 1
-fi

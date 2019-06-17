@@ -1,1 +1,0 @@
-executable ${GOROOT:-${HOME}/go}/src/all.bash ${GOROOT:-${HOME}/dev/go}/src/all.bash

@@ -1,5 +1,0 @@
-#!/bin/bash
-# Usage: pbcurl <options>
-# Shorthand for: curl -L <options> "$(pbpaste)"
-
-exec curl -L "$@" "$(pbpaste)"

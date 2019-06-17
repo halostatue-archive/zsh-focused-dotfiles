@@ -48,6 +48,9 @@ tags-ja
 /.hz-internal
 /.vagrant/
 /config/hoe_template/minitest-travis/
+/fish/conf.d/*
+/fish/completions/*
+/fish/functions/*
 /fish/fishd.*
 /fish/fish_history
 /config/m2/repository

@@ -1,3 +1,10 @@
+if not functions -q fisher
+    set -q XDG_CONFIG_HOME
+    or set XDG_CONFIG_HOME ~/.config
+    curl https://git.io/fisher --create-dirs -sLo $XDG_CONFIG_HOME/fish/functions/fisher.fish
+    fish -c fisher
+end
+
 function __source_or_create -a name type
     set -l name {$__fish_config_dir}/$name.fish
     if test -f $name
@@ -15,8 +22,12 @@ __source_or_create users/(string lower (whoami)) user
 
 functions -e __source_or_create
 
-source (brew --prefix chruby-fish)/share/chruby/chruby.fish
-source (brew --prefix chruby-fish)/share/chruby/auto.fish
+functions -q has:keg
+and has:keg chruby-fish
+and begin
+    source (brew --prefix chruby-fish)/share/chruby/chruby.fish
+    source (brew --prefix chruby-fish)/share/chruby/auto.fish
+end
 
 if command -sq erl
     function erlv -d 'Show the current erlang version'
@@ -30,8 +41,8 @@ if command -sq erl
     end
 end
 
-test -d $HOME/.bin
-and path:unique $HOME/.bin
+functions -q path:unique
+and path:unique --test $HOME/.local/bin $HOME/.bin $HOME/bin
 
 functions -q path:make_unique
 and path:make_unique

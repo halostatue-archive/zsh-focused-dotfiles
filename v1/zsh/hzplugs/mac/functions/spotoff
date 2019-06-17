@@ -1,4 +1,0 @@
-#autoload -U
-
-# Yanked from Mathias Bynens’ dotfiles.
-sudo mdutil -a -i off

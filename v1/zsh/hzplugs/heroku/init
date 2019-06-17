@@ -1,6 +1,0 @@
-#! zsh
-
-function()
-{
-  add-paths-before-if /usr/local/heroku/bin
-}
