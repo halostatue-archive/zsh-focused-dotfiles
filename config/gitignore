@@ -37,7 +37,6 @@ CVS/
 # Logs and databases #
 ######################
 *.log
-*.sql
 *.sqlite
 
 # OS generated files #
@@ -55,6 +54,7 @@ Desktop.ini
 # Language Servers #
 ####################
 .elixir_ls/
+_build/
 
 # Editor Noise #
 ################
