@@ -21,7 +21,8 @@ SETUVAR FZF_PREVIEW_FILE_CMD:head\x20\x2dn\x2010
 SETUVAR --export FZF_REVERSE_ISEARCH_OPTS:\x2d\x2dpreview\x3d\x27echo\x20\x7b\x7d\x27\x20\x2d\x2dpreview\x2dwindow\x20down\x3a3\x3ahidden\x3awrap\x20\x2d\x2dbind\x20\x27\x3f\x3atoggle\x2dpreview\x27
 SETUVAR FZF_TMUX_HEIGHT:40\x25
 SETUVAR --export --path GOPATH:/Users/austin/go
-SETUVAR --export GOROOT:/usr/local/Cellar/go/1\x2e12\x2e7/libexec
+SETUVAR --export GOROOT:/usr/local/Cellar/go/1\x2e13\x2e5/libexec
+SETUVAR PROJECT_PATHS:/Users/austin/dev/kinetic\x1e/Users/austin/dev/kinetic/aldo\x1e/Users/austin/dev/kinetic/kcp\x1e/Users/austin/oss\x1e/Users/austin/oss/mime\x2dtypes\x2dorg\x1e/Users/austin/oss/halostatue
 SETUVAR --export RUBIES:/Users/austin/\x2erubies/ruby\x2d2\x2e3\x2e8\x1e/Users/austin/\x2erubies/ruby\x2d2\x2e4\x2e6\x1e/Users/austin/\x2erubies/ruby\x2d2\x2e5\x2e5\x1e/Users/austin/\x2erubies/ruby\x2d2\x2e6\x2e3
 SETUVAR ZO_CMD:zo
 SETUVAR Z_CMD:z
@@ -34,7 +35,7 @@ SETUVAR __fish_init_2_3_0:\x1d
 SETUVAR __fish_init_3_x:\x1d
 SETUVAR __fzf_cd_command:fd
 SETUVAR __fzf_cd_with_hidden_command:fd
-SETUVAR __fzf_find_file_command:fd
+SETUVAR __fzf_find_file_command:ag
 SETUVAR _fish_abbr__2E_2E_2E_:\x2e\x2e/\x2e\x2e
 SETUVAR fish_color_autosuggestion:969896
 SETUVAR fish_color_cancel:\x2dr
@@ -64,5 +65,5 @@ SETUVAR fish_pager_color_completion:normal
 SETUVAR fish_pager_color_description:B3A06D\x1eyellow
 SETUVAR fish_pager_color_prefix:white\x1e\x2d\x2dbold\x1e\x2d\x2dunderline
 SETUVAR fish_pager_color_progress:brwhite\x1e\x2d\x2dbackground\x3dcyan
-SETUVAR fish_user_paths:/Users/austin/go/bin\x1e/Users/austin/\x2econfig/nvm/8\x2e16\x2e0/bin\x1e/usr/local/opt/fzf/bin\x1e/Users/austin/\x2elocal/bin\x1e/Users/austin/\x2ecargo/bin\x1e/usr/local/Cellar/go/1\x2e12\x2e7/libexec/bin\x1e/Users/austin/\x2ecabal/bin\x1e/Users/austin/\x2eghcup/bin\x1e/Users/austin/\x2emix\x1e/usr/local/Cellar/go/1\x2e12\x2e6/libexec/bin
+SETUVAR fish_user_paths:/Users/austin/go/bin\x1e/Users/austin/\x2epoetry/bin\x1e/usr/local/opt/fzf/bin\x1e/Users/austin/\x2elocal/bin\x1e/Users/austin/\x2emix\x1e/usr/local/Cellar/go/1\x2e12\x2e6/libexec/bin\x1e/usr/local/Cellar/go/1\x2e13\x2e5/libexec/bin\x1e/Users/austin/\x2ecabal/bin\x1e/Users/austin/\x2eghcup/bin\x1e/Users/austin/\x2ecargo/bin
 SETUVAR pisces_pairs:\x28\x2c\x29\x1e\x5b\x2c\x5d\x1e\x7b\x2c\x7d\x1e\x22\x2c\x22\x1e\x27\x2c\x27

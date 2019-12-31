@@ -53,6 +53,7 @@ tags-ja
 /fish/functions/*
 /fish/fishd.*
 /fish/fish_history
+/fish/hosts/
 /config/m2/repository
 /config/lein/indices/
 /packages

@@ -1,5 +1,13 @@
+# alyyousuf7/plugin-epwd
+# daleeidd/natural-selection
+# doughsay/omf-asdf
+# oh-my-fish/plugin-apt
+# oh-my-fish/plugin-archlinux
+# oh-my-fish/theme-bira
+# oh-my-fish/theme-cmorrell.com
+# rafaelrinaldi/pure
+# spacekookie/omf-color-manual
 0rax/fish-bd
-alyyousuf7/plugin-epwd
 edc/bass
 fishpkg/fish-get
 fishpkg/fish-get-file-age
@@ -13,16 +21,18 @@ fishpkg/fish-segment
 franciscolourenco/done
 halostatue/fish-brew
 halostatue/fish-direnv
-halostatue/fish-rust
+halostatue/fish-docker
+halostatue/fish-elixir
+halostatue/fish-fzf
 halostatue/fish-go
 halostatue/fish-haskell
 halostatue/fish-kerl
 halostatue/fish-kiex
 halostatue/fish-macos
 halostatue/fish-rake
+halostatue/fish-rust
 halostatue/fish-utils
 jethrokuan/fzf
-halostatue/fish-fzf
 jethrokuan/z
 jorgebucaran/fish-bax
 jorgebucaran/fish-getopts
@@ -33,16 +43,23 @@ laughedelic/brew-completions
 laughedelic/pisces
 matchai/fish-mock
 matchai/spacefish
+nju33/fish-age
+oh-my-fish/plugin-argu
+oh-my-fish/plugin-await
 oh-my-fish/plugin-aws
 oh-my-fish/plugin-bak
 oh-my-fish/plugin-balias
+oh-my-fish/plugin-battery
+oh-my-fish/plugin-bundler
 oh-my-fish/plugin-cd
 oh-my-fish/plugin-config
 oh-my-fish/plugin-errno
 oh-my-fish/plugin-hash
+oh-my-fish/plugin-jump
 oh-my-fish/plugin-license
+oh-my-fish/plugin-pj
 oh-my-fish/plugin-tab
 oh-my-fish/plugin-technicolor
 ohanhi/fish-elm-completions
+patrickf3139/Colored-Man-Pages
 sijad/gitignore
-halostatue/fish-elixir
