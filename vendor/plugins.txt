@@ -1,9 +1,0 @@
-Plugins to investigate:
-
-- Tarrasch/zsh-bd (upwards cd)
-- Tarrasch/zsh-autoenv
-- Tarrasch/zsh-mcd
-- Tarrasch/zsh-colors
-- Tarrasch/zsh-i-know
-- Tarrasch/command-not-found
-- Tarrasch/zsh-functional

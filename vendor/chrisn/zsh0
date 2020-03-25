@@ -1,4 +1,0 @@
-#!/bin/zsh -i
-# zsh0 - symlink-wrapper to run functions from .zshrc as scripts
-
-eval ${functions[(i)$0:t]:?no such function} "$@"
