@@ -11,3 +11,5 @@ config/htoprc: .config/htop/htoprc
 config/NuGet.Config: .config/NuGet/NuGet.Config
 config/gitk: .config/git/gitk
 config/karabiner: .config/karabiner
+config/powershell/Microsoft.Powershell_profile.ps1: .config/powershell/Microsoft.PowerShell_profile.ps1
+config/starship.toml: .config/starship.toml

@@ -1,73 +1,54 @@
-# Compiled source #
-###################
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.so
-
-# Packages #
-############
-# it's better to unpack these files and commit the raw source
-# git has its own built in compression methods
 *.7z
+*.class
+*.com
+*.dll
 *.dmg
+*.exe
 *.gz
+*.iml
 *.iso
 *.jar
-*.rar
-*.tar
-*.zip
+*.log
+*.o
+*.orig
 *.pyc
 *.pyo
+*.rar
 *.rbc
-.hsenv*
-.cap_tasks~
-.rake_tasks~
-.idea
-*.zwc
-.sass-cache/
-
-# Other VCS #
-#############
-.svn/
-CVS/
-
-# Logs and databases #
-######################
-*.log
+*.so
 *.sqlite
-
-# OS generated files #
-######################
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.cache
-.Trashes
-ehthumbs.db
-Thumbs.db
-Desktop.ini
-
-# Language Servers #
-####################
-.elixir_ls/
-_build/
-
-# Editor Noise #
-################
-*~
 *.sw[a-z]
+*.tar
 *.un~
+*.zip
+*.zwc
+*~
+.DS_Store
+.DS_Store\?
+.Spotlight-V100
+.Trashes
+._*
+.cache
+.cap_tasks~
+.classpath
+.elixir_ls/
+.hsenv*
+.idea
+.project
+.rake_tasks~
+.sass-cache/
+.settings
+.svn/
+.vscode/
+CVS/
+Desktop.ini
 Session.vim
-vim/.netrwhist
-vim/netrwhist
-
-# Tags #
-########
 TAGS
+Thumbs.db
+_build/
+dump.rdb
+ehthumbs.db
 tags
 tags-ja
-
+vim/.netrwhist
+vim/netrwhist

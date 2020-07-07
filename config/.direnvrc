@@ -1,6 +1,19 @@
 #! /usr/bin/env bash
 # shellcheck source=/dev/null
 
+unsafe() {
+  local res
+
+  set +u
+
+  "${@}"
+
+  res=${?}
+  set -u
+
+  return "${res}"
+}
+
 layout_haskell()
 {
   PATH_add ~/.cabal/bin
@@ -51,13 +64,19 @@ use_kerl()
   [[ "${version}" == --auto ]] && version="$(read_version_file .erlang-version)"
   [[ -z "${version}" ]] && return
 
-  local activate
-  activate="$(
+  local version_path
+  version_path=$(
     kerl list installations |
-      ruby -e "puts ARGF.read.scan(/${version}.*/).last.split.last"
-  )"/activate
+      ruby -e "puts ARGF.read.scan(/${version}.*/).last&.split&.last"
+  )
+  if [[ -z $version_path ]]; then
+    echo "Error: Missing erlang version: $version. Install using kerl." 1>&2
+    return 1
+  fi
 
-  [[ -f "${activate}" ]] && source "${activate}"
+  local activate
+  activate="${version_path}/activate"
+  [[ -f "${activate}" ]] && unsafe source "${activate}"
 }
 
 use_kiex()
@@ -70,14 +89,21 @@ use_kiex()
   [[ "${version}" == --auto ]] && version="$(read_version_file .elixir-version)"
   [[ -z "${version}" ]] && return
 
-  local activate
-
-  activate="${KIEX_HOME:-${HOME}/.kiex}"/elixirs/"$(
+  local version_path
+  version_path=$(
     kiex list |
       ruby -e "puts ARGF.read.scan(/elixir-${version}.*/).last"
-  )".env
+  )
 
-  [[ -f "${activate}" ]] && source "${activate}"
+  if [[ -z $version_path ]]; then
+    echo "Error: Missing elixir version: $version. Install using kiex." 1>&2
+    return 1
+  fi
+
+  local activate
+  activate="${KIEX_HOME:-${HOME}/.kiex}/elixirs/${version_path}.env"
+
+  [[ -f "${activate}" ]] && unsafe source "${activate}"
 }
 
 use_docker-machine()
@@ -98,7 +124,7 @@ use_nvm()
   [[ -z "${version}" ]] && return
 
   if [[ -e ~/.nvm/nvm.sh ]]; then
-    source ~/.nvm/nvm.sh
+    unsafe source ~/.nvm/nvm.sh
     nvm use "${version}"
   elif [[ -f ~/.config/nvm/index ]]; then
     # This works with jorgebucaran/fish-nvm, a fish-specific alternative to
@@ -146,9 +172,8 @@ use_chruby()
 
   [[ -z "${chruby}" ]] && return
 
-  set +x
-  source "${chruby}"
-  chruby "${version}"
+  unsafe source "${chruby}"
+  unsafe chruby "${version}"
 }
 
 get_cwd() {

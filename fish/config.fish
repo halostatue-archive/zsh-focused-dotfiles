@@ -209,9 +209,10 @@ bind -k enter magic_enter
 bind \r magic_enter
 bind \n magic_enter
 
-set -gx HOMEBREW_FORCE_VENDOR_RUBY 1
+# set -gx HOMEBREW_FORCE_VENDOR_RUBY 1
 
-function fallback --description 'allow a fallback value for variable'
+functions -q fallback
+or function fallback --description 'allow a fallback value for variable'
     if test (count $argv) = 1
         echo $argv
     else
@@ -219,7 +220,8 @@ function fallback --description 'allow a fallback value for variable'
     end
 end
 
-function get_ext --description "Get the file extension from the argument"
+functions -q get_ext
+or function get_ext --description "Get the file extension from the argument"
     set -l splits (string split "." "$argv")
     echo $splits[-1]
 end
@@ -419,3 +421,7 @@ end
 # if command -sq starship
 #     starship init fish | source
 # end
+
+starship init fish | source
+
+emit fish_postexec

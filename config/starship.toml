@@ -1,0 +1,81 @@
+# Don't print a new line at the start of the prompt
+# add_newline = false # default true
+
+# Timeout for starship to scan files (in milliseconds).
+# scan_timeout = 30 # default 30
+
+# Configure the order in which the prompt module occurs.
+# prompt_order= [] # Default:
+# [
+#     "username",
+#     "hostname",
+#     "kubernetes",
+#     "directory",
+#     "git_branch",
+#     "git_commit",
+#     "git_state",
+#     "git_status",
+#     "hg_branch",
+#     "docker_context",
+#     "package",
+#     "dotnet",
+#     "elixir",
+#     "elm",
+#     "erlang",
+#     "golang",
+#     "java",
+#     "julia",
+#     "nim",
+#     "nodejs",
+#     "ocaml",
+#     "php",
+#     "purescript",
+#     "python",
+#     "ruby",
+#     "rust",
+#     "terraform",
+#     "zig",
+#     "nix_shell",
+#     "conda",
+#     "memory_usage",
+#     "aws",
+#     "env_var",
+#     "crystal",
+#     "cmd_duration",
+#     "custom",
+#     "line_break",
+#     "jobs",
+#     "battery",
+#     "time",
+#     "character",
+# ]
+
+# [prefix]      [symbol]     [version]    [suffix]
+#  "via "         "⬢"        "v10.4.1"       ""
+
+
+[aws]
+# style = "bold blue"
+symbol = "🅰 "
+displayed_items = "region"
+
+[aws.region_aliases]
+ap-southeast-2 = "au"
+us-east-2 = "va"
+
+# Replace the "❯" symbol in the prompt with "➜"
+[character]      # The name of the module we are configuring is "character"
+# symbol = "➜"     # The "symbol" segment is being set to "➜"
+use_symbol_for_status = true
+
+[docker_context]
+only_with_files = true
+
+[git_commit]
+commit_hash_length = 9
+
+[git_status]
+show_sync_count = true
+
+[package]
+disabled = true

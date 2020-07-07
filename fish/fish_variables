@@ -10,44 +10,39 @@ SETUVAR AGNOSTER_ICON_SCM_STASHED:\x7e
 SETUVAR AGNOSTER_SEGMENT_RSEPARATOR:\ue0b2\x1e\ue0b3
 SETUVAR AGNOSTER_SEGMENT_SEPARATOR:\ue0b0\x1e\x20\ue0b1\x20
 SETUVAR --export EDITOR:/usr/local/bin/vim
-SETUVAR --export FZF_CD_COMMAND:fd\x20\x2d\x2dtype\x20d
-SETUVAR --export FZF_CD_WITH_HIDDEN_COMMAND:fd\x20\x2d\x2dtype\x20d\x20\x2d\x2dhidden\x20\x2d\x2dfollow\x20\x2d\x2dexclude\x20\x22\x2egit\x22
 SETUVAR FZF_DEFAULT_OPTS:\x2d\x2dheight\x2040\x25
-SETUVAR --export FZF_FIND_FILE_COMMAND:fd\x20\x2d\x2dtype\x20f
-SETUVAR --export FZF_FIND_FILE_OPTS:\x2d\x2dpreview\x3d\x27string\x20match\x20\x2dqe\x20binary\x20\x28file\x20\x2d\x2dmime\x20\x7b\x7d\x29\x20\x26\x26\x20echo\x20\x7b\x7d\x20is\x20a\x20binary\x20file\x202\x3e\x261\x20\x7c\x7c\x20bat\x20\x2d\x2dstyle\x3dnumbers\x20\x2d\x2dcolor\x3dalways\x20\x7b\x7d\x202\x3e\x261\x20\x7c\x7c\x20cat\x20\x7b\x7d\x202\x3e\x261\x20\x7c\x7c\x20tree\x20\x2dC\x20\x7b\x7d\x20\x7c\x20head\x20\x2d200\x27\x20\x2d\x2dselect\x2d1\x20\x2d\x2dexit\x2d0
+SETUVAR FZF_DISABLE_KEYBINDINGS:0
 SETUVAR FZF_LEGACY_KEYBINDINGS:1
 SETUVAR FZF_PREVIEW_DIR_CMD:ls
 SETUVAR FZF_PREVIEW_FILE_CMD:head\x20\x2dn\x2010
-SETUVAR --export FZF_REVERSE_ISEARCH_OPTS:\x2d\x2dpreview\x3d\x27echo\x20\x7b\x7d\x27\x20\x2d\x2dpreview\x2dwindow\x20down\x3a3\x3ahidden\x3awrap\x20\x2d\x2dbind\x20\x27\x3f\x3atoggle\x2dpreview\x27
 SETUVAR FZF_TMUX_HEIGHT:40\x25
-SETUVAR --export --path GOPATH:/Users/austin/go
-SETUVAR --export GOROOT:/usr/local/Cellar/go/1\x2e13\x2e5/libexec
 SETUVAR PROJECT_PATHS:/Users/austin/dev/kinetic\x1e/Users/austin/dev/kinetic/aldo\x1e/Users/austin/dev/kinetic/kcp\x1e/Users/austin/oss\x1e/Users/austin/oss/mime\x2dtypes\x2dorg\x1e/Users/austin/oss/halostatue
-SETUVAR --export RUBIES:/Users/austin/\x2erubies/ruby\x2d2\x2e3\x2e8\x1e/Users/austin/\x2erubies/ruby\x2d2\x2e4\x2e6\x1e/Users/austin/\x2erubies/ruby\x2d2\x2e5\x2e5\x1e/Users/austin/\x2erubies/ruby\x2d2\x2e6\x2e3
+SETUVAR --export RUBIES:/Users/austin/\x2erubies/ruby\x2d2\x2e6\x2e5
+SETUVAR THEME_EDEN_PROMPT_CHAR:\u00bb
 SETUVAR ZO_CMD:zo
 SETUVAR Z_CMD:z
 SETUVAR Z_DATA:/Users/austin/\x2elocal/share/z/data
 SETUVAR Z_DATA_DIR:/Users/austin/\x2elocal/share/z
 SETUVAR Z_EXCLUDE:/Users/austin
+SETUVAR __async_prompt_fish_prompt_text_8144:\x1b\x5b1m\x1b\x5b36m\x2edotfiles\x1b\x5b1m\x1b\x5b31m\x7c\x1b\x5b1m\x1b\x5b32mhalozsh2\x20\x1b\x5b1m\x1b\x5b33m\u2717\x1b\x28B\x1b\x5bm\u21d2\x20\x1b\x28B\x1b\x5bm
+SETUVAR __async_prompt_fish_right_prompt_text_8144:
 SETUVAR __brew_prefix:/usr/local
 SETUVAR __fish_init_2_39_8:\x1d
 SETUVAR __fish_init_2_3_0:\x1d
 SETUVAR __fish_init_3_x:\x1d
-SETUVAR __fzf_cd_command:fd
-SETUVAR __fzf_cd_with_hidden_command:fd
-SETUVAR __fzf_find_file_command:ag
-SETUVAR _fish_abbr__2E_2E_2E_:\x2e\x2e/\x2e\x2e
+SETUVAR __fish_initialized:3100
 SETUVAR fish_color_autosuggestion:969896
 SETUVAR fish_color_cancel:\x2dr
-SETUVAR fish_color_command:b294bb
+SETUVAR fish_color_command:green
 SETUVAR fish_color_comment:f0c674
 SETUVAR fish_color_cwd:green
 SETUVAR fish_color_cwd_root:red
 SETUVAR fish_color_end:b294bb
-SETUVAR fish_color_error:cc6666
+SETUVAR fish_color_error:red
 SETUVAR fish_color_escape:00a6b2
 SETUVAR fish_color_history_current:\x2d\x2dbold
 SETUVAR fish_color_host:normal
+SETUVAR fish_color_host_remote:yellow
 SETUVAR fish_color_match:\x2d\x2dbackground\x3dbrblue
 SETUVAR fish_color_normal:normal
 SETUVAR fish_color_operator:00a6b2
@@ -59,11 +54,47 @@ SETUVAR fish_color_selection:white\x1e\x2d\x2dbold\x1e\x2d\x2dbackground\x3dbrbl
 SETUVAR fish_color_status:red
 SETUVAR fish_color_user:brgreen
 SETUVAR fish_color_valid_path:\x2d\x2dunderline
+SETUVAR fish_escape_delay_ms:125
 SETUVAR fish_greeting:\x1d
 SETUVAR fish_key_bindings:fish_default_key_bindings
 SETUVAR fish_pager_color_completion:normal
 SETUVAR fish_pager_color_description:B3A06D\x1eyellow
 SETUVAR fish_pager_color_prefix:white\x1e\x2d\x2dbold\x1e\x2d\x2dunderline
 SETUVAR fish_pager_color_progress:brwhite\x1e\x2d\x2dbackground\x3dcyan
-SETUVAR fish_user_paths:/Users/austin/go/bin\x1e/Users/austin/\x2epoetry/bin\x1e/usr/local/opt/fzf/bin\x1e/Users/austin/\x2elocal/bin\x1e/Users/austin/\x2emix\x1e/usr/local/Cellar/go/1\x2e12\x2e6/libexec/bin\x1e/usr/local/Cellar/go/1\x2e13\x2e5/libexec/bin\x1e/Users/austin/\x2ecabal/bin\x1e/Users/austin/\x2eghcup/bin\x1e/Users/austin/\x2ecargo/bin
-SETUVAR pisces_pairs:\x28\x2c\x29\x1e\x5b\x2c\x5d\x1e\x7b\x2c\x7d\x1e\x22\x2c\x22\x1e\x27\x2c\x27
+SETUVAR fish_prompt_pwd_dir_length:0
+SETUVAR fish_user_paths:/usr/local/opt/fzf/bin\x1e/Users/austin/\x2elocal/bin\x1e/Users/austin/\x2emix\x1e/Users/austin/\x2ecabal/bin\x1e/Users/austin/\x2eghcup/bin\x1e/Users/austin/\x2ecargo/bin
+SETUVAR pure_begin_prompt_with_current_directory:true
+SETUVAR pure_color_command_duration:pure_color_warning
+SETUVAR pure_color_current_directory:pure_color_primary
+SETUVAR pure_color_danger:red
+SETUVAR pure_color_dark:black
+SETUVAR pure_color_git_branch:pure_color_mute
+SETUVAR pure_color_git_dirty:pure_color_mute
+SETUVAR pure_color_git_unpulled_commits:pure_color_info
+SETUVAR pure_color_git_unpushed_commits:pure_color_info
+SETUVAR pure_color_info:cyan
+SETUVAR pure_color_jobs:pure_color_normal
+SETUVAR pure_color_light:white
+SETUVAR pure_color_mute:brblack
+SETUVAR pure_color_normal:normal
+SETUVAR pure_color_primary:blue
+SETUVAR pure_color_prompt_on_error:pure_color_danger
+SETUVAR pure_color_prompt_on_success:pure_color_success
+SETUVAR pure_color_ssh_hostname:pure_color_mute
+SETUVAR pure_color_ssh_separator:pure_color_mute
+SETUVAR pure_color_ssh_user_normal:pure_color_mute
+SETUVAR pure_color_ssh_user_root:pure_color_light
+SETUVAR pure_color_success:magenta
+SETUVAR pure_color_virtualenv:pure_color_mute
+SETUVAR pure_color_warning:yellow
+SETUVAR pure_enable_git:true
+SETUVAR pure_reverse_prompt_symbol_in_vimode:true
+SETUVAR pure_separate_prompt_on_error:false
+SETUVAR pure_show_jobs:false
+SETUVAR pure_symbol_git_dirty:\x2a
+SETUVAR pure_symbol_git_unpulled_commits:\u21e3
+SETUVAR pure_symbol_git_unpushed_commits:\u21e1
+SETUVAR pure_symbol_prompt:\u276f
+SETUVAR pure_symbol_reverse_prompt:\u276e
+SETUVAR pure_symbol_title_bar_separator:\u2014
+SETUVAR pure_threshold_command_duration:5

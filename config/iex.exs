@@ -1,6 +1,12 @@
 import_if_available Ecto.Query
 import_if_available Mex
 
+defmodule IEx.HistoryHelpers do
+  def save_history(filename \\ "iex_history.exs") do
+    File.write!(filename, Enum.reverse(:group_history.load()))
+  end
+end
+
 defmodule IEx.Bucket do
   @moduledoc "A trace bucket."
 

@@ -1,8 +1,17 @@
+# Flush output immediately, even when piped
+--flush
+
+# Force color and header, even in less -R.
 --color
+--group
+
 --context=3
 --follow
---group
+--sort-files
+
 --ignore-case
+--smart-case
+
 --ignore-dir=coverage
 --ignore-dir=doc
 --ignore-dir=log
@@ -10,18 +19,33 @@
 --ignore-dir=public/coffeescripts
 --ignore-dir=tmp
 --ignore-dir=vendor
+--ignore-dir=.idea
+--ignore-dir=.elixir_ls
+--ignore-dir=deps
+
 --pager=less -R
---smart-case
---sort-files
---type-add=css=.sass,.scss,.less
---type-add=html=.html.erb,.html.haml,.mustache,.jst,.ejs
---type-add=js=.json,.js.erb,.coffee
---type-add=ruby=.haml,.rake,.rsel,.builder,.ru
---type-set=coffee=.coffee
---type-set=cucumber=.feature
---type-set=markdown=.md,.mdown,.markdown
---type-set=rdoc=.rdoc
---type-set=sass=.sass,.scss,.less
+
+--type-set
+coffee=.coffee
+--type-set
+cucumber=.feature
+--type-set
+markdown=.md,.mdown,.markdown,.mkd
+--type-set
+rdoc=.rdoc
+--type-set
+py=.py
+--type-set
+sass=.sass,.scss,.less
+
+--type-add
+ruby=.haml,.builder,.rake,.rsel,.ru
+--type-add
+css=.sass,.scss
+--type-add
+html=.html.erb,.html.haml,.mustache,.jst,.ejs
+--type-add
+js=.json,.js.erb,.coffee
 
 # Don't include webrat.
 -G^(?!.*test/webrat-)

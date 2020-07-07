@@ -1,65 +1,54 @@
-# alyyousuf7/plugin-epwd
-# daleeidd/natural-selection
+# Themes
+# matchai/spacefish
+# simnalamburt/shellder
+# oh-my-fish/theme-krisleech
+# MaxMilton/pure
+# wakatara/cousteau-theme
+# Packages under consideration
 # doughsay/omf-asdf
-# oh-my-fish/plugin-apt
-# oh-my-fish/plugin-archlinux
-# oh-my-fish/theme-bira
-# oh-my-fish/theme-cmorrell.com
-# rafaelrinaldi/pure
-# spacekookie/omf-color-manual
-0rax/fish-bd
+# bash compatibility wrappers
 edc/bass
+jorgebucaran/fish-bax
+# Everything Else
+# acomagu/fish-async-prompt
+alyyousuf7/plugin-epwd
+0rax/fish-bd
 fishpkg/fish-get
 fishpkg/fish-get-file-age
 fishpkg/fish-git-util
-fishpkg/fish-host-info
-fishpkg/fish-humanize-duration
-fishpkg/fish-menu
-fishpkg/fish-pwd-info
-fishpkg/fish-pwd-is-home
-fishpkg/fish-segment
 franciscolourenco/done
-halostatue/fish-brew
-halostatue/fish-direnv
-halostatue/fish-docker
-halostatue/fish-elixir
-halostatue/fish-fzf
-halostatue/fish-go
-halostatue/fish-haskell
-halostatue/fish-kerl
-halostatue/fish-kiex
-halostatue/fish-macos
-halostatue/fish-rake
-halostatue/fish-rust
-halostatue/fish-utils
 jethrokuan/fzf
 jethrokuan/z
-jorgebucaran/fish-bax
 jorgebucaran/fish-getopts
 jorgebucaran/fish-nvm
 jorgebucaran/fish-spark
 jorgebucaran/fishtape
 laughedelic/brew-completions
-laughedelic/pisces
 matchai/fish-mock
-matchai/spacefish
 nju33/fish-age
-oh-my-fish/plugin-argu
-oh-my-fish/plugin-await
 oh-my-fish/plugin-aws
-oh-my-fish/plugin-bak
-oh-my-fish/plugin-balias
-oh-my-fish/plugin-battery
-oh-my-fish/plugin-bundler
 oh-my-fish/plugin-cd
-oh-my-fish/plugin-config
-oh-my-fish/plugin-errno
-oh-my-fish/plugin-hash
-oh-my-fish/plugin-jump
 oh-my-fish/plugin-license
-oh-my-fish/plugin-pj
 oh-my-fish/plugin-tab
-oh-my-fish/plugin-technicolor
-ohanhi/fish-elm-completions
 patrickf3139/Colored-Man-Pages
 sijad/gitignore
+# My packages
+halostatue/fish-utils-core@v1.x
+halostatue/fish-battery@v1.x
+halostatue/fish-brew@v1.x
+halostatue/fish-direnv@v1.x
+halostatue/fish-docker@v1.x
+halostatue/fish-elixir@v1.x
+halostatue/fish-fzf@v2.x
+halostatue/fish-go@v1.x
+halostatue/fish-haskell@v1.x
+halostatue/fish-kerl@v1.x
+halostatue/fish-kiex@v1.x
+halostatue/fish-macos@v2.x
+halostatue/fish-rake@v1.x
+halostatue/fish-rust@v1.x
+halostatue/fish-utils@v2.x
+halostatue/fish-utils-net@v1.x
+# Pending rewrites
+# oh-my-fish/plugin-bundler -> halostatue/fish-ruby-bundler
+evanlucas/fish-kubectl-completions

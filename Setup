@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+xcode-select --install
+
+brew tap domt4/autoupdate
+brew autoupdate --start --upgrade --cleanup --enable-notifications
+
+# brew install nomad
+# brew install doctl
+
+brew install heroku
+heroku plugins:install heroku-repo
+brew install terraform
+brew install caskroom/cask/virtualbox
+brew install caskroom/cask/minikube
+
+# npm install -g git+https://github.com/projectatomic/dockerfile_lint
+
+# install httpie via pip3/python3
+
+brew install nnn mosh
+brew install bats-core shellcheck
