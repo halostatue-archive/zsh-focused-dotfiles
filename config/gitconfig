@@ -43,7 +43,7 @@
   showtool = "!f() { git difftool --tool icdiff ${1:-HEAD}^ ${1:-HEAD}; }; f"
 % end
 
-% on in_path('hub') do
+% on in_path?('hub') do
   browse = !hub browse
   compare = !hub compare
 % end
