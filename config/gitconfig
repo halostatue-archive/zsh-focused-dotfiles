@@ -93,9 +93,7 @@
 % on path_exist?(home('.git_commit_template')) do
   template = <%= home %>/.git_commit_template
 % end
-% on in_path?('krgpg') do |path|
-  gpgSign = true
-% end
+  ; gpgSign = true
 
 [core]
   autocrlf = input
@@ -171,11 +169,6 @@
 %   end
 % end
 
-[gpg]
-% on in_path?('krgpg') do |path|
-  program = <%= path %>
-% end
-
 [grep]
   extendRegexp = true
   lineNumber = true
@@ -231,9 +224,7 @@
   fetchJobs = 4
 
 [tag]
-% on in_path?('krgpg') do |path|
   forceSignAnnotated = true
-% end
 
 # URL shorthands
 [url "git@github.com:"]

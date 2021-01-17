@@ -61,3 +61,6 @@ tags-ja
 /user-backup.tar.gz
 
 .byebug_history
+
+/bitbar/enabled/*
+!/bitbar/enabled/.keep

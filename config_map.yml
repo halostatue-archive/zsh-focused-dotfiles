@@ -1,15 +1,14 @@
 ---
 # source-file: target-file
-config/ssh-config: .ssh/config
-config/gnupg: .gnupg/gpg.conf
-config/hub: .config/hub
-config/gem-credentials.yml: .gem/credentials
-config/aws-credentials: .aws/credentials
-config/aws-config: .aws/config
-fish: .config/fish
-config/htoprc: .config/htop/htoprc
 config/NuGet.Config: .config/NuGet/NuGet.Config
+config/aws-config: .aws/config
+config/aws-credentials: .aws/credentials
+config/gem-credentials.yml: .gem/credentials
 config/gitk: .config/git/gitk
-config/karabiner: .config/karabiner
-config/powershell/Microsoft.Powershell_profile.ps1: .config/powershell/Microsoft.PowerShell_profile.ps1
+config/gnupg: .gnupg/gpg.conf
+config/htoprc: .config/htop/htoprc
+config/hub: .config/hub
+config/kitty.conf: .config/kitty/kitty.conf
+config/ssh-config: .ssh/config
 config/starship.toml: .config/starship.toml
+fish: .config/fish

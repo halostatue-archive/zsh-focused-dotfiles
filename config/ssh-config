@@ -15,18 +15,6 @@ VerifyHostKeyDNS yes
 Host *^*
   ProxyCommand ssh-chain %h %p
 
-% on in_path?('krssh') do |path|
-Host *
-  PKCS11Provider <%= Pathname(path).join('../../lib/kr-pkcs11.so').expand_path %>
-  ProxyCommand <%= path %> %h %p
-  IdentityFile ~/.ssh/id_krypton
-  IdentityFile ~/.ssh/id_kryptonite
-  IdentityFile ~/.ssh/id_ed25519
-  IdentityFile ~/.ssh/id_rsa
-  IdentityFile ~/.ssh/id_ecdsa
-  IdentityFile ~/.ssh/id_dsa
-% end
-
 # Default
 # Host *
 #     #User username

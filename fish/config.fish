@@ -418,10 +418,12 @@ end
 
 # set_color 8aC374 && figlet -f block -w 80 "The Lab"
 
-# if command -sq starship
-#     starship init fish | source
-# end
+# command -sq starship; and starship init fish | source
 
-starship init fish | source
+command -sq pipx
+and command -sq register-python-argcomplete
+and register-python-argcomplete --shell fish pipx | source
+
+set -U pisces_only_insert_at_eol 1
 
 emit fish_postexec
