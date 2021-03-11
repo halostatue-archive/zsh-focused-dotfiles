@@ -186,7 +186,7 @@ end
 
 function magic_enter
     if test -z (string join0 (commandline))
-        if git_is_repo
+        if __fish_is_git_repository
             set -q MAGIC_ENTER_GIT_COMMAND
             or set MAGIC_ENTER_GIT_COMMAND 'git status -u .'
             eval $MAGIC_ENTER_GIT_COMMAND
@@ -418,7 +418,7 @@ end
 
 # set_color 8aC374 && figlet -f block -w 80 "The Lab"
 
-# command -sq starship; and starship init fish | source
+command -sq starship; and starship init fish | source
 
 command -sq pipx
 and command -sq register-python-argcomplete
